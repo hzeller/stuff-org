@@ -1,0 +1,43 @@
+<head>
+  <link rel="icon" type="image/png" href="/img/stuff-icon.png">
+</head>
+<body>
+  <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
+       This is how we did it back then. Yes, tables! It sucked. Still sucks. -->
+
+<span style="font-size:smaller;">{{.Msg}}&nbsp;</span>
+<form action="/form" method="GET">  <!-- while testing: make it GET -->
+  <!-- to determine if id was changed -->
+<input type="hidden" name="orig_id" value="{{.Id}}"/>
+<table width="100%">
+<tr><td valign="top">
+<table style="float:left; margin-right:10px">
+  <tr style="background-color:#eeeeee; height:3em;"><td align="right">
+    <label for="cid">Drawer ID </label></td>
+    <td><input style="font-weight:bold; font-size:larger;"
+	       type="text" name="id" size="5" id="cid" value="{{.Id}}" onchange="form.submit();">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a style="font-size:larger; text-decoration:none;" href="?id={{.PrevId}}">◀<img align="middle" height="40" src="/img/{{.PrevId}}.jpg"/></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a style="font-size:larger; text-decoration:none;" href="?id={{.NextId}}"><img align="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
+
+  </td></tr>
+
+  <tr><td align="right"><label for="ccat">Category</label></td>
+    <td><input type="text" name="category" size="40" id="cvalue" value="{{.Category}}">(TODO: radio buttons)</td></tr>
+<tr><td align="right"><label for="cvalue">Value</label></td>
+    <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
+<tr><td align="right" valign="top"><label for="cdesc">Description</label></td>
+  <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
+  <tr><td colspan="2" style="background-color:#eeeeee; height:3em; align:right;">
+      <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
+</table></td>
+<td align="left">
+  <img src="/img/{{.Id}}.jpg"/><br/>
+</td></tr>
+</tr>
+</table>
+</form>
+
+<!-- todo: recent list -->
+</body>
