@@ -2,8 +2,10 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	"fmt"
+	_ "github.com/lib/pq"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -64,6 +66,81 @@ type StuffStore interface {
 	Search(search_term string) []*Component
 }
 
+type DBBackend struct {
+	db           *sql.DB
+	findById     *sql.Stmt
+	insertRecord *sql.Stmt
+	updateRecord *sql.Stmt
+}
+
+func NewDBBackend(db *sql.DB) (*DBBackend, error) {
+	findById, err := db.Prepare("SELECT category, value, description " +
+		"FROM component where id=$1")
+	if err != nil {
+		return nil, err
+	}
+	insertRecord, err := db.Prepare("INSERT INTO component (id, category, value, description) " +
+		"VALUES ($1, $2, $3, $4)")
+	if err != nil {
+		return nil, err
+	}
+	updateRecord, err := db.Prepare("UPDATE component SET " +
+		"category=$2, value=$3, description=$4 where id=$1 ")
+	if err != nil {
+		return nil, err
+	}
+
+	return &DBBackend{
+		db:           db,
+		findById:     findById,
+		insertRecord: insertRecord,
+		updateRecord: updateRecord}, nil
+}
+
+func (d *DBBackend) FindById(id int) *Component {
+	result := &Component{id: id}
+	err := d.findById.QueryRow(id).Scan(&result.category, &result.value, &result.description)
+	switch {
+	case err == sql.ErrNoRows:
+		return nil
+	case err != nil:
+		log.Fatal(err)
+	default:
+		return result
+	}
+	return nil
+}
+
+func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
+	needsInsert := false
+	toEdit := d.FindById(id)
+	if toEdit == nil {
+		needsInsert = true
+		toEdit = &Component{id: id}
+	}
+	if update(toEdit) {
+		if toEdit.id != id {
+			return false, "ID was modified"
+		}
+		var err error
+		if needsInsert {
+			_, err = d.insertRecord.Exec(id, toEdit.category, toEdit.value,
+				toEdit.description)
+		} else {
+			_, err = d.updateRecord.Exec(id, toEdit.category, toEdit.value,
+				toEdit.description)
+		}
+		if err != nil {
+			return false, err.Error()
+		}
+	}
+	return true, ""
+}
+
+func (d *DBBackend) Search(search_term string) []*Component {
+	return nil // not implemented yet.
+}
+
 type InMemoryStore struct {
 	lock         sync.Mutex
 	id2Component map[int]*Component
@@ -95,12 +172,6 @@ func (s *InMemoryStore) EditRecord(id int, update ModifyFun) (bool, string) {
 		return true, ""
 	}
 	return true, ""
-}
-
-func (s *InMemoryStore) Exists(id int) bool {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-	return s.id2Component[id] != nil
 }
 
 func (s *InMemoryStore) FindById(id int) *Component {
@@ -178,13 +249,17 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	page := &FormPage{}
 
 	if requestStore {
-		store.EditRecord(id, func(comp *Component) bool {
+		success, err := store.EditRecord(id, func(comp *Component) bool {
 			comp.category = category
 			comp.value = r.FormValue("value")
 			comp.description = r.FormValue("description")
 			return true
 		})
-		msg = "Stored item " + fmt.Sprintf("%d", id)
+		if success {
+			msg = "Stored item " + fmt.Sprintf("%d", id)
+		} else {
+			msg = "ERROR STORING STUFF DAMNIT. " + err + fmt.Sprintf("ID=%d", id)
+		}
 	} else {
 		msg = "Edit item " + fmt.Sprintf("%d", id)
 	}
@@ -231,11 +306,24 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
 	port := flag.Int("port", 2000, "Port to serve from")
+	dbName := flag.String("db", "stuff", "Database to connect")
+	dbUser := flag.String("dbuser", "hzeller", "Database user")
+	dbPwd := flag.String("dbpwd", "", "Database password")
 
 	flag.Parse()
 
-	store := NewInMemoryStore()
+	db, err := sql.Open("postgres",
+		fmt.Sprintf("user=%s dbname=%s password=%s",
+			*dbUser, *dbName, *dbPwd))
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	//store := NewInMemoryStore()
+	store, err := NewDBBackend(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
 		imageServe(*imageDir, w, r)
 	})
