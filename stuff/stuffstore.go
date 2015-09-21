@@ -81,8 +81,8 @@ func NewDBBackend(db *sql.DB) (*DBBackend, error) {
 	if err != nil {
 		return nil, err
 	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, created, category, value, description, notes, quantity) " +
-		" VALUES ($1, $2, $3, $4, $5, $6, $7)")
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity) " +
+		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
 		return nil, err
 	}
