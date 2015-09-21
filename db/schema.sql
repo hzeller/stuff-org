@@ -2,7 +2,7 @@
 -- we got. For the first round, just a simple flat table.
 create table component (
        id    int       constraint pk_component primary key,
-       category varchar(20),    -- should be some foreign key
+       category varchar(40),    -- should be some foreign key
        value varchar(80),       -- identifying the component value
        description text,        -- additional information
        notes text,              -- user notes, can contain hashtags.

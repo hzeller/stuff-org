@@ -299,6 +299,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.value = r.FormValue("value")
 			comp.description = r.FormValue("description")
 			comp.notes = r.FormValue("notes")
+			comp.quantity = r.FormValue("quantity")
 			return true
 		})
 		if success {
@@ -325,6 +326,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		page.Value = currentItem.value
 		page.Description = currentItem.description
 		page.Notes = currentItem.notes
+		page.Quantity = currentItem.quantity
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
