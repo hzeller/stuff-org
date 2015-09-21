@@ -1,5 +1,7 @@
 <head>
-  <link rel="icon" type="image/png" href="/img/stuff-icon.png">
+  <link rel="icon" type="image/png" href="/static/stuff-icon.png">
+  <style>
+    </style>
 </head>
 <body>
   <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
@@ -29,11 +31,18 @@
     <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
 <tr><td align="right" valign="top"><label for="cdesc">Description</label></td>
   <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
+<tr><td align="right" valign="top"><label for="cnotes">Notes</label></td>
+  <td><textarea rows="5" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td></tr>
+<tr><td align="right"><label for="cquant">Quantity</label></td>
+    <td><input style="text-align:right;" type="text" name="value" size="5" id="cquant" value="{{.Quantity}}">-ish</td></tr>
+
+
+<!-- submit -->
   <tr><td colspan="2" style="background-color:#eeeeee; height:3em; align:right;">
       <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
 </table></td>
 <td align="left">
-  <img src="/img/{{.Id}}.jpg"/><br/>
+  <img height="320" src="/img/{{.Id}}.jpg"/><br/>
 </td></tr>
 </tr>
 </table>

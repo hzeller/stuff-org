@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Component struct {
@@ -21,8 +22,9 @@ type Component struct {
 	value       string
 	category    string
 	description string
+	quantity    string // at this point just a string.
+	notes       string
 	// The follwing are not used yet.
-	//notes         string
 	//datasheet_url string
 	//vendor        string
 	//auto_notes    string
@@ -74,18 +76,18 @@ type DBBackend struct {
 }
 
 func NewDBBackend(db *sql.DB) (*DBBackend, error) {
-	findById, err := db.Prepare("SELECT category, value, description " +
-		"FROM component where id=$1")
+	findById, err := db.Prepare("SELECT category, value, description, notes, quantity" +
+		" FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, category, value, description) " +
-		"VALUES ($1, $2, $3, $4)")
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, category, value, description, notes, quantity) " +
+		" VALUES ($1, $2, $3, $4, $5, $6, $7)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"category=$2, value=$3, description=$4 where id=$1 ")
+		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7 where id=$1 ")
 	if err != nil {
 		return nil, err
 	}
@@ -97,15 +99,46 @@ func NewDBBackend(db *sql.DB) (*DBBackend, error) {
 		updateRecord: updateRecord}, nil
 }
 
+func nullIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	} else {
+		return &s
+	}
+}
+func emptyIfNull(s *string) string {
+	if s == nil {
+		return ""
+	} else {
+		return *s
+	}
+}
+
 func (d *DBBackend) FindById(id int) *Component {
-	result := &Component{id: id}
-	err := d.findById.QueryRow(id).Scan(&result.category, &result.value, &result.description)
+	type ReadRecord struct {
+		category    *string
+		value       *string
+		description *string
+		notes       *string
+		quantity    *string
+	}
+	rec := &ReadRecord{}
+	err := d.findById.QueryRow(id).Scan(&rec.category, &rec.value,
+		&rec.description, &rec.notes, &rec.quantity)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
 	case err != nil:
 		log.Fatal(err)
 	default:
+		result := &Component{
+			id:          id,
+			category:    emptyIfNull(rec.category),
+			value:       emptyIfNull(rec.value),
+			description: emptyIfNull(rec.description),
+			notes:       emptyIfNull(rec.notes),
+			quantity:    emptyIfNull(rec.quantity),
+		}
 		return result
 	}
 	return nil
@@ -113,22 +146,32 @@ func (d *DBBackend) FindById(id int) *Component {
 
 func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	needsInsert := false
-	toEdit := d.FindById(id)
-	if toEdit == nil {
+	rec := d.FindById(id)
+	if rec == nil {
 		needsInsert = true
-		toEdit = &Component{id: id}
+		rec = &Component{id: id}
 	}
-	if update(toEdit) {
-		if toEdit.id != id {
+	before := *rec
+	if update(rec) {
+		if rec.id != id {
 			return false, "ID was modified"
 		}
+		if *rec == before {
+			log.Printf("No need to store ID=%d: no change.", id)
+			return true, "No change"
+		}
 		var err error
+
 		if needsInsert {
-			_, err = d.insertRecord.Exec(id, toEdit.category, toEdit.value,
-				toEdit.description)
+			_, err = d.insertRecord.Exec(id, time.Now(),
+				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
+				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
+				nullIfEmpty(rec.quantity))
 		} else {
-			_, err = d.updateRecord.Exec(id, toEdit.category, toEdit.value,
-				toEdit.description)
+			_, err = d.updateRecord.Exec(id, time.Now(),
+				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
+				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
+				nullIfEmpty(rec.quantity))
 		}
 		if err != nil {
 			return false, err.Error()
@@ -226,6 +269,8 @@ type FormPage struct {
 	Category    string
 	Value       string
 	Description string
+	Notes       string
+	Quantity    string
 }
 
 // for now, render templates directly to easier edit them.
@@ -253,6 +298,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.category = category
 			comp.value = r.FormValue("value")
 			comp.description = r.FormValue("description")
+			comp.notes = r.FormValue("notes")
 			return true
 		})
 		if success {
@@ -276,8 +322,9 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	currentItem := store.FindById(id)
 	if currentItem != nil {
 		page.Category = currentItem.category
-		page.Description = currentItem.description
 		page.Value = currentItem.value
+		page.Description = currentItem.description
+		page.Notes = currentItem.notes
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
@@ -286,13 +333,20 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	renderTemplate(w, "form-template", page)
 }
 
-func imageServe(imgPath string, out http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[len("/img/"):]
+func imageServe(prefix_len int, imgPath string, fallbackPath string,
+	out http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path[prefix_len:]
 	content, _ := ioutil.ReadFile(imgPath + "/" + path)
-	if content == nil {
-		content, _ = ioutil.ReadFile(imgPath + "/fallback.jpg")
+	if content == nil && fallbackPath != "" {
+		content, _ = ioutil.ReadFile(fallbackPath + "/fallback.jpg")
 	}
-	out.Header()["Content-Type"] = []string{"image/jpeg"}
+	switch {
+	case strings.HasSuffix(path, ".png"):
+		out.Header()["Content-Type"] = []string{"image/png"}
+	default:
+		out.Header()["Content-Type"] = []string{"image/jpeg"}
+	}
+
 	out.Write(content)
 	return
 }
@@ -305,6 +359,7 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 
 func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
+	staticResource := flag.String("staticdir", "static", "Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
 	dbName := flag.String("db", "stuff", "Database to connect")
 	dbUser := flag.String("dbuser", "hzeller", "Database user")
@@ -325,7 +380,10 @@ func main() {
 		log.Fatal(err)
 	}
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
-		imageServe(*imageDir, w, r)
+		imageServe(len("/img/"), *imageDir, *staticResource, w, r)
+	})
+	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
+		imageServe(len("/static/"), *staticResource, "", w, r)
 	})
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {

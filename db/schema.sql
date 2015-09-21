@@ -9,8 +9,12 @@ create table component (
        datasheet_url text,      -- data sheet URL if available
        vendor varchar(30),      -- should be foreign key
        auto_notes text,         -- auto generated notes, might help in search (including hashtags)
-       footprint varchar(30)
+       footprint varchar(30),
+       quantity varchar(5),	-- Initially text to allow freeform <50 or so. TODO: better.
+
+       created timestamp,
+       updated timestamp
 
        -- also, we need the following eventually
-       -- labeltext, drawer-type, location, amount. Several of these need
+       -- labeltext, drawer-type, location. Several of these should have foreign keys.
 );
