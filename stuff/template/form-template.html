@@ -8,7 +8,7 @@
        This is how we did it back then. Yes, tables! It sucked. Still sucks. -->
 
 <span style="font-size:smaller;">{{.Msg}}&nbsp;</span>
-<form action="/form" method="GET">  <!-- while testing: make it GET -->
+<form action="/form" method="POST">
   <!-- to determine if id was changed -->
 <input type="hidden" name="orig_id" value="{{.Id}}"/>
 <table width="100%">
@@ -33,6 +33,8 @@
   <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
 <tr><td align="right" valign="top"><label for="cnotes">Notes</label></td>
   <td><textarea rows="5" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td></tr>
+<tr><td align="right"><label for="dsheet">Datasheet</label></td>
+    <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet}}"></td></tr> <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
 <tr><td align="right"><label for="cquant">Quantity</label></td>
     <td><input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish</td></tr>
 

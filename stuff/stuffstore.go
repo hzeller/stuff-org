@@ -18,14 +18,14 @@ import (
 )
 
 type Component struct {
-	id          int
-	value       string
-	category    string
-	description string
-	quantity    string // at this point just a string.
-	notes       string
+	id            int
+	value         string
+	category      string
+	description   string
+	quantity      string // at this point just a string.
+	notes         string
+	datasheet_url string
 	// The follwing are not used yet.
-	//datasheet_url string
 	//vendor        string
 	//auto_notes    string
 	//footprint     string
@@ -76,18 +76,18 @@ type DBBackend struct {
 }
 
 func NewDBBackend(db *sql.DB) (*DBBackend, error) {
-	findById, err := db.Prepare("SELECT category, value, description, notes, quantity" +
+	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url" +
 		" FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity) " +
-		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7)")
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url) " +
+		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7 where id=$1 ")
+		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8 where id=$1 ")
 	if err != nil {
 		return nil, err
 	}
@@ -121,10 +121,11 @@ func (d *DBBackend) FindById(id int) *Component {
 		description *string
 		notes       *string
 		quantity    *string
+		datasheet   *string
 	}
 	rec := &ReadRecord{}
 	err := d.findById.QueryRow(id).Scan(&rec.category, &rec.value,
-		&rec.description, &rec.notes, &rec.quantity)
+		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet)
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
@@ -132,12 +133,13 @@ func (d *DBBackend) FindById(id int) *Component {
 		log.Fatal(err)
 	default:
 		result := &Component{
-			id:          id,
-			category:    emptyIfNull(rec.category),
-			value:       emptyIfNull(rec.value),
-			description: emptyIfNull(rec.description),
-			notes:       emptyIfNull(rec.notes),
-			quantity:    emptyIfNull(rec.quantity),
+			id:            id,
+			category:      emptyIfNull(rec.category),
+			value:         emptyIfNull(rec.value),
+			description:   emptyIfNull(rec.description),
+			notes:         emptyIfNull(rec.notes),
+			quantity:      emptyIfNull(rec.quantity),
+			datasheet_url: emptyIfNull(rec.datasheet),
 		}
 		return result
 	}
@@ -166,12 +168,12 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			_, err = d.insertRecord.Exec(id, time.Now(),
 				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
 				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity))
+				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url))
 		} else {
 			_, err = d.updateRecord.Exec(id, time.Now(),
 				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
 				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity))
+				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url))
 		}
 		if err != nil {
 			return false, err.Error()
@@ -271,6 +273,7 @@ type FormPage struct {
 	Description string
 	Notes       string
 	Quantity    string
+	Datasheet   string
 }
 
 // for now, render templates directly to easier edit them.
@@ -300,6 +303,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.description = r.FormValue("description")
 			comp.notes = r.FormValue("notes")
 			comp.quantity = r.FormValue("quantity")
+			comp.datasheet_url = r.FormValue("datasheet")
 			return true
 		})
 		if success {
@@ -327,6 +331,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		page.Description = currentItem.description
 		page.Notes = currentItem.notes
 		page.Quantity = currentItem.quantity
+		page.Datasheet = currentItem.datasheet_url
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
