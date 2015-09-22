@@ -77,14 +77,14 @@ func (d *DBBackend) FindById(id int) *Component {
 		log.Fatal(err)
 	default:
 		result := &Component{
-			id:            id,
-			category:      emptyIfNull(rec.category),
-			value:         emptyIfNull(rec.value),
-			description:   emptyIfNull(rec.description),
-			notes:         emptyIfNull(rec.notes),
-			quantity:      emptyIfNull(rec.quantity),
-			datasheet_url: emptyIfNull(rec.datasheet),
-			drawersize:    drawersize,
+			Id:            id,
+			Category:      emptyIfNull(rec.category),
+			Value:         emptyIfNull(rec.value),
+			Description:   emptyIfNull(rec.description),
+			Notes:         emptyIfNull(rec.notes),
+			Quantity:      emptyIfNull(rec.quantity),
+			Datasheet_url: emptyIfNull(rec.datasheet),
+			Drawersize:    drawersize,
 		}
 		return result
 	}
@@ -96,11 +96,11 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	rec := d.FindById(id)
 	if rec == nil {
 		needsInsert = true
-		rec = &Component{id: id}
+		rec = &Component{Id: id}
 	}
 	before := *rec
 	if update(rec) {
-		if rec.id != id {
+		if rec.Id != id {
 			return false, "ID was modified"
 		}
 		if *rec == before {
@@ -111,16 +111,16 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 
 		if needsInsert {
 			_, err = d.insertRecord.Exec(id, time.Now(),
-				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
-				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url),
-				rec.drawersize)
+				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
+				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
+				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
+				rec.Drawersize)
 		} else {
 			_, err = d.updateRecord.Exec(id, time.Now(),
-				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
-				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url),
-				rec.drawersize)
+				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
+				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
+				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
+				rec.Drawersize)
 		}
 		if err != nil {
 			return false, err.Error()

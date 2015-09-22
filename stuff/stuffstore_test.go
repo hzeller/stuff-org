@@ -18,7 +18,7 @@ func TestBasicStore(t *testing.T) {
 
 	// Crete record 1, set description
 	store.EditRecord(1, func(c *Component) bool {
-		c.description = "foo"
+		c.Description = "foo"
 		return true
 	})
 
@@ -26,18 +26,18 @@ func TestBasicStore(t *testing.T) {
 
 	// Edit it, but decide not to proceed
 	store.EditRecord(1, func(c *Component) bool {
-		ExpectTrue(t, c.description == "foo", "Initial value set")
-		c.description = "bar"
+		ExpectTrue(t, c.Description == "foo", "Initial value set")
+		c.Description = "bar"
 		return false // don't commit
 	})
 	store.EditRecord(1, func(c *Component) bool {
-		ExpectTrue(t, c.description == "foo", "Unchanged in second tx")
+		ExpectTrue(t, c.Description == "foo", "Unchanged in second tx")
 		return false
 	})
 
 	// Now change it
 	store.EditRecord(1, func(c *Component) bool {
-		c.description = "bar"
+		c.Description = "bar"
 		return true
 	})
 }
@@ -45,19 +45,19 @@ func TestBasicStore(t *testing.T) {
 func TestBasicMatching(t *testing.T) {
 	store := NewInMemoryStore()
 	store.EditRecord(1, func(c *Component) bool {
-		c.value = "foo" // Value: pretty high score
+		c.Value = "foo" // Value: pretty high score
 		return true
 	})
 	store.EditRecord(2, func(c *Component) bool {
-		c.description = "barfoo" // in description, but hidden
+		c.Description = "barfoo" // in description, but hidden
 		return true
 	})
 	store.EditRecord(3, func(c *Component) bool {
-		c.description = "foo" // in description and first
+		c.Description = "foo" // in description and first
 		return true
 	})
 	store.EditRecord(4, func(c *Component) bool {
-		c.value = "something different"
+		c.Value = "something different"
 		return true
 	})
 
@@ -66,7 +66,7 @@ func TestBasicMatching(t *testing.T) {
 	result := store.Search("foo")
 	ExpectTrue(t, len(result) == 3, "Unexpected result count "+
 		strconv.Itoa(len(result)))
-	ExpectTrue(t, result[0].id == 1, "Seq 1 unexpected")
-	ExpectTrue(t, result[1].id == 3, "Seq 2 unexpected")
-	ExpectTrue(t, result[2].id == 2, "Seq 3 unexpected")
+	ExpectTrue(t, result[0].Id == 1, "Seq 1 unexpected")
+	ExpectTrue(t, result[1].Id == 3, "Seq 2 unexpected")
+	ExpectTrue(t, result[2].Id == 2, "Seq 3 unexpected")
 }

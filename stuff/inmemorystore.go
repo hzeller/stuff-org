@@ -22,11 +22,13 @@ func (s *InMemoryStore) EditRecord(id int, update ModifyFun) (bool, string) {
 	if found != nil {
 		toEdit = *found
 	} else {
-		toEdit.id = id
+		toEdit.Id = id
 	}
 	s.lock.Unlock()
 	if update(&toEdit) {
-		toEdit.id = id // We don't allow to mess with that one :)
+		if toEdit.Id != id {
+			return false, "ID different after editing. Can't do that!"
+		}
 		s.lock.Lock()
 		defer s.lock.Unlock()
 		if s.id2Component[id] != found {

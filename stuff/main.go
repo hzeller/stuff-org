@@ -15,14 +15,14 @@ import (
 )
 
 type Component struct {
-	id            int
-	value         string
-	category      string
-	description   string
-	quantity      string // at this point just a string.
-	notes         string
-	datasheet_url string
-	drawersize    int
+	Id            int
+	Value         string
+	Category      string
+	Description   string
+	Quantity      string // at this point just a string.
+	Notes         string
+	Datasheet_url string
+	Drawersize    int
 	// The follwing are not used yet.
 	//vendor        string
 	//auto_notes    string
@@ -42,9 +42,9 @@ func StringScore(needle string, haystack string) float32 {
 
 // Matches the component and returns a score
 func (c *Component) MatchScore(term string) float32 {
-	return 1*StringScore(term, c.category) +
-		3*StringScore(term, c.value) +
-		2*StringScore(term, c.description)
+	return 1*StringScore(term, c.Category) +
+		3*StringScore(term, c.Value) +
+		2*StringScore(term, c.Description)
 
 }
 
@@ -67,10 +67,11 @@ type StuffStore interface {
 }
 
 type FormPage struct {
-	Msg         string
-	Id          string
-	PrevId      string
-	NextId      string
+	Msg    string
+	Id     string
+	PrevId string
+	NextId string
+
 	Category    string
 	Value       string
 	Description string
@@ -102,13 +103,13 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 
 	if requestStore {
 		success, err := store.EditRecord(id, func(comp *Component) bool {
-			comp.category = category
-			comp.value = r.FormValue("value")
-			comp.description = r.FormValue("description")
-			comp.notes = r.FormValue("notes")
-			comp.quantity = r.FormValue("quantity")
-			comp.datasheet_url = r.FormValue("datasheet")
-			comp.drawersize, _ = strconv.Atoi(r.FormValue("drawersize"))
+			comp.Category = category
+			comp.Value = r.FormValue("value")
+			comp.Description = r.FormValue("description")
+			comp.Notes = r.FormValue("notes")
+			comp.Quantity = r.FormValue("quantity")
+			comp.Datasheet_url = r.FormValue("datasheet")
+			comp.Drawersize, _ = strconv.Atoi(r.FormValue("drawersize"))
 			return true
 		})
 		if success {
@@ -131,13 +132,13 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	page.NextId = strconv.Itoa(id + 1)
 	currentItem := store.FindById(id)
 	if currentItem != nil {
-		page.Category = currentItem.category
-		page.Value = currentItem.value
-		page.Description = currentItem.description
-		page.Notes = currentItem.notes
-		page.Quantity = currentItem.quantity
-		page.Datasheet = currentItem.datasheet_url
-		page.Drawersize = currentItem.drawersize
+		page.Category = currentItem.Category
+		page.Value = currentItem.Value
+		page.Description = currentItem.Description
+		page.Notes = currentItem.Notes
+		page.Quantity = currentItem.Quantity
+		page.Datasheet = currentItem.Datasheet_url
+		page.Drawersize = currentItem.Drawersize
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
