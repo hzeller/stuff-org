@@ -11,6 +11,7 @@ create table component (
        auto_notes text,         -- auto generated notes, might help in search (including hashtags)
        footprint varchar(30),
        quantity varchar(5),	-- Initially text to allow freeform <50 or so. TODO: better.
+       drawersize int,
 
        created timestamp,
        updated timestamp

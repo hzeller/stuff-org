@@ -25,6 +25,7 @@ type Component struct {
 	quantity      string // at this point just a string.
 	notes         string
 	datasheet_url string
+	drawersize    int
 	// The follwing are not used yet.
 	//vendor        string
 	//auto_notes    string
@@ -76,18 +77,18 @@ type DBBackend struct {
 }
 
 func NewDBBackend(db *sql.DB) (*DBBackend, error) {
-	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url" +
+	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url,drawersize" +
 		" FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url) " +
-		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8)")
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url,drawersize) " +
+		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8 where id=$1 ")
+		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8,drawersize=$9 where id=$1 ")
 	if err != nil {
 		return nil, err
 	}
@@ -122,10 +123,15 @@ func (d *DBBackend) FindById(id int) *Component {
 		notes       *string
 		quantity    *string
 		datasheet   *string
+		drawersize  *int
 	}
 	rec := &ReadRecord{}
 	err := d.findById.QueryRow(id).Scan(&rec.category, &rec.value,
-		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet)
+		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet, &rec.drawersize)
+	drawersize := 0
+	if rec.drawersize != nil {
+		drawersize = *rec.drawersize
+	}
 	switch {
 	case err == sql.ErrNoRows:
 		return nil
@@ -140,6 +146,7 @@ func (d *DBBackend) FindById(id int) *Component {
 			notes:         emptyIfNull(rec.notes),
 			quantity:      emptyIfNull(rec.quantity),
 			datasheet_url: emptyIfNull(rec.datasheet),
+			drawersize:    drawersize,
 		}
 		return result
 	}
@@ -168,12 +175,14 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			_, err = d.insertRecord.Exec(id, time.Now(),
 				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
 				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url))
+				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url),
+				rec.drawersize)
 		} else {
 			_, err = d.updateRecord.Exec(id, time.Now(),
 				nullIfEmpty(rec.category), nullIfEmpty(rec.value),
 				nullIfEmpty(rec.description), nullIfEmpty(rec.notes),
-				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url))
+				nullIfEmpty(rec.quantity), nullIfEmpty(rec.datasheet_url),
+				rec.drawersize)
 		}
 		if err != nil {
 			return false, err.Error()
@@ -274,6 +283,7 @@ type FormPage struct {
 	Notes       string
 	Quantity    string
 	Datasheet   string
+	Drawersize  int
 }
 
 // for now, render templates directly to easier edit them.
@@ -304,6 +314,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.notes = r.FormValue("notes")
 			comp.quantity = r.FormValue("quantity")
 			comp.datasheet_url = r.FormValue("datasheet")
+			comp.drawersize, _ = strconv.Atoi(r.FormValue("drawersize"))
 			return true
 		})
 		if success {
@@ -332,6 +343,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		page.Notes = currentItem.notes
 		page.Quantity = currentItem.quantity
 		page.Datasheet = currentItem.datasheet_url
+		page.Drawersize = currentItem.drawersize
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}

@@ -15,10 +15,10 @@
 <tr><td valign="top">
 <table style="float:left; margin-right:10px">
   <tr style="background-color:#eeeeee; height:3em;"><td align="right">
-    <label for="cid">Drawer ID </label></td>
+    <label for="cid">Drawer/Bin</label></td>
     <td><input style="font-weight:bold; font-size:larger;"
 	       type="text" name="id" size="5" id="cid" value="{{.Id}}" onchange="form.submit();">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Browse:
     <a style="font-size:larger; text-decoration:none;" href="?id={{.PrevId}}">◀<img align="middle" height="40" src="/img/{{.PrevId}}.jpg"/></a>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a style="font-size:larger; text-decoration:none;" href="?id={{.NextId}}"><img align="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
@@ -26,7 +26,7 @@
   </td></tr>
   <tr><td align="right"><label for="ccat">Category</label></td>
     <td><input type="text" name="category" size="40" id="cvalue" value="{{.Category}}">(TODO: radio buttons)</td></tr>
-<tr><td align="right"><label for="cvalue">Value</label></td>
+<tr><td align="right"><label for="cvalue">Name/Value</label></td>
     <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
 <tr><td align="right" valign="top"><label for="cdesc">Description</label></td>
   <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
@@ -35,11 +35,13 @@
 <tr><td align="right"><label for="dsheet">Datasheet</label></td>
     <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet}}"></td></tr> <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
 <tr><td align="right"><label for="cquant">Quantity</label></td>
-    <td><input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish</td></tr>
-
-
+    <td><input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
+<input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">Needs regular drawer</label>
+<input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
+<input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
+</td></tr>
 <!-- submit -->
-  <tr><td colspan="2" style="background-color:#eeeeee; height:3em; align:right;">
+  <tr><td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
       <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
 </table></td>
   <td align="left">
@@ -50,6 +52,6 @@
 </tr>
 </table>
 </form>
-
+Noisebridge. Yay.
 <!-- todo: recent list -->
 </body>
