@@ -109,19 +109,18 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 		}
 		var err error
 
+		var toExec *sql.Stmt
 		if needsInsert {
-			_, err = d.insertRecord.Exec(id, time.Now(),
-				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
-				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
-				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-				rec.Drawersize)
+			toExec = d.insertRecord
 		} else {
-			_, err = d.updateRecord.Exec(id, time.Now(),
-				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
-				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
-				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-				rec.Drawersize)
+			toExec = d.updateRecord
 		}
+		_, err = toExec.Exec(id, time.Now(),
+			nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
+			nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
+			nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
+			rec.Drawersize)
+
 		if err != nil {
 			return false, err.Error()
 		}
