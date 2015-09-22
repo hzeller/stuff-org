@@ -67,18 +67,11 @@ type StuffStore interface {
 }
 
 type FormPage struct {
-	Msg    string
-	Id     string
-	PrevId string
-	NextId string
-
-	Category    string
-	Value       string
-	Description string
-	Notes       string
-	Quantity    string
-	Datasheet   string
-	Drawersize  int
+	Component // All these values are shown in the form
+	// Additional stuff
+	Msg    string // Feedback for user
+	PrevId int    // For browsing
+	NextId int
 }
 
 // for now, render templates directly to easier edit them.
@@ -125,20 +118,14 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		id = id + 1 // be helpful and suggest next
 	}
 
-	page.Id = strconv.Itoa(id)
+	page.Id = id
 	if id > 0 {
-		page.PrevId = strconv.Itoa(id - 1)
+		page.PrevId = id - 1
 	}
-	page.NextId = strconv.Itoa(id + 1)
+	page.NextId = id + 1
 	currentItem := store.FindById(id)
 	if currentItem != nil {
-		page.Category = currentItem.Category
-		page.Value = currentItem.Value
-		page.Description = currentItem.Description
-		page.Notes = currentItem.Notes
-		page.Quantity = currentItem.Quantity
-		page.Datasheet = currentItem.Datasheet_url
-		page.Drawersize = currentItem.Drawersize
+		page.Component = *currentItem
 	} else {
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
