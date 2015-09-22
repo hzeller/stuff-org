@@ -24,7 +24,6 @@
   <a style="font-size:larger; text-decoration:none;" href="?id={{.NextId}}"><img align="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
 
   </td></tr>
-
   <tr><td align="right"><label for="ccat">Category</label></td>
     <td><input type="text" name="category" size="40" id="cvalue" value="{{.Category}}">(TODO: radio buttons)</td></tr>
 <tr><td align="right"><label for="cvalue">Value</label></td>
@@ -43,8 +42,10 @@
   <tr><td colspan="2" style="background-color:#eeeeee; height:3em; align:right;">
       <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
 </table></td>
-<td align="left">
-  <img height="320" src="/img/{{.Id}}.jpg"/><br/>
+  <td align="left">
+  <!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
+       now, but that needs to be adapted of course -->
+  <img height="320" widt="400" src="/img/{{.Id}}.jpg"/><br/>
 </td></tr>
 </tr>
 </table>
