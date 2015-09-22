@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Component struct {
@@ -27,6 +28,24 @@ type Component struct {
 	//vendor        string
 	//auto_notes    string
 	//footprint     string
+}
+
+// Modify a user pointer. Returns 'true' if the changes should be commited.
+type ModifyFun func(comp *Component) bool
+
+type StuffStore interface {
+	// Find a component by its ID. Returns nil if it does not exist. Don't
+	// modify the returned pointer.
+	FindById(id int) *Component
+
+	// Edit record of given ID. If ID is new, it is inserted and an empty
+	// record returned to be edited. Returns 'true' if transaction has
+	// been successfully commited (or aborted by ModifyFun.)
+	EditRecord(id int, updater ModifyFun) (bool, string)
+
+	// Given a search term, returns all the components that match, ordered
+	// by some internal scoring system. Don't modify the returned objects!
+	Search(search_term string) []*Component
 }
 
 func StringScore(needle string, haystack string) float32 {
@@ -48,22 +67,12 @@ func (c *Component) MatchScore(term string) float32 {
 
 }
 
-// Modify a user pointer. Returns 'true' if the changes should be commited.
-type ModifyFun func(comp *Component) bool
+var wantTimings *bool
 
-type StuffStore interface {
-	// Find a component by its ID. Returns nil if it does not exist. Don't
-	// modify the returned pointer.
-	FindById(id int) *Component
-
-	// Edit record of given ID. If ID is new, it is inserted and an empty
-	// record returned to be edited. Returns 'true' if transaction has
-	// been successfully commited (or aborted by ModifyFun.)
-	EditRecord(id int, updater ModifyFun) (bool, string)
-
-	// Given a search term, returns all the components that match, ordered
-	// by some internal scoring system. Don't modify the returned objects!
-	Search(search_term string) []*Component
+func ElapsedPrint(msg string, start time.Time) {
+	if *wantTimings {
+		log.Printf("%s took %s", msg, time.Since(start))
+	}
 }
 
 type FormPage struct {
@@ -94,6 +103,11 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	msg := ""
 	page := &FormPage{}
 
+	if requestStore {
+		defer ElapsedPrint("Storing item", time.Now())
+	} else {
+		defer ElapsedPrint("View item", time.Now())
+	}
 	if requestStore {
 		success, err := store.EditRecord(id, func(comp *Component) bool {
 			comp.Category = category
@@ -136,6 +150,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 
 func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	out http.ResponseWriter, r *http.Request) {
+	defer ElapsedPrint("Image serve", time.Now())
 	path := r.URL.Path[prefix_len:]
 	content, _ := ioutil.ReadFile(imgPath + "/" + path)
 	if content == nil && fallbackPath != "" {
@@ -159,6 +174,7 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	wantTimings = flag.Bool("want_timings", false, "Print processing timings.")
 	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
 	staticResource := flag.String("staticdir", "static", "Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
@@ -175,11 +191,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//store := NewInMemoryStore()
-	store, err := NewDBBackend(db)
+	var store StuffStore
+	store, err = NewDBBackend(db)
 	if err != nil {
 		log.Fatal(err)
 	}
+	//store = NewInMemoryStore()
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
 		imageServe(len("/img/"), *imageDir, *staticResource, w, r)
 	})
