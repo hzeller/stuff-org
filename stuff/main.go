@@ -2,11 +2,13 @@
 package main
 
 import (
+	"compress/gzip"
 	"database/sql"
 	"flag"
 	"fmt"
 	_ "github.com/lib/pq"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -101,7 +103,7 @@ var cache_templates = flag.Bool("cache_templates", true,
 var templates = template.Must(template.ParseFiles("template/form-template.html"))
 
 // for now, render templates directly to easier edit them.
-func renderTemplate(w http.ResponseWriter, tmpl string, p *FormPage) {
+func renderTemplate(w io.Writer, tmpl string, p *FormPage) {
 	var err error
 	template_name := tmpl + ".html"
 	if *cache_templates {
@@ -109,13 +111,13 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *FormPage) {
 	} else {
 		t, err := template.ParseFiles("template/" + template_name)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Print("Template broken")
 			return
 		}
 		err = t.Execute(w, p)
 	}
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print("Template broken")
 	}
 }
 
@@ -148,12 +150,12 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			return true
 		})
 		if success {
-			msg = "Stored item " + fmt.Sprintf("%d", id)
+			msg = fmt.Sprintf("Stored item %d; Proceed to %d", id, id+1)
 		} else {
 			msg = "ERROR STORING STUFF DAMNIT. " + err + fmt.Sprintf("ID=%d", id)
 		}
 	} else {
-		msg = "Edit item " + fmt.Sprintf("%d", id)
+		msg = "Browse to item " + fmt.Sprintf("%d", id)
 	}
 
 	if requestStore {
@@ -222,7 +224,12 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		page.CategoryText = page.Component.Category
 	}
 	page.Msg = msg
-	renderTemplate(w, "form-template", page)
+
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	zipped := gzip.NewWriter(w)
+	renderTemplate(zipped, "form-template", page)
+	zipped.Close()
 }
 
 func imageServe(prefix_len int, imgPath string, fallbackPath string,
@@ -233,12 +240,12 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	if content == nil && fallbackPath != "" {
 		content, _ = ioutil.ReadFile(fallbackPath + "/fallback.jpg")
 	}
-	out.Header()["Cache-Control"] = []string{"max-age=900"}
+	out.Header().Set("Cache-Control", "max-age=900")
 	switch {
 	case strings.HasSuffix(path, ".png"):
-		out.Header()["Content-Type"] = []string{"image/png"}
+		out.Header().Set("Content-Type", "image/png")
 	default:
-		out.Header()["Content-Type"] = []string{"image/jpeg"}
+		out.Header().Set("Content-Type", "image/jpg")
 	}
 
 	out.Write(content)
@@ -246,7 +253,7 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 }
 
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
-	out.Header()["Content-Type"] = []string{"text/html"}
+	out.Header().Set("Content-Type", "text/html")
 	out.Write([]byte("Welcome to StuffStore. " +
 		"Here is an <a href='/form'>input form</a>."))
 }

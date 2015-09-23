@@ -11,6 +11,19 @@
     input[type="radio"]:checked + label {
        background-color:#8888ff;
     }
+
+    .msgbox {
+      border-radius:8px;
+      background-color:#ffcc77;
+      padding: 10px;
+      margin: 10px;
+      opacity:0;
+      animation: fade-out 2s;
+    }
+    @keyframes fade-out {
+       from { opacity: 1; }
+       to   { opacity: 0; }
+   }
   </style>
 </head>
 <body>
@@ -18,23 +31,27 @@
        This is how we did it back then. Yes, tables! It sucked. Still sucks.
        Also, I don't know javascript, so feel free to make this right.
     -->
-
-<span style="font-size:smaller;">{{.Msg}}&nbsp;</span>
 <form name="compform" action="/form" method="POST">
-  <!-- to determine if id was changed -->
+{{/* to determine if id was changed */}}
 <input type="hidden" name="orig_id" value="{{.Id}}"/>
 <table width="100%">
 <tr><td valign="top">
-<table style="float:left; margin-right:10px">
-  <tr style="background-color:#eeeeee; height:3em;"><td align="right">
-    <label for="cid">Drawer/Bin</label></td>
-    <td><input style="font-weight:bold; font-size:larger;"
-	       type="text" name="id" size="5" id="cid" value="{{.Id}}" onchange="form.submit();">
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Browse:
-    <a style="font-size:larger; text-decoration:none;" href="?id={{.PrevId}}">◀<img align="middle" height="40" src="/img/{{.PrevId}}.jpg"/></a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a style="font-size:larger; text-decoration:none;" href="?id={{.NextId}}"><img align="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
+    <table style="float:left; margin-right:10px">
+      {{/* The number on the drawer or bin */}}
+      <tr style="background-color:#eeeeee; height:3em;"><td align="right">
+	  <label for="cid">Drawer/Bin</label></td>
+	<td>
+	  {{/* left arrow */}}
+	  <a style="font-size:200%; text-decoration:none;" href="?id={{.PrevId}}">◀<img valign="middle" height="40" src="/img/{{.PrevId}}.jpg"/></a>
+	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
+	  <input style="font-weight:bold; font-size:200%;"
+		 type="text" name="id" size="5" id="cid" value="{{.Id}}"
+		 onchange="form.submit();">
+
+	  {{/* Right arrow */}}
+	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	  <a style="font-size:200%; text-decoration:none;" href="?id={{.NextId}}"><img valign="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
   </td></tr>
   <tr><td colspan="2">Category</td></tr>
   <tr><td colspan="2"><table width="100%">
@@ -75,7 +92,8 @@ Bin-size needed <input type="radio" name="drawersize" value="0" id="d0" {{if eq 
   <td valign="top" align="left">
   <!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
        now, but that needs to be adapted of course -->
-  <img height="320" widt="400" src="/img/{{.Id}}.jpg"/><br/>
+  <img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
+  <div class="msgbox">{{.Msg}}</div>
 </td></tr>
 </tr>
 </table>
