@@ -3,14 +3,24 @@
   <title>Noisebridge Electronic Component Declutter Project</title>
   <style>
     body {font-family:sans-serif;}
+    label {
+    padding:2px 11px;
+    font-weight:bold;
+    }
+
+    input[type="radio"]:checked + label {
+       background-color:#8888ff;
+    }
   </style>
 </head>
 <body>
   <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
-       This is how we did it back then. Yes, tables! It sucked. Still sucks. -->
+       This is how we did it back then. Yes, tables! It sucked. Still sucks.
+       Also, I don't know javascript, so feel free to make this right.
+    -->
 
 <span style="font-size:smaller;">{{.Msg}}&nbsp;</span>
-<form action="/form" method="POST">
+<form name="compform" action="/form" method="POST">
   <!-- to determine if id was changed -->
 <input type="hidden" name="orig_id" value="{{.Id}}"/>
 <table width="100%">
@@ -26,21 +36,35 @@
   <a style="font-size:larger; text-decoration:none;" href="?id={{.NextId}}"><img align="middle" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
 
   </td></tr>
-  <tr><td align="right"><label for="ccat">Category</label></td>
-    <td><input type="text" name="category" size="40" id="cvalue" value="{{.Category}}">(TODO: radio buttons)</td></tr>
+  <tr><td colspan="2">Category</td></tr>
+  <tr><td colspan="2"><table width="100%">
+{{range $i, $element := .CatChoice}}
+{{if $element.AddSeparator}}<tr>{{end}}
+	  <td><input type="radio" name="category_select" value="{{$element.Value}}"
+		     id="cat{{$i}}"
+		     {{if $element.IsSelected}}checked{{end}}>
+	    <label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
+  </table></td></tr>
+  <tr><td colspan="2">
+      <input type="radio" name="category_select"
+	     value="{{.CatFallback.Value}}" id="catother"
+	     {{if .CatFallback.IsSelected}}checked{{end}}>
+      <label for="catother">(other)</label>
+      <input type="text" name="category_txt" value="{{.CategoryText}}"
+	     onkeydown="document.getElementById('catother').checked=true;"></td></tr>
 <tr><td align="right"><label for="cvalue">Name/Value</label></td>
-    <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
-<tr><td align="right" valign="top"><label for="cdesc">Description</label></td>
-  <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
+  <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
 <tr><td align="right"><label for="fprint">Footprint</label></td>
     <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}"></td></tr>
+<tr><td align="right" valign="top"><label for="cdesc">Description</label></td>
+  <td><textarea rows="5" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
 <tr><td align="right" valign="top"><label for="cnotes">Notes</label></td>
   <td><textarea rows="5" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td></tr>
 <tr><td align="right"><label for="dsheet">Datasheet</label></td>
     <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td></tr> <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
 <tr><td align="right"><label for="cquant">Quantity</label></td>
-    <td><input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
-Needs <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular drawer</label>
+    <td><input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish<br/>
+Bin-size needed <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
 <input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
 <input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
 </td></tr>
@@ -48,7 +72,7 @@ Needs <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersiz
   <tr><td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
       <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
 </table></td>
-  <td align="left">
+  <td valign="top" align="left">
   <!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
        now, but that needs to be adapted of course -->
   <img height="320" widt="400" src="/img/{{.Id}}.jpg"/><br/>

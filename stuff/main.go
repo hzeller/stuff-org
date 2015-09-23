@@ -76,8 +76,20 @@ func ElapsedPrint(msg string, start time.Time) {
 	}
 }
 
+// First, very crude version of radio button selecions
+type Selection struct {
+	Value        string
+	IsSelected   bool
+	AddSeparator bool
+}
 type FormPage struct {
 	Component // All these values are shown in the form
+
+	// Category choice.
+	CatChoice    []Selection
+	CatFallback  Selection
+	CategoryText string
+
 	// Additional stuff
 	Msg    string // Feedback for user
 	PrevId int    // For browsing
@@ -110,7 +122,6 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *FormPage) {
 func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(r.FormValue("id"))
 	requestStore := r.FormValue("send") != "" && r.FormValue("orig_id") == r.FormValue("id")
-	category := r.FormValue("category")
 	msg := ""
 	page := &FormPage{}
 
@@ -121,7 +132,12 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	}
 	if requestStore {
 		success, err := store.EditRecord(id, func(comp *Component) bool {
-			comp.Category = category
+			if r.FormValue("category_select") == "-" {
+				comp.Category = r.FormValue("category_txt")
+			} else {
+				comp.Category = r.FormValue("category_select")
+			}
+
 			comp.Value = r.FormValue("value")
 			comp.Description = r.FormValue("description")
 			comp.Notes = r.FormValue("notes")
@@ -156,6 +172,55 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 		msg = "Edit new item " + fmt.Sprintf("%d", id)
 	}
 
+	// Bad hacky.
+	var available_category []string = []string{
+		"Resistor",
+		"Potentiometer",
+		"R-Network",
+
+		"Capacitor (C)",
+		"Aluminum Cap",
+		"Inductor (L)",
+
+		"Diode (D)",
+		"Power Diode",
+		"LED",
+
+		"Transistor",
+		"Mosfet",
+		"IGBT",
+
+		"Integrated Circuit (IC)",
+		"IC Analog",
+		"IC Digital",
+
+		"Connector",
+		"Socket",
+		"Switch",
+
+		"Fuse",
+		"Mounting",
+		"Heat Sink",
+
+		"Microphone",
+		"Transformer"}
+
+	page.CatChoice = make([]Selection, len(available_category))
+	anySelected := false
+	for i, val := range available_category {
+		thisSelected := page.Component.Category == val
+		anySelected = anySelected || thisSelected
+		page.CatChoice[i] = Selection{
+			Value:        val,
+			IsSelected:   thisSelected,
+			AddSeparator: i%3 == 0}
+	}
+	page.CatFallback = Selection{
+		Value:      "-",
+		IsSelected: !anySelected}
+	if !anySelected {
+		page.CategoryText = page.Component.Category
+	}
 	page.Msg = msg
 	renderTemplate(w, "form-template", page)
 }
