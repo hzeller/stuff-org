@@ -15,18 +15,18 @@ type DBBackend struct {
 }
 
 func NewDBBackend(db *sql.DB) (*DBBackend, error) {
-	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url,drawersize" +
+	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url,drawersize,footprint" +
 		" FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url,drawersize) " +
-		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9)")
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url,drawersize,footprint) " +
+		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9, $10)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8,drawersize=$9 where id=$1 ")
+		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8,drawersize=$9, footprint=$10 where id=$1 ")
 	if err != nil {
 		return nil, err
 	}
@@ -62,10 +62,12 @@ func (d *DBBackend) FindById(id int) *Component {
 		quantity    *string
 		datasheet   *string
 		drawersize  *int
+		footprint   *string
 	}
 	rec := &ReadRecord{}
 	err := d.findById.QueryRow(id).Scan(&rec.category, &rec.value,
-		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet, &rec.drawersize)
+		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet,
+		&rec.drawersize, &rec.footprint)
 	drawersize := 0
 	if rec.drawersize != nil {
 		drawersize = *rec.drawersize
@@ -85,6 +87,7 @@ func (d *DBBackend) FindById(id int) *Component {
 			Quantity:      emptyIfNull(rec.quantity),
 			Datasheet_url: emptyIfNull(rec.datasheet),
 			Drawersize:    drawersize,
+			Footprint:     emptyIfNull(rec.footprint),
 		}
 		return result
 	}
@@ -119,7 +122,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
 			nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
 			nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-			rec.Drawersize)
+			rec.Drawersize, rec.Footprint)
 
 		if err != nil {
 			return false, err.Error()

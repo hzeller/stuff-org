@@ -24,6 +24,7 @@ type Component struct {
 	Notes         string
 	Datasheet_url string
 	Drawersize    int
+	Footprint     string
 	// The follwing are not used yet.
 	//vendor        string
 	//auto_notes    string
@@ -127,6 +128,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.Quantity = r.FormValue("quantity")
 			comp.Datasheet_url = r.FormValue("datasheet")
 			comp.Drawersize, _ = strconv.Atoi(r.FormValue("drawersize"))
+			comp.Footprint = r.FormValue("footprint")
 			return true
 		})
 		if success {
