@@ -67,7 +67,7 @@ func (c *Component) MatchScore(term string) float32 {
 
 }
 
-var wantTimings *bool
+var wantTimings = flag.Bool("want_timings", false, "Print processing timings.")
 
 func ElapsedPrint(msg string, start time.Time) {
 	if *wantTimings {
@@ -83,14 +83,24 @@ type FormPage struct {
 	NextId int
 }
 
+var cache_templates = flag.Bool("cache_templates", true,
+	"Cache templates. False for online editing.")
+var templates = template.Must(template.ParseFiles("template/form-template.html"))
+
 // for now, render templates directly to easier edit them.
 func renderTemplate(w http.ResponseWriter, tmpl string, p *FormPage) {
-	t, err := template.ParseFiles("template/" + tmpl + ".html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	var err error
+	template_name := tmpl + ".html"
+	if *cache_templates {
+		err = templates.ExecuteTemplate(w, template_name, p)
+	} else {
+		t, err := template.ParseFiles("template/" + template_name)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = t.Execute(w, p)
 	}
-	err = t.Execute(w, p)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -175,7 +185,6 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	wantTimings = flag.Bool("want_timings", false, "Print processing timings.")
 	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
 	staticResource := flag.String("staticdir", "static", "Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
