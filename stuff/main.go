@@ -171,7 +171,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	if currentItem != nil {
 		page.Component = *currentItem
 	} else {
-		msg = "Edit new item " + fmt.Sprintf("%d", id)
+		msg = msg + fmt.Sprintf(" (%d: New item)", id)
 	}
 
 	// Bad hacky.
