@@ -156,6 +156,7 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	if content == nil && fallbackPath != "" {
 		content, _ = ioutil.ReadFile(fallbackPath + "/fallback.jpg")
 	}
+	out.Header()["Cache-Control"] = []string{"max-age=900"}
 	switch {
 	case strings.HasSuffix(path, ".png"):
 		out.Header()["Content-Type"] = []string{"image/png"}
