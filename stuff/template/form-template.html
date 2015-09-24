@@ -7,6 +7,7 @@
     border-style: solid;
     border-width:2px;
     border-color:lightgray;
+    padding-left:1px;
     }
     input[type=submit] {
       border-style:outset;
@@ -67,21 +68,21 @@
 	  <a style="font-size:200%; text-decoration:none; color:black;" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
   </td></tr>
   <tr><td colspan="2">Category</td></tr>
-  <tr><td colspan="2"><table width="100%">
+  <tr><td colspan="2"><table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
 {{range $i, $element := .CatChoice}}
 {{if $element.AddSeparator}}<tr>{{end}}
 	  <td><input type="radio" name="category_select" value="{{$element.Value}}"
 		     id="cat{{$i}}"
 		     {{if $element.IsSelected}}checked{{end}}>
 	    <label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
-  </table></td></tr>
-  <tr><td colspan="2">
+  <tr><td colspan="3">
       <input type="radio" name="category_select"
 	     value="{{.CatFallback.Value}}" id="catother"
 	     {{if .CatFallback.IsSelected}}checked{{end}}>
       <label for="catother">(other)</label>
       <input type="text" name="category_txt" value="{{.CategoryText}}"
 	     onkeydown="document.getElementById('catother').checked=true;"></td></tr>
+    </table></td></tr>
 <tr><td align="right"><label for="cvalue">Name/Value</label></td>
   <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
 <tr><td align="right"><label for="fprint">Footprint</label></td>
