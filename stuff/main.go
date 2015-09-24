@@ -33,6 +33,18 @@ type Component struct {
 	//footprint     string
 }
 
+// Some useful pre-defined set of categories
+var available_category []string = []string{
+	"Resistor", "Potentiometer", "R-Network",
+	"Capacitor (C)", "Aluminum Cap", "Inductor (L)",
+	"Diode (D)", "Power Diode", "LED",
+	"Transistor", "Mosfet", "IGBT",
+	"Integrated Circuit (IC)", "IC Analog", "IC Digital",
+	"Connector", "Socket", "Switch",
+	"Fuse", "Mounting", "Heat Sink",
+	"Microphone", "Transformer",
+}
+
 // Modify a user pointer. Returns 'true' if the changes should be commited.
 type ModifyFun func(comp *Component) bool
 
@@ -173,39 +185,6 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	} else {
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
 	}
-
-	// Bad hacky.
-	var available_category []string = []string{
-		"Resistor",
-		"Potentiometer",
-		"R-Network",
-
-		"Capacitor (C)",
-		"Aluminum Cap",
-		"Inductor (L)",
-
-		"Diode (D)",
-		"Power Diode",
-		"LED",
-
-		"Transistor",
-		"Mosfet",
-		"IGBT",
-
-		"Integrated Circuit (IC)",
-		"IC Analog",
-		"IC Digital",
-
-		"Connector",
-		"Socket",
-		"Switch",
-
-		"Fuse",
-		"Mounting",
-		"Heat Sink",
-
-		"Microphone",
-		"Transformer"}
 
 	page.CatChoice = make([]Selection, len(available_category))
 	anySelected := false
