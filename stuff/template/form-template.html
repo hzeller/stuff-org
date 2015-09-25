@@ -87,17 +87,18 @@
   <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
 <tr><td align="right"><label for="fprint">Footprint</label></td>
   <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
+    &nbsp;&nbsp;
     <label for="cquant">Quantity</label>
     <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
 </td></tr>
 <tr><td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
-  <td><textarea rows="4" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
+  <td><textarea rows="3" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
 <tr><td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
   <td><textarea rows="3" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td></tr>
 <tr><td align="right"><label for="dsheet">Datasheet</label></td>
     <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td></tr> <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
 <tr><td align="right"><label>Drawer/Bin</label></td>
-  <td>space needed<input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
+  <td>space needed: <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
 <input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
 <input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
 </td></tr>
