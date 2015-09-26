@@ -1,7 +1,9 @@
 <head>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
   <style>
-  body {font-family:sans-serif;}
+  body {
+	  font-family:sans-serif;
+  }
   td {
 	  vertical-align:top;
   }
@@ -23,12 +25,17 @@
 	  border-width: 1px;
 	  border-style: solid;
 	  border-color: #cccccc;
-	  width: 260;   /* 172 + 2*margin-in-rimg*/
+	  width: 260;
 	  height: 190;
 	  float: left;
 	  padding: 5px 5px;
 	  visibility:hidden;
 	  text-decoration: none;
+  }
+  .rimg {
+	  height:128;
+	  width:172;
+	  padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
   }
   .rtxtbox {
 	  height: 3.5em;
@@ -38,11 +45,6 @@
 	  display: -webkit-box;
 	  -webkit-line-clamp: 3;
 	  -webkit-box-orient: vertical;
-  }
-  .rimg {
-	  height:128;
-	  width:172;
-	  padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
   }
   .seltab {
 	  background-color:#ccccff;
@@ -66,8 +68,7 @@
 	  xmlhttp.onreadystatechange = function() {
 		  if (xmlhttp.responseText == "")
 			  return;
-		  j = JSON.parse(xmlhttp.responseText);
-		  filltab(j);
+		  fillresults(JSON.parse(xmlhttp.responseText));
 	  };
 	  url="/api?q=" + encodeURIComponent(input_field.value);
 	  xmlhttp.open("GET", url, true);
@@ -110,9 +111,10 @@
   <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
 </div>
 <script>
-var fallback = "http://localhost:3000/static/fallback.jpg";
 var references = [];
 var result_items = document.getElementById('result-list').childNodes;
+
+// Pre-collect all the relevant nodes for quick access
 for (var r = 0; r < result_items.length; ++r) {
 	var a = result_items[r];
 	if (a.nodeName != "A") continue
@@ -123,7 +125,7 @@ for (var r = 0; r < result_items.length; ++r) {
 }
 
 var info_box = document.getElementById('infobox');  // we need that later
-function filltab(resultRecord) {
+function fillresults(resultRecord) {
 	var data = resultRecord.items;
 	var len = (resultRecord.count != 0)
 		? data.length < references.length ? data.length : references.length
