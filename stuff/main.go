@@ -226,7 +226,10 @@ type JsonSearchResult struct {
 }
 
 func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
-	//defer ElapsedPrint("Query", time.Now())
+	defer ElapsedPrint("Query", time.Now())
+	// Allow very brief caching, so that editing the query does not
+	// necessarily has to trigger a new server roundtrip.
+	out.Header().Set("Cache-Control", "max-age=10")
 	query := r.FormValue("q")
 	if query == "" {
 		out.Write([]byte("{\"count\":0, \"info\":\"\", \"items\":[]}"))

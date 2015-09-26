@@ -68,7 +68,7 @@
 		  j = JSON.parse(xmlhttp.responseText);
 		  filltab(j);
 	  };
-	  url="/api?q=" + input_field.value;
+	  url="/api?q=" + encodeURIComponent(input_field.value);
 	  xmlhttp.open("GET", url, true);
 	  xmlhttp.send();
   }
