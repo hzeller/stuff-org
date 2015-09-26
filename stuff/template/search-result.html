@@ -8,6 +8,18 @@
 	  horizontal-align: center;
 	  padding: 10px;
   }
+  .rbox {
+	  border-width: 1px;
+	  border-style: solid;
+	  border-color: #cccccc;
+	  width: 240;   /* 172 + 2*margin */
+	  height: 190;
+	  float: left;
+	  padding: 5px 5px;
+  }
+  .rimg {
+	  padding-left:34px;
+  }
   </style>
   <script>
   function retrieve(input_field) {
@@ -24,48 +36,44 @@
 </head>
 
 <div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);"></div>
-
-<!-- - experiment with table, but that should probably be divs -->
-<body>
-<table id="result">
-  <tbody id="result-list">
-    <tr>
-      <td><img src="#"><div style="3em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="3em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-    </tr>
-    <tr>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
-    </tr>
-  </tbody>
-</table>
+&nbsp;
+<div id="result-list">
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+</div>
 <script>
 var fallback = "http://localhost:3000/static/fallback.jpg";
 var references = [];
-var rows = document.getElementById('result-list').childNodes;
-for (var r = 0; r < rows.length; ++r) {
-	var cols = rows[r].childNodes;
-	for (var c = 0; c < cols.length; ++c) {
-		var x = cols[c];
-		if (x.nodeName != "TD") continue;
-		var img = x.childNodes[0];
-		img.height=128;
-		img.width=172;
-		references.push({ obj: x, img: x.childNodes[0], txt: x.childNodes[1]});
-		x.style.visibility = 'hidden';
-	}
+var result_items = document.getElementById('result-list').childNodes;
+for (var r = 0; r < result_items.length; ++r) {
+	var x = result_items[r];
+	if (x.nodeName != "DIV") continue
+	var img = x.childNodes[0];
+	img.height=128;
+	img.width=172;
+	references.push({ obj: x, img: x.childNodes[0], txt: x.childNodes[1]});
+	x.style.visibility = 'hidden';
 }
 
 function filltab(data) {
