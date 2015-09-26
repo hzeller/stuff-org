@@ -214,28 +214,42 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	return
 }
 
-type JsonQuickSearch struct {
+type JsonSearchResultRecord struct {
 	Id    int    `json:"id"`
 	Label string `json:"txt"`
+}
+
+type JsonSearchResult struct {
+	Count int                      `json:"count"`
+	Info  string                   `json:"info"`
+	Items []JsonSearchResultRecord `json:"items"`
 }
 
 func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	defer ElapsedPrint("Query", time.Now())
 	query := r.FormValue("q")
 	if query == "" {
-		out.Write([]byte("[]"))
+		out.Write([]byte("{\"count\":0, \"info\":\"\", \"items\":[]}"))
 		return
 	}
+	start := time.Now()
 	searchResults := store.Search(query)
+	elapsed := time.Now().Sub(start)
+	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
 	outlen := 20
 	if len(searchResults) < outlen {
 		outlen = len(searchResults)
 	}
-	jsonResult := make([]JsonQuickSearch, outlen)
+	jsonResult := &JsonSearchResult{
+		Count: len(searchResults),
+		Info:  fmt.Sprintf("%d results (%s)", len(searchResults), elapsed),
+		Items: make([]JsonSearchResultRecord, outlen),
+	}
+
 	for i := 0; i < outlen; i++ {
 		var c = searchResults[i]
-		jsonResult[i].Id = c.Id
-		jsonResult[i].Label = "<b>" + html.EscapeString(c.Value) + "</b> " +
+		jsonResult.Items[i].Id = c.Id
+		jsonResult.Items[i].Label = "<b>" + html.EscapeString(c.Value) + "</b> " +
 			html.EscapeString(c.Description)
 	}
 	json, _ := json.Marshal(jsonResult)

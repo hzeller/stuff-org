@@ -7,12 +7,15 @@
   .searchbar {
 	  background-color:#eeeeee;
 	  horizontal-align: center;
-	  padding: 10px 20px;
+	  padding: 15px 20px;
   }
   .searchinput {
 	  font-size: x-large;
 	  padding: 10px;
 	  width: 100%;
+  }
+  .infobox {
+	  font-size: small;
   }
   .rbox {
 	  font-size: larger;
@@ -60,6 +63,8 @@
   function retrieve(input_field) {
 	  xmlhttp=new XMLHttpRequest();
 	  xmlhttp.onreadystatechange = function() {
+		  if (xmlhttp.responseText == "")
+			  return;
 		  j = JSON.parse(xmlhttp.responseText);
 		  filltab(j);
 	  };
@@ -72,7 +77,9 @@
 
 <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span><span style="font-size:smaller;">(experimental)</span></div>
 
-<div class="searchbar"><input class="searchinput" id="sbox" placeholder="Type and refine. Most relevant will be first." type="text" onkeyup="retrieve(this);" autofocus></div>
+<div class="searchbar"><input class="searchinput" id="sbox" placeholder="Type and refine. Most relevant will be first." type="text" onkeyup="retrieve(this);" autofocus><br/>
+  <spn class="infobox" id="infobox" style="float:right;"></span>
+</div>
 &nbsp;
 <div id="result-list">
   <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
@@ -107,9 +114,12 @@ for (var r = 0; r < result_items.length; ++r) {
 	references.push({ obj: a, img: img, txt: txt});
 }
 
-function filltab(data) {
-	var len = data.length < references.length ? data.length : references.length
-	console.log(data.length);
+var info_box = document.getElementById('infobox');  // we need that later
+function filltab(resultRecord) {
+	var data = resultRecord.items;
+	var len = (resultRecord.count != 0)
+		? data.length < references.length ? data.length : references.length
+		: 0;
 	var i = 0;
 	for (i = 0; i < len; ++i) {
 		var d = data[i];
@@ -121,6 +131,7 @@ function filltab(data) {
 	for (; i < references.length; ++i) {
 		references[i].obj.style.visibility = 'hidden';
 	}
+	infobox.innerHTML = resultRecord.info;
 }
 
 // If we are here because of back button, the sbox might already contain
