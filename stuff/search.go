@@ -11,15 +11,18 @@ func isSeparator(c byte) bool {
 }
 
 func StringScore(needle string, haystack string) float32 {
+	haystack = strings.ToLower(haystack)
 	pos := strings.Index(haystack, needle)
 	if pos < 0 {
 		return 0
 	}
 	endword := pos + len(needle)
 	var boost float32 = 0.0
-	if (endword == len(haystack) || isSeparator(haystack[endword])) &&
-		(pos == 0 || isSeparator(haystack[pos-1])) {
-		boost = 20.0 // exact word match: higher score.
+	if pos == 0 || isSeparator(haystack[pos-1]) {
+		boost = 15.0 // word starts with it
+	}
+	if endword == len(haystack) || isSeparator(haystack[endword]) {
+		boost += 5.0 // word ends with it
 	}
 	result := 10 - pos // early in string: higher score
 	if result < 1 {
@@ -29,15 +32,27 @@ func StringScore(needle string, haystack string) float32 {
 	}
 }
 
+func maxlist(values ...float32) (max float32) {
+	max = 0
+	for _, v := range values {
+		if v > max {
+			max = v
+		}
+	}
+	return
+}
+
 // Matches the component and returns a score
 func (c *Component) MatchScore(term string) float32 {
 	var total_score float32 = 0.0
 	for _, part := range strings.Split(term, " ") {
-		score := 2.0*StringScore(part, strings.ToLower(c.Category)) +
-			3.0*StringScore(part, strings.ToLower(c.Value)) +
-			2.0*StringScore(part, strings.ToLower(c.Description)) +
-			1.5*StringScore(part, strings.ToLower(c.Notes)) +
-			1.0*StringScore(part, strings.ToLower(c.Footprint))
+		// Avoid keyword stuffing by looking only at the field
+		// that scores the most.
+		score := maxlist(2.0*StringScore(part, c.Category),
+			3.0*StringScore(part, c.Value),
+			2.0*StringScore(part, c.Description),
+			1.5*StringScore(part, c.Notes),
+			1.0*StringScore(part, c.Footprint))
 
 		if score == 0 {
 			return 0 // all words must match somehow
@@ -71,16 +86,37 @@ func (s ScoreList) Len() int {
 func (s ScoreList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
-func (s ScoreList) Less(i, j int) bool {
-	// We want to reverse score: highest match first
-	diff := s[i].score - s[j].score
+func (s ScoreList) Less(a, b int) bool {
+	diff := s[a].score - s[b].score
 	if diff != 0 {
+		// We want to reverse score: highest match first
 		return diff > 0
 	}
-	if s[i].comp.Value != s[j].comp.Value {
-		return s[i].comp.Value < s[j].comp.Value
+
+	if s[a].comp.Value != s[b].comp.Value {
+		// Items that have a value vs. none are scored higher.
+		if s[a].comp.Value == "" {
+			return false
+		}
+		if s[b].comp.Value == "" {
+			return true
+		}
+		// other than that: alphabetically
+		return s[a].comp.Value < s[b].comp.Value
 	}
-	return s[i].comp.Id < s[j].comp.Id // stable
+
+	if s[a].comp.Description != s[b].comp.Description {
+		// Items that have a Description vs. none are scored higher.
+		if s[a].comp.Description == "" {
+			return false
+		}
+		if s[b].comp.Description == "" {
+			return true
+		}
+	}
+
+	// If we reach this, make it at least predictable.
+	return s[a].comp.Id < s[b].comp.Id // stable
 }
 
 func (s *FulltextSearh) Update(c *Component) {
