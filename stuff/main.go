@@ -239,7 +239,7 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	searchResults := store.Search(query)
 	elapsed := time.Now().Sub(start)
 	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
-	outlen := 20
+	outlen := 24 // Limit max output
 	if len(searchResults) < outlen {
 		outlen = len(searchResults)
 	}
