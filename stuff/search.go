@@ -33,9 +33,12 @@ func StringScore(needle string, haystack string) float32 {
 func (c *Component) MatchScore(term string) float32 {
 	var total_score float32 = 0.0
 	for _, part := range strings.Split(term, " ") {
-		score := 1.0*StringScore(part, strings.ToLower(c.Category)) +
+		score := 2.0*StringScore(part, strings.ToLower(c.Category)) +
 			3.0*StringScore(part, strings.ToLower(c.Value)) +
-			2.0*StringScore(part, strings.ToLower(c.Description))
+			2.0*StringScore(part, strings.ToLower(c.Description)) +
+			1.5*StringScore(part, strings.ToLower(c.Notes)) +
+			1.0*StringScore(part, strings.ToLower(c.Footprint))
+
 		if score == 0 {
 			return 0 // all words must match somehow
 		} else {

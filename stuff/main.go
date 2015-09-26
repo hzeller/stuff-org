@@ -196,7 +196,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 
 func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	out http.ResponseWriter, r *http.Request) {
-	defer ElapsedPrint("Image serve", time.Now())
+	//defer ElapsedPrint("Image serve", time.Now())
 	path := r.URL.Path[prefix_len:]
 	content, _ := ioutil.ReadFile(imgPath + "/" + path)
 	if content == nil && fallbackPath != "" {
