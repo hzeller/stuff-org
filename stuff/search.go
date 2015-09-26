@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"sort"
 	"strings"
 	"sync"
@@ -17,16 +16,16 @@ func StringScore(needle string, haystack string) float32 {
 		return 0
 	}
 	endword := pos + len(needle)
+	var boost float32 = 0.0
 	if (endword == len(haystack) || isSeparator(haystack[endword])) &&
 		(pos == 0 || isSeparator(haystack[pos-1])) {
-		log.Printf("word matdch '%s' in '%s'", needle, haystack)
-		return 20
+		boost = 20.0 // exact word match: higher score.
 	}
 	result := 10 - pos // early in string: higher score
 	if result < 1 {
-		return 1
+		return 1 + boost
 	} else {
-		return float32(result)
+		return float32(result) + boost
 	}
 }
 
@@ -71,7 +70,14 @@ func (s ScoreList) Swap(i, j int) {
 }
 func (s ScoreList) Less(i, j int) bool {
 	// We want to reverse score: highest match first
-	return s[i].score > s[j].score
+	diff := s[i].score - s[j].score
+	if diff != 0 {
+		return diff > 0
+	}
+	if s[i].comp.Value != s[j].comp.Value {
+		return s[i].comp.Value < s[j].comp.Value
+	}
+	return s[i].comp.Id < s[j].comp.Id // stable
 }
 
 func (s *FulltextSearh) Update(c *Component) {

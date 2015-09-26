@@ -22,6 +22,19 @@
   .rimg {
 	  padding-left:34px;
   }
+  .seltab {
+	  background-color:#ccccff;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  font-weight:bold;
+  }
+  .deseltab {
+	  background-color:#dddddd;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  text-decoration: none;
+	  font-weight:bold;
+  }
   </style>
   <script>
   function retrieve(input_field) {
@@ -36,9 +49,10 @@
   }
   </script>
 </head>
-<div><a href="/form">[Input]</a>&nbsp;[Search] <span style="font-size:smaller;">(experimental)</span></div>
 
-<div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);"></div>
+<div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span><span style="font-size:smaller;">(experimental)</span></div>
+
+<div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);" autofocus></div>
 &nbsp;
 <div id="result-list">
   <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>

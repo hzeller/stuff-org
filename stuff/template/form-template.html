@@ -38,10 +38,23 @@
 	  from { opacity: 1; }
 	  to   { opacity: 0; }
   }
+  .seltab {
+	  background-color:#ccccff;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  font-weight:bold;
+  }
+  .deseltab {
+	  background-color:#dddddd;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  text-decoration: none;
+	  font-weight:bold;
+  }
   </style>
 </head>
 <body>
-  <div>[Input]&nbsp;<a href="search">[Search]</a></div>
+  <div><span class="seltab">Enter Data</span>&nbsp;<a href="/search" class="deseltab">Search</a></div>
   <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
        This is how we did it back then. Yes, tables! It sucked. Still sucks.
        Also, I don't know javascript, so feel free to make this right.
