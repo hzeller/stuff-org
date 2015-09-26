@@ -18,6 +18,7 @@
 	  float: left;
 	  padding: 5px 5px;
 	  visibility:hidden;
+	  text-decoration: none;
   }
   .rimg {
 	  padding-left:34px;
@@ -35,6 +36,8 @@
 	  text-decoration: none;
 	  font-weight:bold;
   }
+  :link { color: black; }
+  :visited { color: black; }
   </style>
   <script>
   function retrieve(input_field) {
@@ -52,44 +55,41 @@
 
 <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span><span style="font-size:smaller;">(experimental)</span></div>
 
-<div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);" autofocus></div>
+<div class="searchfield"><input id="sbox" type="text" size="80" onkeyup="retrieve(this);" autofocus></div>
 &nbsp;
 <div id="result-list">
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
-  <div class="rbox"><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></di
 </div>
 <script>
 var fallback = "http://localhost:3000/static/fallback.jpg";
 var references = [];
 var result_items = document.getElementById('result-list').childNodes;
 for (var r = 0; r < result_items.length; ++r) {
-	var x = result_items[r];
-	if (x.nodeName != "DIV") continue
-	var img = x.childNodes[0];
+	var a = result_items[r];
+	if (a.nodeName != "A") continue
+	var div = a.childNodes[0];
+	var img = div.childNodes[0];
+	var txt = div.childNodes[1];
 	img.height=128;
 	img.width=172;
-	references.push({ obj: x, img: x.childNodes[0], txt: x.childNodes[1]});
+	references.push({ obj: a, img: img, txt: txt});
 }
 
 function filltab(data) {
@@ -99,6 +99,7 @@ function filltab(data) {
 	for (i = 0; i < len; ++i) {
 		var d = data[i];
 		references[i].obj.style.visibility = 'visible';
+		references[i].obj.href = "/form?id=" + d.id;
 		references[i].img.src = "/img/" + d.id + ".jpg";
 		references[i].txt.innerHTML = d.txt;
 	}
@@ -106,5 +107,9 @@ function filltab(data) {
 		references[i].obj.style.visibility = 'hidden';
 	}
 }
+
+// If we are here because of back button, the sbox might already contain
+// a term. Populate search results.
+retrieve(document.getElementById('sbox'));
 </script>
 </body>
