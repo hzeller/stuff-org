@@ -1,5 +1,6 @@
 <head>
   <style>
+  body {font-family:sans-serif;}
   td {
 	  vertical-align:top;
   }
@@ -16,6 +17,7 @@
 	  height: 190;
 	  float: left;
 	  padding: 5px 5px;
+	  visibility:hidden;
   }
   .rimg {
 	  padding-left:34px;
@@ -34,6 +36,7 @@
   }
   </script>
 </head>
+<div><a href="/form">[Input]</a>&nbsp;[Search] <span style="font-size:smaller;">(experimental)</span></div>
 
 <div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);"></div>
 &nbsp;
@@ -73,7 +76,6 @@ for (var r = 0; r < result_items.length; ++r) {
 	img.height=128;
 	img.width=172;
 	references.push({ obj: x, img: x.childNodes[0], txt: x.childNodes[1]});
-	x.style.visibility = 'hidden';
 }
 
 function filltab(data) {
@@ -83,7 +85,7 @@ function filltab(data) {
 	for (i = 0; i < len; ++i) {
 		var d = data[i];
 		references[i].obj.style.visibility = 'visible';
-		references[i].img.src = "http://localhost:3000/img/" + d.id + ".jpg";
+		references[i].img.src = "/img/" + d.id + ".jpg";
 		references[i].txt.innerHTML = d.txt;
 	}
 	for (; i < references.length; ++i) {
