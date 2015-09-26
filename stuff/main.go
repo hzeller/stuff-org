@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	_ "github.com/lib/pq"
+	"html"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -234,7 +235,8 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	for i := 0; i < outlen; i++ {
 		var c = searchResults[i]
 		jsonResult[i].Id = c.Id
-		jsonResult[i].Label = "<b>" + c.Value + "</b> " + c.Description
+		jsonResult[i].Label = "<b>" + html.EscapeString(c.Value) + "</b> " +
+			html.EscapeString(c.Description)
 	}
 	json, _ := json.Marshal(jsonResult)
 	out.Write(json)
