@@ -42,17 +42,17 @@ func maxlist(values ...float32) (max float32) {
 }
 
 // Matches the component and returns a score
-func (c *Component) MatchScore(term string) float32 {
+func (c *SearchComponent) MatchScore(term string) float32 {
 	var total_score float32 = 0.0
 	for _, part := range strings.Split(term, " ") {
 		// Avoid keyword stuffing by looking only at the field
 		// that scores the most.
 		// NOTE: more fields here, add to lowerCased below.
-		score := maxlist(2.0*StringScore(part, c.Category),
-			3.0*StringScore(part, c.Value),
-			2.0*StringScore(part, c.Description),
-			1.5*StringScore(part, c.Notes),
-			1.0*StringScore(part, c.Footprint))
+		score := maxlist(2.0*StringScore(part, c.preprocessed.Category),
+			3.0*StringScore(part, c.preprocessed.Value),
+			2.0*StringScore(part, c.preprocessed.Description),
+			1.5*StringScore(part, c.preprocessed.Notes),
+			1.0*StringScore(part, c.preprocessed.Footprint))
 
 		if score == 0 {
 			return 0 // all words must match somehow
@@ -63,14 +63,18 @@ func (c *Component) MatchScore(term string) float32 {
 	return total_score
 }
 
+type SearchComponent struct {
+	orig         *Component
+	preprocessed *Component
+}
 type FulltextSearh struct {
 	lock         sync.Mutex
-	id2Component map[int]*Component
+	id2Component map[int]*SearchComponent
 }
 
 func NewFulltextSearch() *FulltextSearh {
 	return &FulltextSearh{
-		id2Component: make(map[int]*Component),
+		id2Component: make(map[int]*SearchComponent),
 	}
 }
 
@@ -124,8 +128,7 @@ func (s *FulltextSearh) Update(c *Component) {
 		return
 	}
 	lowerCased := &Component{
-		Id: c.Id,
-		// Only the ones we are interested in.
+		// Only the fields we are interested in.
 		Category:    strings.ToLower(c.Category),
 		Value:       strings.ToLower(c.Value),
 		Description: strings.ToLower(c.Description),
@@ -133,17 +136,20 @@ func (s *FulltextSearh) Update(c *Component) {
 		Footprint:   strings.ToLower(c.Footprint),
 	}
 	s.lock.Lock()
-	s.id2Component[c.Id] = lowerCased
+	s.id2Component[c.Id] = &SearchComponent{
+		orig:         c,
+		preprocessed: lowerCased,
+	}
 	s.lock.Unlock()
 }
 func (s *FulltextSearh) Search(search_term string) []*Component {
 	search_term = strings.ToLower(search_term)
 	s.lock.Lock()
 	scoredlist := make(ScoreList, 0, 10)
-	for _, comp := range s.id2Component {
+	for _, search_comp := range s.id2Component {
 		scored := &ScoredComponent{
-			score: comp.MatchScore(search_term),
-			comp:  comp,
+			score: search_comp.MatchScore(search_term),
+			comp:  search_comp.orig,
 		}
 		if scored.score > 0 {
 			scoredlist = append(scoredlist, scored)
