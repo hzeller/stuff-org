@@ -131,7 +131,7 @@ function filltab(resultRecord) {
 	// The rest invisible and prepopulated with neutral image.
 	for (; i < references.length; ++i) {
 		references[i].obj.style.visibility = 'hidden';
-		references[i].img.src = "/static/fallback.jpg"
+		references[i].img.src = "/static/white.png"
 	}
 	infobox.innerHTML = resultRecord.info;
 }
