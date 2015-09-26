@@ -4,24 +4,41 @@
   td {
 	  vertical-align:top;
   }
-  .searchfield {
+  .searchbar {
 	  background-color:#eeeeee;
 	  horizontal-align: center;
+	  padding: 10px 20px;
+  }
+  .searchinput {
+	  font-size: x-large;
 	  padding: 10px;
+	  width: 100%;
   }
   .rbox {
+	  font-size: larger;
 	  border-width: 1px;
 	  border-style: solid;
 	  border-color: #cccccc;
-	  width: 240;   /* 172 + 2*margin */
+	  width: 260;   /* 172 + 2*margin-in-rimg*/
 	  height: 190;
 	  float: left;
 	  padding: 5px 5px;
 	  visibility:hidden;
 	  text-decoration: none;
   }
+  .rtxtbox {
+	  height: 3.5em;
+	  overflow: hidden;
+	  text-overflow: ellipsis;
+	  /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
+	  display: -webkit-box;
+	  -webkit-line-clamp: 3;
+	  -webkit-box-orient: vertical;
+  }
   .rimg {
-	  padding-left:34px;
+	  height:128;
+	  width:172;
+	  padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
   }
   .seltab {
 	  background-color:#ccccff;
@@ -55,27 +72,27 @@
 
 <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span><span style="font-size:smaller;">(experimental)</span></div>
 
-<div class="searchfield"><input id="sbox" type="text" size="80" onkeyup="retrieve(this);" autofocus></div>
+<div class="searchbar"><input class="searchinput" id="sbox" placeholder="Type and refine. Most relevant will be first." type="text" onkeyup="retrieve(this);" autofocus></div>
 &nbsp;
 <div id="result-list">
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div style="3em">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
+  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox">Hello<br/>world</div></div></a>
 </div>
 <script>
 var fallback = "http://localhost:3000/static/fallback.jpg";
@@ -87,8 +104,6 @@ for (var r = 0; r < result_items.length; ++r) {
 	var div = a.childNodes[0];
 	var img = div.childNodes[0];
 	var txt = div.childNodes[1];
-	img.height=128;
-	img.width=172;
 	references.push({ obj: a, img: img, txt: txt});
 }
 
