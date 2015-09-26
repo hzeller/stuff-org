@@ -4,6 +4,7 @@ package main
 import (
 	"compress/gzip"
 	"database/sql"
+	"encoding/json"
 	"flag"
 	"fmt"
 	_ "github.com/lib/pq"
@@ -61,25 +62,6 @@ type StuffStore interface {
 	// Given a search term, returns all the components that match, ordered
 	// by some internal scoring system. Don't modify the returned objects!
 	Search(search_term string) []*Component
-}
-
-func StringScore(needle string, haystack string) float32 {
-	switch strings.Index(haystack, needle) {
-	case -1:
-		return 0
-	case 0:
-		return 2 // start of string, higher match
-	default:
-		return 1
-	}
-}
-
-// Matches the component and returns a score
-func (c *Component) MatchScore(term string) float32 {
-	return 1*StringScore(term, c.Category) +
-		3*StringScore(term, c.Value) +
-		2*StringScore(term, c.Description)
-
 }
 
 var wantTimings = flag.Bool("want_timings", false, "Print processing timings.")
@@ -231,10 +213,42 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	return
 }
 
+type JsonQuickSearch struct {
+	Id    int    `json:"id"`
+	Label string `json:"txt"`
+}
+
+func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
+	defer ElapsedPrint("Query", time.Now())
+	query := r.FormValue("q")
+	if query == "" {
+		out.Write([]byte("[]"))
+		return
+	}
+	searchResults := store.Search(query)
+	outlen := 20
+	if len(searchResults) < outlen {
+		outlen = len(searchResults)
+	}
+	jsonResult := make([]JsonQuickSearch, outlen)
+	for i := 0; i < outlen; i++ {
+		var c = searchResults[i]
+		jsonResult[i].Id = c.Id
+		jsonResult[i].Label = "<b>" + c.Value + "</b> " + c.Description
+	}
+	json, _ := json.Marshal(jsonResult)
+	out.Write(json)
+}
+
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Content-Type", "text/html")
 	out.Write([]byte("Welcome to StuffStore. " +
 		"Here is an <a href='/form'>input form</a>."))
+}
+func search(out http.ResponseWriter, r *http.Request) {
+	out.Header().Set("Content-Type", "text/html")
+	content, _ := ioutil.ReadFile("template/search-result.html")
+	out.Write(content)
 }
 
 func main() {
@@ -269,6 +283,14 @@ func main() {
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
 		entryFormHandler(store, w, r)
+	})
+
+	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
+		search(w, r)
+	})
+
+	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+		apiSearch(store, w, r)
 	})
 
 	http.HandleFunc("/", stuffStoreRoot)

@@ -7,37 +7,6 @@ import (
 	"time"
 )
 
-type DBBackend struct {
-	db           *sql.DB
-	findById     *sql.Stmt
-	insertRecord *sql.Stmt
-	updateRecord *sql.Stmt
-}
-
-func NewDBBackend(db *sql.DB) (*DBBackend, error) {
-	findById, err := db.Prepare("SELECT category, value, description, notes, quantity, datasheet_url,drawersize,footprint" +
-		" FROM component where id=$1")
-	if err != nil {
-		return nil, err
-	}
-	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, category, value, description, notes, quantity, datasheet_url,drawersize,footprint) " +
-		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9, $10)")
-	if err != nil {
-		return nil, err
-	}
-	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8,drawersize=$9, footprint=$10 where id=$1 ")
-	if err != nil {
-		return nil, err
-	}
-
-	return &DBBackend{
-		db:           db,
-		findById:     findById,
-		insertRecord: insertRecord,
-		updateRecord: updateRecord}, nil
-}
-
 func nullIfEmpty(s string) *string {
 	if s == "" {
 		return nil
@@ -52,9 +21,9 @@ func emptyIfNull(s *string) string {
 		return *s
 	}
 }
-
-func (d *DBBackend) FindById(id int) *Component {
+func row2Component(row *sql.Rows) (*Component, error) {
 	type ReadRecord struct {
+		id          int
 		category    *string
 		value       *string
 		description *string
@@ -65,7 +34,7 @@ func (d *DBBackend) FindById(id int) *Component {
 		footprint   *string
 	}
 	rec := &ReadRecord{}
-	err := d.findById.QueryRow(id).Scan(&rec.category, &rec.value,
+	err := row.Scan(&rec.id, &rec.category, &rec.value,
 		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet,
 		&rec.drawersize, &rec.footprint)
 	drawersize := 0
@@ -74,12 +43,12 @@ func (d *DBBackend) FindById(id int) *Component {
 	}
 	switch {
 	case err == sql.ErrNoRows:
-		return nil
+		return nil, nil // no rows are ok error.
 	case err != nil:
 		log.Fatal(err)
 	default:
 		result := &Component{
-			Id:            id,
+			Id:            rec.id,
 			Category:      emptyIfNull(rec.category),
 			Value:         emptyIfNull(rec.value),
 			Description:   emptyIfNull(rec.description),
@@ -89,7 +58,59 @@ func (d *DBBackend) FindById(id int) *Component {
 			Drawersize:    drawersize,
 			Footprint:     emptyIfNull(rec.footprint),
 		}
-		return result
+		return result, nil
+	}
+	return nil, nil
+}
+
+type DBBackend struct {
+	db           *sql.DB
+	findById     *sql.Stmt
+	insertRecord *sql.Stmt
+	updateRecord *sql.Stmt
+	fts          *FulltextSearh
+}
+
+func NewDBBackend(db *sql.DB) (*DBBackend, error) {
+	all_fields := "category, value, description, notes, quantity, datasheet_url,drawersize,footprint"
+	findById, err := db.Prepare("SELECT id, " + all_fields + " FROM component where id=$1")
+	if err != nil {
+		return nil, err
+	}
+	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, " + all_fields + ") " +
+		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9, $10)")
+	if err != nil {
+		return nil, err
+	}
+	updateRecord, err := db.Prepare("UPDATE component SET " +
+		"updated=$2, category=$3, value=$4, description=$5, notes=$6, quantity=$7, datasheet_url=$8,drawersize=$9, footprint=$10 where id=$1 ")
+	if err != nil {
+		return nil, err
+	}
+
+	// Populate fts with existing components.
+	fts := NewFulltextSearch()
+	rows, _ := db.Query("SELECT id, " + all_fields + " FROM component")
+	count := 0
+	for rows != nil && rows.Next() {
+		c, _ := row2Component(rows)
+		fts.Update(c)
+		count++
+	}
+	log.Printf("Prepopulated full text search with %d items", count)
+	return &DBBackend{
+		db:           db,
+		findById:     findById,
+		insertRecord: insertRecord,
+		updateRecord: updateRecord,
+		fts:          fts}, nil
+}
+
+func (d *DBBackend) FindById(id int) *Component {
+	rows, _ := d.findById.Query(id)
+	if rows.Next() {
+		c, _ := row2Component(rows)
+		return c
 	}
 	return nil
 }
@@ -127,10 +148,11 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 		if err != nil {
 			return false, err.Error()
 		}
+		d.fts.Update(rec)
 	}
 	return true, ""
 }
 
 func (d *DBBackend) Search(search_term string) []*Component {
-	return nil // not implemented yet.
+	return d.fts.Search(search_term)
 }

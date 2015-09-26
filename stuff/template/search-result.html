@@ -1,0 +1,86 @@
+<head>
+  <style>
+  td {
+	  vertical-align:top;
+  }
+  .searchfield {
+	  background-color:#eeeeee;
+	  horizontal-align: center;
+	  padding: 10px;
+  }
+  </style>
+  <script>
+  function retrieve(input_field) {
+	  xmlhttp=new XMLHttpRequest();
+	  xmlhttp.onreadystatechange = function() {
+		  j = JSON.parse(xmlhttp.responseText);
+		  filltab(j);
+	  };
+	  url="/api?q=" + input_field.value;
+	  xmlhttp.open("GET", url, true);
+	  xmlhttp.send();
+  }
+  </script>
+</head>
+
+<div class="searchfield"><input type="text" size="80" onkeyup="retrieve(this);"></div>
+
+<!-- - experiment with table, but that should probably be divs -->
+<body>
+<table id="result">
+  <tbody id="result-list">
+    <tr>
+      <td><img src="#"><div style="3em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="3em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+    </tr>
+    <tr>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+      <td><img src="#"><div style="2em">Hello<br/>world</div></td>
+    </tr>
+  </tbody>
+</table>
+<script>
+var fallback = "http://localhost:3000/static/fallback.jpg";
+var references = [];
+var rows = document.getElementById('result-list').childNodes;
+for (var r = 0; r < rows.length; ++r) {
+	var cols = rows[r].childNodes;
+	for (var c = 0; c < cols.length; ++c) {
+		var x = cols[c];
+		if (x.nodeName != "TD") continue;
+		var img = x.childNodes[0];
+		img.height=128;
+		img.width=172;
+		references.push({ obj: x, img: x.childNodes[0], txt: x.childNodes[1]});
+		x.style.visibility = 'hidden';
+	}
+}
+
+function filltab(data) {
+	var len = data.length < references.length ? data.length : references.length
+	console.log(data.length);
+	var i = 0;
+	for (i = 0; i < len; ++i) {
+		var d = data[i];
+		references[i].obj.style.visibility = 'visible';
+		references[i].img.src = "http://localhost:3000/img/" + d.id + ".jpg";
+		references[i].txt.innerHTML = d.txt;
+	}
+	for (; i < references.length; ++i) {
+		references[i].obj.style.visibility = 'hidden';
+	}
+}
+</script>
+</body>
