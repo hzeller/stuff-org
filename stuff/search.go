@@ -11,7 +11,6 @@ func isSeparator(c byte) bool {
 }
 
 func StringScore(needle string, haystack string) float32 {
-	haystack = strings.ToLower(haystack)
 	pos := strings.Index(haystack, needle)
 	if pos < 0 {
 		return 0
@@ -48,6 +47,7 @@ func (c *Component) MatchScore(term string) float32 {
 	for _, part := range strings.Split(term, " ") {
 		// Avoid keyword stuffing by looking only at the field
 		// that scores the most.
+		// NOTE: more fields here, add to lowerCased below.
 		score := maxlist(2.0*StringScore(part, c.Category),
 			3.0*StringScore(part, c.Value),
 			2.0*StringScore(part, c.Description),
@@ -123,8 +123,17 @@ func (s *FulltextSearh) Update(c *Component) {
 	if c == nil {
 		return
 	}
+	lowerCased := &Component{
+		Id: c.Id,
+		// Only the ones we are interested in.
+		Category:    strings.ToLower(c.Category),
+		Value:       strings.ToLower(c.Value),
+		Description: strings.ToLower(c.Description),
+		Notes:       strings.ToLower(c.Notes),
+		Footprint:   strings.ToLower(c.Footprint),
+	}
 	s.lock.Lock()
-	s.id2Component[c.Id] = c
+	s.id2Component[c.Id] = lowerCased
 	s.lock.Unlock()
 }
 func (s *FulltextSearh) Search(search_term string) []*Component {
