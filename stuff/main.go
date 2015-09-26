@@ -241,9 +241,7 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 }
 
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
-	out.Header().Set("Content-Type", "text/html")
-	out.Write([]byte("Welcome to StuffStore. " +
-		"Here is an <a href='/form'>input form</a>."))
+	http.Redirect(out, r, "/form", 302)
 }
 func search(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Content-Type", "text/html")
