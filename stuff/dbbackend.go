@@ -108,9 +108,12 @@ func NewDBBackend(db *sql.DB) (*DBBackend, error) {
 
 func (d *DBBackend) FindById(id int) *Component {
 	rows, _ := d.findById.Query(id)
-	if rows.Next() {
-		c, _ := row2Component(rows)
-		return c
+	if rows != nil {
+		defer rows.Close()
+		if rows.Next() {
+			c, _ := row2Component(rows)
+			return c
+		}
 	}
 	return nil
 }
