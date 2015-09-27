@@ -56,79 +56,109 @@
 <body>
   <div><span class="seltab">Enter Data</span>&nbsp;<a href="/search" class="deseltab">Search</a></div>
   <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
-       This is how we did it back then. Yes, tables! It sucked. Still sucks.
-       Also, I don't know javascript, so feel free to make this right.
-    -->
-<form name="compform" action="/form" method="POST">
-{{/* to determine if id was changed */}}
-<input type="hidden" name="orig_id" value="{{.Id}}"/>
-<table>
-<tr><td valign="top">
-    <table style="float:left; margin-right:10px">
-      {{/* The number on the drawer or bin */}}
-      <tr style="background-color:#eeeeee; height:3em;"><td align="right">
-	  <label for="cid">Drawer/Bin</label></td>
-	<td>
-	  {{/* left arrow */}}
-	  <a style="font-size:180%; text-decoration:none; color:black;" href="?id={{.PrevId}}">◀<img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></a>
-	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  This is how we did it back then. Yes, tables! It sucked. Still sucks.
+  Also, I don't know javascript, so feel free to make this right.
+  -->
+  <form name="compform" action="/form" method="POST">
+    {{/* to determine if id was changed */}}
+    <input type="hidden" name="orig_id" value="{{.Id}}"/>
+    <table>
+      <tr><td valign="top">                              <!-- First column: Form -->
+	<!-- Drawer Bin selection -->
+	<table style="margin-right:5px">  <!-- Table to align form elements: left input fields -->
+	  {{/* The number on the drawer or bin */}}
 
-	  <input style="font-weight:bold; font-size:200%;"
-		 type="text" name="id" size="5" id="cid" value="{{.Id}}"
-		 onchange="form.submit();">
+	  <tr style="background-color:#eeeeee; height:3em;">
+	    <td align="right"><label for="cid">Drawer/Bin</label></td>
+	    <td>
+	      {{/* left arrow */}}
+	      <a style="font-size:180%; text-decoration:none; color:black;" href="?id={{.PrevId}}">◀<img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></a>
+	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-	  {{/* Right arrow */}}
-	  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	  <a style="font-size:200%; text-decoration:none; color:black;" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
-  </td></tr>
-  <tr><td colspan="2">Category</td></tr>
-  <tr><td colspan="2"><table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
-{{range $i, $element := .CatChoice}}
-{{if $element.AddSeparator}}<tr>{{end}}
-	  <td><input type="radio" name="category_select" value="{{$element.Value}}"
-		     id="cat{{$i}}"
-		     {{if $element.IsSelected}}checked{{end}}>
-	    <label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
-  <tr><td colspan="3">
-      <input type="radio" name="category_select"
-	     value="{{.CatFallback.Value}}" id="catother"
-	     {{if .CatFallback.IsSelected}}checked{{end}}>
-      <label for="catother">(other)</label>
-      <input type="text" name="category_txt" value="{{.CategoryText}}"
-	     onkeydown="document.getElementById('catother').checked=true;"></td></tr>
-    </table></td></tr>
-<tr><td align="right"><label for="cvalue">Name/Value</label></td>
-  <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td></tr>
-<tr><td align="right"><label for="fprint">Footprint</label></td>
-  <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
-    &nbsp;&nbsp;
-    <label for="cquant">Quantity</label>
-    <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
-</td></tr>
-<tr><td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
-  <td><textarea rows="3" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td></tr>
-<tr><td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
-  <td><textarea rows="3" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td></tr>
-<tr><td align="right"><label for="dsheet">Datasheet</label></td>
-    <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td></tr> <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
-<tr><td align="right"><label>Drawer/Bin</label></td>
-  <td>space needed: <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
-<input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
-<input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
-</td></tr>
-<!-- submit -->
-      <tr><td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
-      <input style="font-size:larger;" type="reset" name="cancel" value="Cancel">&nbsp;
-      <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td></tr>
-</table></td>
-  <td style="vertical-align:top;" align="left">
-  <!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
-       now, but that needs to be adapted of course -->
-  <img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
-  <div class="msgbox">{{.Msg}}</div>
-</td></tr>
-</tr>
-</table>
-</form>
-<!-- todo: recent list -->
+	      <input style="font-weight:bold; font-size:200%;"
+		      type="text" name="id" size="5" id="cid" value="{{.Id}}"
+		      onchange="form.submit();">
+
+	      {{/* Right arrow */}}
+	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	      <a style="font-size:200%; text-decoration:none; color:black;" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
+	    </td>
+	  </tr>
+
+	  <tr><td colspan="2">Category</td></tr>
+	  <tr><td colspan="2">
+	    <!-- Selection box -->
+	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
+	      {{range $i, $element := .CatChoice}}
+	      {{if $element.AddSeparator}}<tr>{{end}}
+	      <td><input type="radio" name="category_select" value="{{$element.Value}}"
+			  id="cat{{$i}}"
+			  {{if $element.IsSelected}}checked{{end}}>
+		<label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
+	      <tr><td colspan="3">
+		<input type="radio" name="category_select"
+			value="{{.CatFallback.Value}}" id="catother"
+			{{if .CatFallback.IsSelected}}checked{{end}}>
+		<label for="catother">(other)</label>
+		<input type="text" name="category_txt" value="{{.CategoryText}}"
+			onkeydown="document.getElementById('catother').checked=true;"></td></tr>
+	    </table>
+	  </td></tr>
+
+	  <tr>
+	    <td align="right"><label for="cvalue">Name/Value</label></td>
+	    <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td>
+	  </tr>
+
+	  <tr>
+	    <td align="right"><label for="fprint">Footprint</label></td>
+	    <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
+	      &nbsp;&nbsp;
+	      <label for="cquant">Quantity</label>
+	      <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
+	    </td>
+	  </tr>
+
+	  <tr>
+	    <td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
+	    <td><textarea rows="3" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td>
+	  </tr>
+
+	  <tr>
+	    <td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
+	    <td><textarea rows="3" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td>
+	  </tr>
+
+	  <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
+	  <tr>
+	    <td align="right"><label for="dsheet">Datasheet</label></td>
+	    <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td>
+	  </tr>
+
+	  <tr><td align="right"><label>Drawer/Bin</label></td>
+	    <td>space needed: <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
+	      <input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
+	      <input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
+	    </td>
+	  </tr>
+
+	  <!-- submit -->
+	  <tr>
+	    <td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
+	      <input style="font-size:larger;" type="reset" name="cancel" value="Cancel">&nbsp;
+	      <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td>
+	  </tr>
+	</table>
+      </td>  <!-- - end of form column -->
+
+      <td style="vertical-align:top;" align="left">        <!-- Second column: Picture  -->
+	<!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
+	now, but that needs to be adapted of course -->
+	<img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
+	<div class="msgbox">{{.Msg}}</div>
+      </td>
+	  </tr>
+    </table>
+  </form>
+  <!-- todo: recent list -->
 </body>
