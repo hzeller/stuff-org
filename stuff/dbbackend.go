@@ -128,11 +128,11 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	before := *rec
 	if update(rec) {
 		if rec.Id != id {
-			return false, "ID was modified"
+			return false, "ID was modified."
 		}
 		if *rec == before {
 			log.Printf("No need to store ID=%d: no change.", id)
-			return true, "No change"
+			return false, "No change."
 		}
 		var err error
 
@@ -152,8 +152,9 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			return false, err.Error()
 		}
 		d.fts.Update(rec)
+		return true, ""
 	}
-	return true, ""
+	return false, ""
 }
 
 func (d *DBBackend) Search(search_term string) []*Component {

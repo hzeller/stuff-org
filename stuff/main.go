@@ -56,8 +56,8 @@ type StuffStore interface {
 	FindById(id int) *Component
 
 	// Edit record of given ID. If ID is new, it is inserted and an empty
-	// record returned to be edited. Returns 'true' if transaction has
-	// been successfully commited (or aborted by ModifyFun.)
+	// record returned to be edited.
+	// Returns if record has been saved, possibly with message.
 	EditRecord(id int, updater ModifyFun) (bool, string)
 
 	// Given a search term, returns all the components that match, ordered
@@ -117,8 +117,20 @@ func renderTemplate(w io.Writer, tmpl string, p *FormPage) {
 }
 
 func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) {
-	id, _ := strconv.Atoi(r.FormValue("id"))
-	requestStore := r.FormValue("send") != "" && r.FormValue("orig_id") == r.FormValue("id")
+	store_id, _ := strconv.Atoi(r.FormValue("store_id"))
+	var next_id int
+	if r.FormValue("id") != r.FormValue("store_id") {
+		// The ID field was edited. Use that as the next ID
+		next_id, _ = strconv.Atoi(r.FormValue("id"))
+	} else if r.FormValue("nav_id") != "" {
+		// Use the navigation buttons to choose next ID.
+		next_id, _ = strconv.Atoi(r.FormValue("nav_id"))
+	} else {
+		// Regular submit. Jump to next
+		next_id = store_id + 1
+	}
+
+	requestStore := r.FormValue("store_id") != ""
 	msg := ""
 	page := &FormPage{}
 
@@ -127,8 +139,9 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	} else {
 		defer ElapsedPrint("View item", time.Now())
 	}
+
 	if requestStore {
-		success, err := store.EditRecord(id, func(comp *Component) bool {
+		was_stored, store_msg := store.EditRecord(store_id, func(comp *Component) bool {
 			if r.FormValue("category_select") == "-" {
 				comp.Category = r.FormValue("category_txt")
 			} else {
@@ -144,19 +157,17 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 			comp.Footprint = r.FormValue("footprint")
 			return true
 		})
-		if success {
-			msg = fmt.Sprintf("Stored item %d; Proceed to %d", id, id+1)
+		if was_stored {
+			msg = fmt.Sprintf("Stored item %d; Proceed to %d", store_id, next_id)
 		} else {
-			msg = "ERROR STORING STUFF DAMNIT. " + err + fmt.Sprintf("ID=%d", id)
+			msg = fmt.Sprintf("Item %d (%s); Proceed to %d", store_id, store_msg, next_id)
 		}
 	} else {
-		msg = "Browse to item " + fmt.Sprintf("%d", id)
+		msg = "Browse item " + fmt.Sprintf("%d", next_id)
 	}
 
-	if requestStore {
-		id = id + 1 // be helpful and suggest next
-	}
-
+	// Populate page.
+	id := next_id
 	page.Id = id
 	if id > 0 {
 		page.PrevId = id - 1

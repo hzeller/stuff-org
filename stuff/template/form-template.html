@@ -9,8 +9,11 @@
 	  border-color:lightgray;
 	  padding-left:1px;
   }
+  button {
+	  border: none;
+  }
   input[type=submit] {
-	  border-style:outset;
+	  border-style:none;
   }
   textarea {
 	  border-style: solid;
@@ -32,7 +35,7 @@
 	  padding: 10px;
 	  margin: 10px;
 	  opacity:0;
-	  animation: fade-out 2s;
+	  animation: fade-out 5s;
   }
   @keyframes fade-out {
 	  from { opacity: 1; }
@@ -52,7 +55,7 @@
 	  font-weight:bold;
   }
   .arrowlink {
-	  font-size:180%;
+	  font-size:200%;
 	  text-decoration:none;
 	  color:black;
   }
@@ -85,27 +88,29 @@
   Also, I don't know javascript, so feel free to make this right.
   -->
   <form name="compform" id="compform" action="/form" method="POST">
-    {{/* to determine if id was changed */}}
-    <input type="hidden" name="orig_id" value="{{.Id}}"/>
+    <input type="hidden" name="store_id" value="{{.Id}}"/>
     <table>
       <tr><td valign="top">                              <!-- First column: Form -->
 	<!-- Drawer Bin selection -->
 	<table style="margin-right:5px">  <!-- Table to align form elements: left input fields -->
 	  {{/* The number on the drawer or bin */}}
-
 	  <tr style="background-color:#eeeeee; height:3em;">
-	    <td align="right"><label for="cid">Drawer/Bin</label></td>
+	    <td align="right"><label for="navigate_id">Drawer/Bin</label></td>
 	    <td>
-	      <a class="arrowlink" href="?id={{.PrevId}}">◀<img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></a>
+	      <!-- dummy submit button to catch the 'Return' action. Not sure if
+	           this works properly on all browsers. Chrome, Firefox work -->
+	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
+
+	      <button class="arrowlink" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></button>
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 	      <input style="font-weight:bold; font-size:200%;"
-		      type="text" name="id" size="5" id="cid" value="{{.Id}}"
+		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	      <a class="arrowlink" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
+	      <button class="arrowlink" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/> ▶</button>
 	    </td>
 	  </tr>
 
@@ -170,7 +175,7 @@
 	  <tr>
 	    <td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
 	      <input style="font-size:larger;" type="reset" name="cancel" value="Cancel">&nbsp;
-	      <input style="font-size:larger;" type="submit" name="send" value="Submit and next"></td>
+	      <input type="submit" style="font-size:larger;" name="send" value="Submit and next"></td>
 	  </tr>
 	</table>
       </td>  <!-- - end of form column -->
