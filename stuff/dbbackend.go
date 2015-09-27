@@ -131,7 +131,6 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			return false, "ID was modified."
 		}
 		if *rec == before {
-			log.Printf("No need to store ID=%d: no change.", id)
 			return false, "No change."
 		}
 		var err error

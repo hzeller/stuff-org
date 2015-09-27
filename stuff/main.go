@@ -14,25 +14,22 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type Component struct {
-	Id            int
-	Value         string
-	Category      string
-	Description   string
-	Quantity      string // at this point just a string.
-	Notes         string
-	Datasheet_url string
-	Drawersize    int
-	Footprint     string
-	// The follwing are not used yet.
-	//vendor        string
-	//auto_notes    string
-	//footprint     string
+	Id            int    `json:"id"`
+	Value         string `json:"value"`
+	Category      string `json:"category"`
+	Description   string `json:"description"`
+	Quantity      string `json:"quantity"` // at this point just a string.
+	Notes         string `json:"notes"`
+	Datasheet_url string `json:"datasheet_url"`
+	Drawersize    int    `json:"drawersize"`
+	Footprint     string `json:"footprint"`
 }
 
 // Some useful pre-defined set of categories
@@ -134,31 +131,35 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	msg := ""
 	page := &FormPage{}
 
-	if requestStore {
-		defer ElapsedPrint("Storing item", time.Now())
-	} else {
-		defer ElapsedPrint("View item", time.Now())
-	}
+	//defer ElapsedPrint("Form action", time.Now())
 
 	if requestStore {
+		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
+		fromForm := Component{
+			Id:            store_id,
+			Value:         r.FormValue("value"),
+			Description:   r.FormValue("description"),
+			Notes:         r.FormValue("notes"),
+			Quantity:      r.FormValue("quantity"),
+			Datasheet_url: r.FormValue("datasheet"),
+			Drawersize:    drawersize,
+			Footprint:     r.FormValue("footprint"),
+		}
+		// If there only was a ?: operator ...
+		if r.FormValue("category_select") == "-" {
+			fromForm.Category = r.FormValue("category_txt")
+		} else {
+			fromForm.Category = r.FormValue("category_select")
+		}
+
 		was_stored, store_msg := store.EditRecord(store_id, func(comp *Component) bool {
-			if r.FormValue("category_select") == "-" {
-				comp.Category = r.FormValue("category_txt")
-			} else {
-				comp.Category = r.FormValue("category_select")
-			}
-
-			comp.Value = r.FormValue("value")
-			comp.Description = r.FormValue("description")
-			comp.Notes = r.FormValue("notes")
-			comp.Quantity = r.FormValue("quantity")
-			comp.Datasheet_url = r.FormValue("datasheet")
-			comp.Drawersize, _ = strconv.Atoi(r.FormValue("drawersize"))
-			comp.Footprint = r.FormValue("footprint")
+			*comp = fromForm
 			return true
 		})
 		if was_stored {
 			msg = fmt.Sprintf("Stored item %d; Proceed to %d", store_id, next_id)
+			json, _ := json.Marshal(fromForm)
+			log.Printf("STORE %s", json)
 		} else {
 			msg = fmt.Sprintf("Item %d (%s); Proceed to %d", store_id, store_msg, next_id)
 		}
@@ -237,7 +238,7 @@ type JsonSearchResult struct {
 }
 
 func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
-	defer ElapsedPrint("Query", time.Now())
+	//defer ElapsedPrint("Query", time.Now())
 	// Allow very brief caching, so that editing the query does not
 	// necessarily has to trigger a new server roundtrip.
 	out.Header().Set("Cache-Control", "max-age=10")
@@ -286,8 +287,20 @@ func main() {
 	dbName := flag.String("db", "stuff", "Database to connect")
 	dbUser := flag.String("dbuser", "hzeller", "Database user")
 	dbPwd := flag.String("dbpwd", "", "Database password")
+	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 
 	flag.Parse()
+
+	if *logfile != "" {
+		f, err := os.OpenFile(*logfile,
+			os.O_RDWR|os.O_CREATE|os.O_APPEND,
+			0644)
+		if err != nil {
+			log.Fatalf("error opening file: %v", err)
+		}
+		defer f.Close()
+		log.SetOutput(f)
+	}
 
 	db, err := sql.Open("postgres",
 		fmt.Sprintf("user=%s dbname=%s password=%s",
