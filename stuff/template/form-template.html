@@ -51,7 +51,32 @@
 	  text-decoration: none;
 	  font-weight:bold;
   }
+  .arrowlink {
+	  font-size:180%;
+	  text-decoration:none;
+	  color:black;
+  }
   </style>
+  <script>
+  function disable_form_if_different(ev, field, orig) {
+	  if (ev.keyCode == 27) {  // Escape
+		  field.value = orig;
+	  }
+	  var enable_action = (field.value == orig);
+	  var elements = document.querySelectorAll("#compform input,textarea");
+	  for (var i = 0; i < elements.length; ++i) {
+		  if (elements[i] === field) {
+			  continue;
+		  }
+		  elements[i].enable = enable_action;
+		  if (enable_action) {
+			  elements[i].style["background-color"] = 'white';
+		  } else {
+			  elements[i].style["background-color"] = '#eeeeee';
+		  }
+	  }
+  }
+  </script>
 </head>
 <body>
   <div><span class="seltab">Enter Data</span>&nbsp;<a href="/search" class="deseltab">Search</a></div>
@@ -59,7 +84,7 @@
   This is how we did it back then. Yes, tables! It sucked. Still sucks.
   Also, I don't know javascript, so feel free to make this right.
   -->
-  <form name="compform" action="/form" method="POST">
+  <form name="compform" id="compform" action="/form" method="POST">
     {{/* to determine if id was changed */}}
     <input type="hidden" name="orig_id" value="{{.Id}}"/>
     <table>
@@ -71,17 +96,16 @@
 	  <tr style="background-color:#eeeeee; height:3em;">
 	    <td align="right"><label for="cid">Drawer/Bin</label></td>
 	    <td>
-	      {{/* left arrow */}}
-	      <a style="font-size:180%; text-decoration:none; color:black;" href="?id={{.PrevId}}">◀<img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></a>
+	      <a class="arrowlink" href="?id={{.PrevId}}">◀<img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></a>
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 	      <input style="font-weight:bold; font-size:200%;"
 		      type="text" name="id" size="5" id="cid" value="{{.Id}}"
+		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
-	      {{/* Right arrow */}}
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	      <a style="font-size:200%; text-decoration:none; color:black;" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
+	      <a class="arrowlink" href="?id={{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/>▶</a>
 	    </td>
 	  </tr>
 
