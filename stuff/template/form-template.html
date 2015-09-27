@@ -106,6 +106,7 @@
 
 	      <input style="font-weight:bold; font-size:200%;"
 		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
+		      onfocus="this.value = this.value;"
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
@@ -136,7 +137,10 @@
 
 	  <tr>
 	    <td align="right"><label for="cvalue">Name/Value</label></td>
-	    <td><input type="text" name="value" size="40" id="cvalue" value="{{.Value}}" autofocus></td>
+	    <td><input type="text" id="cvalue" size="40"
+			name="value" value="{{.Value}}"
+			onfocus="this.value = this.value;"
+			autofocus></td>
 	  </tr>
 
 	  <tr>
