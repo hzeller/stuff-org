@@ -10,4 +10,5 @@ can be handled with the excellent henplus JDBC commandline
 utility ( https://github.com/neurolabs/henplus )
 
 The sqlite-file.db is a binary file with the same content. You can use it with the
-application by giving `--db_file=../db/sqlite-file.db`
+application by giving `--db_file=../db/sqlite-file.db`, or copy it somewhere to play
+around without messing with this file.
