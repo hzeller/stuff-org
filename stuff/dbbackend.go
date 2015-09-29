@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// Initial phase: while collecting the raw information, a single flat table
+// is sufficient.
 var create_schema string = `
 create table component (
        id            int           constraint pk_component primary key,

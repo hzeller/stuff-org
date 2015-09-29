@@ -131,7 +131,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	msg := ""
 	page := &FormPage{}
 
-	//defer ElapsedPrint("Form action", time.Now())
+	defer ElapsedPrint("Form action", time.Now())
 
 	if requestStore {
 		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
@@ -208,7 +208,7 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 
 func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	out http.ResponseWriter, r *http.Request) {
-	//defer ElapsedPrint("Image serve", time.Now())
+	defer ElapsedPrint("Image serve", time.Now())
 	path := r.URL.Path[prefix_len:]
 	content, _ := ioutil.ReadFile(imgPath + "/" + path)
 	if content == nil && fallbackPath != "" {
@@ -238,7 +238,7 @@ type JsonSearchResult struct {
 }
 
 func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
-	//defer ElapsedPrint("Query", time.Now())
+	defer ElapsedPrint("Query", time.Now())
 	// Allow very brief caching, so that editing the query does not
 	// necessarily has to trigger a new server roundtrip.
 	out.Header().Set("Cache-Control", "max-age=10")
@@ -281,8 +281,9 @@ func search(out http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
-	staticResource := flag.String("staticdir", "static", "Directory with static resources")
+	imageDir := flag.String("imagedir", "img-srv", "Directory with component images")
+	staticResource := flag.String("staticdir", "static",
+		"Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
 	dbFile := flag.String("db_file", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
