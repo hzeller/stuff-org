@@ -91,7 +91,7 @@ type DBBackend struct {
 	findById     *sql.Stmt
 	insertRecord *sql.Stmt
 	updateRecord *sql.Stmt
-	fts          *FulltextSearh
+	fts          *FulltextSearch
 }
 
 func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {

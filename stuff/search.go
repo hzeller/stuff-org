@@ -67,13 +67,13 @@ type SearchComponent struct {
 	orig         *Component
 	preprocessed *Component
 }
-type FulltextSearh struct {
+type FulltextSearch struct {
 	lock         sync.Mutex
 	id2Component map[int]*SearchComponent
 }
 
-func NewFulltextSearch() *FulltextSearh {
-	return &FulltextSearh{
+func NewFulltextSearch() *FulltextSearch {
+	return &FulltextSearch{
 		id2Component: make(map[int]*SearchComponent),
 	}
 }
@@ -123,7 +123,7 @@ func (s ScoreList) Less(a, b int) bool {
 	return s[a].comp.Id < s[b].comp.Id // stable
 }
 
-func (s *FulltextSearh) Update(c *Component) {
+func (s *FulltextSearch) Update(c *Component) {
 	if c == nil {
 		return
 	}
@@ -142,7 +142,7 @@ func (s *FulltextSearh) Update(c *Component) {
 	}
 	s.lock.Unlock()
 }
-func (s *FulltextSearh) Search(search_term string) []*Component {
+func (s *FulltextSearch) Search(search_term string) []*Component {
 	search_term = strings.ToLower(search_term)
 	s.lock.Lock()
 	scoredlist := make(ScoreList, 0, 10)
