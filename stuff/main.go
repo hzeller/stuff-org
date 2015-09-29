@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 	"html"
 	"html/template"
 	"io"
@@ -284,9 +284,7 @@ func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with images")
 	staticResource := flag.String("staticdir", "static", "Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
-	dbName := flag.String("db", "stuff", "Database to connect")
-	dbUser := flag.String("dbuser", "hzeller", "Database user")
-	dbPwd := flag.String("dbpwd", "", "Database password")
+	dbFile := flag.String("db_file", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 
 	flag.Parse()
@@ -302,15 +300,18 @@ func main() {
 		log.SetOutput(f)
 	}
 
-	db, err := sql.Open("postgres",
-		fmt.Sprintf("user=%s dbname=%s password=%s",
-			*dbUser, *dbName, *dbPwd))
+	is_dbfilenew := true
+	if _, err := os.Stat(*dbFile); err == nil {
+		is_dbfilenew = false
+	}
+
+	db, err := sql.Open("sqlite3", *dbFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var store StuffStore
-	store, err = NewDBBackend(db)
+	store, err = NewDBBackend(db, is_dbfilenew)
 	if err != nil {
 		log.Fatal(err)
 	}

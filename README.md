@@ -9,7 +9,7 @@ With a neat useful search though :)
 Needs Postgres driver currently
 
 ```
-go get github.com/lib/pq
+go get github.com/mattn/go-sqlite3
 ```
 
 maybe switching to SQLite or just plain manual IO as using SQL is kinda lots of

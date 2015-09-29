@@ -7,6 +7,28 @@ import (
 	"time"
 )
 
+var create_schema string = `
+create table component (
+       id            int           constraint pk_component primary key,
+       category      varchar(40),  -- should be some foreign key
+       value         varchar(80),  -- identifying the component value
+       description   text,         -- additional information
+       notes         text,         -- user notes, can contain hashtags.
+       datasheet_url text,         -- data sheet URL if available
+       vendor        varchar(30),  -- should be foreign key
+       auto_notes    text,         -- auto generated notes, might aid in search
+       footprint     varchar(30),
+       quantity      varchar(5),   -- Initially text to allow freeform e.g '< 50'
+       drawersize    int,          -- 0=small, 1=medium, 2=large
+
+       created timestamp,
+       updated timestamp
+
+       -- also, we need the following eventually
+       -- labeltext, drawer-type, location. Several of these should have foreign keys.
+);
+`
+
 func nullIfEmpty(s string) *string {
 	if s == "" {
 		return nil
@@ -71,7 +93,13 @@ type DBBackend struct {
 	fts          *FulltextSearh
 }
 
-func NewDBBackend(db *sql.DB) (*DBBackend, error) {
+func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
+	if create_tables {
+		_, err := db.Exec(create_schema)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 	all_fields := "category, value, description, notes, quantity, datasheet_url,drawersize,footprint"
 	findById, err := db.Prepare("SELECT id, " + all_fields + " FROM component where id=$1")
 	if err != nil {
