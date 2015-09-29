@@ -316,7 +316,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//store = NewInMemoryStore()
+
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
 		imageServe(len("/img/"), *imageDir, *staticResource, w, r)
 	})
