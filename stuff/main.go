@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"html"
 	"html/template"
 	"io"
@@ -18,6 +17,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Component struct {
@@ -62,7 +63,7 @@ type StuffStore interface {
 	Search(search_term string) []*Component
 }
 
-var wantTimings = flag.Bool("want_timings", false, "Print processing timings.")
+var wantTimings = flag.Bool("want-timings", false, "Print processing timings.")
 
 func ElapsedPrint(msg string, start time.Time) {
 	if *wantTimings {
@@ -90,7 +91,7 @@ type FormPage struct {
 	NextId int
 }
 
-var cache_templates = flag.Bool("cache_templates", true,
+var cache_templates = flag.Bool("cache-templates", true,
 	"Cache templates. False for online editing.")
 var templates = template.Must(template.ParseFiles("template/form-template.html"))
 
@@ -285,7 +286,7 @@ func main() {
 	staticResource := flag.String("staticdir", "static",
 		"Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
-	dbFile := flag.String("db_file", "stuff-database.db", "SQLite database file")
+	dbFile := flag.String("dbfile", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 
 	flag.Parse()
