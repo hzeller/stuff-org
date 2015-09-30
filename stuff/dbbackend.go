@@ -107,12 +107,12 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		return nil, err
 	}
 	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, " + all_fields + ") " +
-		" VALUES ($1, $2, $2, $3, $4, $5, $6, $7, $8, $9, $10)")
+		" VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=$1, category=$2, value=$3, description=$4, notes=$5, quantity=$6, datasheet_url=$7, drawersize=$8, footprint=$9 WHERE id=$10")
+		"updated=?2, category=?3, value=?4, description=?5, notes=?6, quantity=?7, datasheet_url=?8, drawersize=?9, footprint=?10 WHERE id=?1")
 	if err != nil {
 		return nil, err
 	}
@@ -164,30 +164,25 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 		}
 		var err error
 
-		//var toExec *sql.Stmt
-		var r sql.Result
+		var toExec *sql.Stmt
 		if needsInsert {
-			r, err = d.insertRecord.Exec(id, time.Now(),
-				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
-				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
-				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-				rec.Drawersize, rec.Footprint)
-
+			toExec = d.insertRecord
 		} else {
-			r, err = d.updateRecord.Exec(time.Now(),
-				nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
-				nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
-				nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-				rec.Drawersize, rec.Footprint, id)
+			toExec = d.updateRecord
 		}
+		result, err := toExec.Exec(id, time.Now(),
+			nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
+			nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
+			nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
+			rec.Drawersize, rec.Footprint)
 
 		if err != nil {
 			log.Printf("Oops: %s", err)
 			return false, err.Error()
 		}
-		affected, _ := r.RowsAffected()
+		affected, _ := result.RowsAffected()
 		if affected != 1 {
-			log.Printf("Oops, unexpected row number %d", affected)
+			log.Printf("Oops, expected 1 row to update but was %d", affected)
 			return false, "ERR: not updated"
 		}
 		d.fts.Update(rec)
