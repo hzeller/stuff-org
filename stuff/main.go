@@ -278,23 +278,24 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 	http.Redirect(out, r, "/form", 302)
 }
 func search(out http.ResponseWriter, r *http.Request) {
-	out.Header().Set("Content-Type", "text/html")
+	out.Header().Set("Content-Type", "text/html; charset=utf-8")
 	content, _ := ioutil.ReadFile("template/search-result.html")
 	out.Write(content)
 }
 
 type StatusItem struct {
-	Number    int
-	Status    string
-	Separator int
+	Number     int
+	Status     string
+	Separator  int
+	HasPicture bool
 }
 type StatusPage struct {
 	Items []StatusItem
 }
 
-func listStatus(store StuffStore, out http.ResponseWriter, r *http.Request) {
+func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *http.Request) {
 	defer ElapsedPrint("Show status", time.Now())
-	out.Header().Set("Content-Type", "text/html")
+	out.Header().Set("Content-Type", "text/html; charset=utf-8")
 	page := &StatusPage{
 		Items: make([]StatusItem, 1800),
 	}
@@ -336,6 +337,9 @@ func listStatus(store StuffStore, out http.ResponseWriter, r *http.Request) {
 			} else if i%10 == 0 {
 				page.Items[i].Separator = 1
 			}
+		}
+		if _, err := os.Stat(fmt.Sprintf("%s/%d.jpg", imageDir, i)); err == nil {
+			page.Items[i].HasPicture = true
 		}
 	}
 	renderTemplate(out, "status-table", page)
@@ -397,7 +401,7 @@ func main() {
 		apiSearch(store, w, r)
 	})
 	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-		listStatus(store, w, r)
+		listStatus(store, *imageDir, w, r)
 	})
 	http.HandleFunc("/", stuffStoreRoot)
 

@@ -41,16 +41,28 @@
 <body>
   <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<a class="deseltab" href="/search">Search</a>&nbsp;<span class="seltab">Status</span></div>
   <h2>Status of data quality</h2>
+  <p>
   Legend: <span class="missing">Entry missing</span> |
   <span class="poor">Poor: Only one field</span> |
   <span class="fair">Fair: Two fields</span> |
   <span class="good">Good; Category, Name and Description</span>
+  </p>
   <p>
+    <table width="50%"><tr>
+      <td>
+	<table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
+      </td><td style="text-align:left;width:90%;">
+	A square indicates that there is a picture available.
+      </td></tr></table>
+  </p>
+
   <table><tr>
     {{ range $element := .Items }}
     {{ if eq $element.Separator 1}}</tr><tr>{{end}}
     {{ if eq $element.Separator 2}}</tr></table><h2>{{$element.Number}}</h2><table><tr>{{end}}
-    <td class="{{$element.Status}}"><a href="/form?id={{ $element.Number }}">{{ $element.Number }}</a></td>
+    <td class="{{$element.Status}}">
+      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+      <a href="/form?id={{ $element.Number }}">{{ $element.Number }}</a></td>
     {{end}}
   </table>
 </body>
