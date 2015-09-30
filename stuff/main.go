@@ -93,10 +93,12 @@ type FormPage struct {
 
 var cache_templates = flag.Bool("cache-templates", true,
 	"Cache templates. False for online editing.")
-var templates = template.Must(template.ParseFiles("template/form-template.html"))
+var templates = template.Must(template.ParseFiles(
+	"template/form-template.html",
+	"template/status-table.html"))
 
 // for now, render templates directly to easier edit them.
-func renderTemplate(w io.Writer, tmpl string, p *FormPage) {
+func renderTemplate(w io.Writer, tmpl string, p interface{}) {
 	var err error
 	template_name := tmpl + ".html"
 	if *cache_templates {
@@ -104,7 +106,7 @@ func renderTemplate(w io.Writer, tmpl string, p *FormPage) {
 	} else {
 		t, err := template.ParseFiles("template/" + template_name)
 		if err != nil {
-			log.Print("Template broken")
+			log.Printf("Template broken %s", err)
 			return
 		}
 		err = t.Execute(w, p)
@@ -281,6 +283,58 @@ func search(out http.ResponseWriter, r *http.Request) {
 	out.Write(content)
 }
 
+type StatusItem struct {
+	Number    int
+	Status    string
+	Separator int
+}
+type StatusPage struct {
+	Items []StatusItem
+}
+
+func listStatus(store StuffStore, out http.ResponseWriter, r *http.Request) {
+	out.Header().Set("Content-Type", "text/html")
+	page := &StatusPage{
+		Items: make([]StatusItem, 1800),
+	}
+	for i := 0; i < 1800; i++ {
+		comp := store.FindById(i)
+		page.Items[i].Number = i
+		if comp != nil {
+			count := 0
+			if comp.Category != "" {
+				count++
+			}
+			if comp.Value != "" {
+				count++
+			}
+			if comp.Description != "" {
+				count++
+			}
+			switch count {
+			case 0:
+				page.Items[i].Status = "missing"
+			case 1:
+				page.Items[i].Status = "poor"
+			case 2:
+				page.Items[i].Status = "fair"
+			case 3:
+				page.Items[i].Status = "good"
+			}
+		} else {
+			page.Items[i].Status = "missing"
+		}
+		if i > 0 {
+			if i%100 == 0 {
+				page.Items[i].Separator = 2
+			} else if i%10 == 0 {
+				page.Items[i].Separator = 1
+			}
+		}
+	}
+	renderTemplate(out, "status-table", page)
+}
+
 func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with component images")
 	staticResource := flag.String("staticdir", "static",
@@ -336,7 +390,9 @@ func main() {
 	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 		apiSearch(store, w, r)
 	})
-
+	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		listStatus(store, w, r)
+	})
 	http.HandleFunc("/", stuffStoreRoot)
 
 	log.Printf("Listening on :%d", *port)

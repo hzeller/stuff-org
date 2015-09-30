@@ -1,0 +1,56 @@
+<head>
+  <link rel="icon" type="image/png" href="/static/stuff-icon.png">
+  <title>Noisebridge Electronic Component Declutter Project</title>
+  <style>
+  body {font-family:sans-serif;}
+  td {
+	  width: 40;
+	  height: 40;
+	  text-align: right;
+  }
+  span {
+	  padding: 5px 15px;
+  }
+  .seltab {
+	  background-color:#ccccff;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  font-weight:bold;
+  }
+  .deseltab {
+	  background-color:#dddddd;
+	  padding: 2px 30px;
+	  border-radius:8px;
+	  text-decoration: none;
+	  font-weight:bold;
+  }
+  .missing {
+	  background-color: #eeeeee;
+  }
+  .poor {
+	  background-color: #ff8888;
+  }
+  .fair {
+	  background-color: #ffff88;
+  }
+  .good {
+	  background-color: #88ff88;
+  }
+  </style>
+</head>
+<body>
+  <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<a class="deseltab" href="/search">Search</a>&nbsp;<span class="seltab">Status</span></div>
+  <h2>Status of data quality</h2>
+  Legend: <span class="missing">Entry missing</span> |
+  <span class="poor">Poor: Only one field</span> |
+  <span class="fair">Fair: Two fields</span> |
+  <span class="good">Good; Category, Name and Description</span>
+  <p>
+  <table><tr>
+    {{ range $element := .Items }}
+    {{ if eq $element.Separator 1}}</tr><tr>{{end}}
+    {{ if eq $element.Separator 2}}</tr></table><h2>{{$element.Number}}</h2><table><tr>{{end}}
+    <td class="{{$element.Status}}"><a href="/form?id={{ $element.Number }}">{{ $element.Number }}</a></td>
+    {{end}}
+  </table>
+</body>
