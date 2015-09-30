@@ -309,7 +309,12 @@ func listStatus(store StuffStore, out http.ResponseWriter, r *http.Request) {
 			if comp.Value != "" {
 				count++
 			}
-			if comp.Description != "" {
+			// Description should be set. But for simple things such
+			// as resistors or capacitors, we see just one value
+			// to be sufficient. Totally hacky classification :)
+			if comp.Description != "" ||
+				(comp.Category == "Resistor" && comp.Value != "") ||
+				(comp.Category == "Capacitor (C)" && comp.Value != "") {
 				count++
 			}
 			switch count {
