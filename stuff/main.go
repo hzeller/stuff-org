@@ -293,6 +293,7 @@ type StatusPage struct {
 }
 
 func listStatus(store StuffStore, out http.ResponseWriter, r *http.Request) {
+	defer ElapsedPrint("Show status", time.Now())
 	out.Header().Set("Content-Type", "text/html")
 	page := &StatusPage{
 		Items: make([]StatusItem, 1800),
