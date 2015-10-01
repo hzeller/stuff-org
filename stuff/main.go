@@ -89,6 +89,8 @@ type FormPage struct {
 	Msg    string // Feedback for user
 	PrevId int    // For browsing
 	NextId int
+
+	Status []StatusItem
 }
 
 var cache_templates = flag.Bool("cache-templates", true,
@@ -116,7 +118,8 @@ func renderTemplate(w io.Writer, tmpl string, p interface{}) {
 	}
 }
 
-func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) {
+func entryFormHandler(store StuffStore, imageDir string,
+	w http.ResponseWriter, r *http.Request) {
 	store_id, _ := strconv.Atoi(r.FormValue("store_id"))
 	var next_id int
 	if r.FormValue("id") != r.FormValue("store_id") {
@@ -202,6 +205,18 @@ func entryFormHandler(store StuffStore, w http.ResponseWriter, r *http.Request) 
 	}
 	page.Msg = msg
 
+	// Show status for 10 entries around
+	page.Status = make([]StatusItem, 12)
+	startStatusId := (id/10)*10 - 1
+	if startStatusId <= 0 {
+		startStatusId = 0
+	}
+	for i := 0; i < 12; i++ {
+		fillStatusItem(store, imageDir, i+startStatusId, &page.Status[i])
+		if i+startStatusId == id {
+			page.Status[i].Status = page.Status[i].Status + " selstatus"
+		}
+	}
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	zipped := gzip.NewWriter(w)
@@ -288,9 +303,48 @@ type StatusItem struct {
 	Status     string
 	Separator  int
 	HasPicture bool
+	Highlight  bool
 }
 type StatusPage struct {
 	Items []StatusItem
+}
+
+func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem) {
+	comp := store.FindById(id)
+	item.Number = id
+	if comp != nil {
+		count := 0
+		if comp.Category != "" {
+			count++
+		}
+		if comp.Value != "" {
+			count++
+		}
+		// Description should be set. But for simple things such
+		// as resistors or capacitors, we see just one value
+		// to be sufficient. Totally hacky classification :)
+		if comp.Description != "" ||
+			(comp.Category == "Resistor" && comp.Value != "") ||
+			(comp.Category == "Capacitor (C)" && comp.Value != "") {
+			count++
+		}
+		switch count {
+		case 0:
+			item.Status = "missing"
+		case 1:
+			item.Status = "poor"
+		case 2:
+			item.Status = "fair"
+		case 3:
+			item.Status = "good"
+		}
+	} else {
+		item.Status = "missing"
+	}
+	if _, err := os.Stat(fmt.Sprintf("%s/%d.jpg", imageDir, id)); err == nil {
+		item.HasPicture = true
+	}
+
 }
 
 func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *http.Request) {
@@ -300,46 +354,13 @@ func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *h
 		Items: make([]StatusItem, 1800),
 	}
 	for i := 0; i < 1800; i++ {
-		comp := store.FindById(i)
-		page.Items[i].Number = i
-		if comp != nil {
-			count := 0
-			if comp.Category != "" {
-				count++
-			}
-			if comp.Value != "" {
-				count++
-			}
-			// Description should be set. But for simple things such
-			// as resistors or capacitors, we see just one value
-			// to be sufficient. Totally hacky classification :)
-			if comp.Description != "" ||
-				(comp.Category == "Resistor" && comp.Value != "") ||
-				(comp.Category == "Capacitor (C)" && comp.Value != "") {
-				count++
-			}
-			switch count {
-			case 0:
-				page.Items[i].Status = "missing"
-			case 1:
-				page.Items[i].Status = "poor"
-			case 2:
-				page.Items[i].Status = "fair"
-			case 3:
-				page.Items[i].Status = "good"
-			}
-		} else {
-			page.Items[i].Status = "missing"
-		}
+		fillStatusItem(store, imageDir, i, &page.Items[i])
 		if i > 0 {
 			if i%100 == 0 {
 				page.Items[i].Separator = 2
 			} else if i%10 == 0 {
 				page.Items[i].Separator = 1
 			}
-		}
-		if _, err := os.Stat(fmt.Sprintf("%s/%d.jpg", imageDir, i)); err == nil {
-			page.Items[i].HasPicture = true
 		}
 	}
 	renderTemplate(out, "status-table", page)
@@ -390,7 +411,7 @@ func main() {
 	})
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
-		entryFormHandler(store, w, r)
+		entryFormHandler(store, *imageDir, w, r)
 	})
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {

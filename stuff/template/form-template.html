@@ -59,6 +59,30 @@
 	  text-decoration:none;
 	  color:black;
   }
+
+  #statustab button {
+	  width: 30;
+	  height: 30;
+	  text-align: right;
+	  font-size: 80%;
+  }
+  .selstatus {
+	  border: 2px;
+	  border-style: solid;
+	  border-color: black;
+  }
+  .missing {
+	  background-color: #eeeeee;
+  }
+  .poor {
+	  background-color: #ff8888;
+  }
+  .fair {
+	  background-color: #ffff88;
+  }
+  .good {
+	  background-color: #88ff88;
+  }
   </style>
   <script>
   function disable_form_if_different(ev, field, orig) {
@@ -190,6 +214,15 @@
 	now, but that needs to be adapted of course -->
 	<img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
 	<div class="msgbox">{{.Msg}}</div>
+	<div>Status adjacent drawers/bins</div>
+	<table id="statustab"><tr>
+	  {{ range $element := .Status }}
+	  <td class="{{$element.Status}}">
+	    <button style="background-color:inherit;" name="nav_id" value="{{$element.Number}}">
+	      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+	      {{ $element.Number }}</button></td>
+	  {{end}}</tr>
+	</table>
       </td>
 	  </tr>
     </table>
