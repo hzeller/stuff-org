@@ -73,13 +73,21 @@
 	  url="/api?q=" + encodeURIComponent(input_field.value);
 	  xmlhttp.open("GET", url, true);
 	  xmlhttp.send();
+	  window.location = "#" + encodeURIComponent(input_field.value);
   }
   </script>
 </head>
 
 <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span>&nbsp;<a href="/status" class="deseltab">Status</a></div>
 <p></p>
-<div class="searchbar"><input class="searchinput" id="sbox" placeholder="Type and refine. Most relevant results will be first." type="text" onkeyup="retrieve(this);" autofocus><br/>
+<div class="searchbar">
+  <input class="searchinput"
+	  id="sbox"
+	  placeholder="Type and refine. Most relevant results will be first."
+	  type="text"
+	  onkeyup="retrieve(this);"
+	  onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+	  autofocus><br/>
   <spn class="infobox" id="infobox" style="float:right;"></span>
 </div>
 &nbsp;
@@ -148,6 +156,11 @@ function fillresults(resultRecord) {
 
 // If we are here because of back button, the sbox might already contain
 // a term. Populate search results.
-retrieve(document.getElementById('sbox'));
+var initial_term = window.location.hash;
+var input_box = document.getElementById('sbox');
+if (initial_term != undefined && initial_term != "") {
+	input_box.value = decodeURIComponent(initial_term.substring(1));
+}
+retrieve(input_box);
 </script>
 </body>

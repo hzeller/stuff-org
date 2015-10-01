@@ -107,7 +107,7 @@
 
 	      <input style="font-weight:bold; font-size:200%;"
 		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
-		      onfocus="this.value = this.value;"
+		      onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
@@ -140,7 +140,7 @@
 	    <td align="right"><label for="cvalue">Name/Value</label></td>
 	    <td><input type="text" id="cvalue" size="40"
 			name="value" value="{{.Value}}"
-			onfocus="this.value = this.value;"
+			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 			autofocus></td>
 	  </tr>
 
