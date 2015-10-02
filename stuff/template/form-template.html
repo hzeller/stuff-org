@@ -4,104 +4,104 @@
   <style>
   body {font-family:sans-serif;}
   input {
-	  border-style: solid;
-	  border-width:2px;
-	  border-color:lightgray;
-	  padding-left:1px;
+      border-style: solid;
+      border-width:2px;
+      border-color:lightgray;
+      padding-left:1px;
   }
   button {
-	  border: none;
+      border: none;
   }
   input[type=submit] {
-	  border-style:none;
+      border-style:none;
   }
   textarea {
-	  border-style: solid;
-	  border-width:2px;
+      border-style: solid;
+      border-width:2px;
   }
   label {
-	  padding:4px 11px;
-	  font-weight:bold;
-	  border-radius:5px;
+      padding:4px 11px;
+      font-weight:bold;
+      border-radius:5px;
   }
 
   input[type="radio"]:checked + label {
-	  background-color:#8888ff;
+      background-color:#8888ff;
   }
 
   .msgbox {
-	  border-radius:8px;
-	  background-color:#ffcc77;
-	  padding: 10px;
-	  margin: 10px;
-	  opacity:0;
-	  animation: fade-out 5s;
+      border-radius:8px;
+      background-color:#ffcc77;
+      padding: 10px;
+      margin: 10px;
+      opacity:0;
+      animation: fade-out 5s;
   }
   @keyframes fade-out {
-	  from { opacity: 1; }
-	  to   { opacity: 0; }
+      from { opacity: 1; }
+      to   { opacity: 0; }
   }
   .seltab {
-	  background-color:#ccccff;
-	  padding: 2px 30px;
-	  border-radius:8px;
-	  font-weight:bold;
+      background-color:#ccccff;
+      padding: 2px 30px;
+      border-radius:8px;
+      font-weight:bold;
   }
   .deseltab {
-	  background-color:#dddddd;
-	  padding: 2px 30px;
-	  border-radius:8px;
-	  text-decoration: none;
-	  font-weight:bold;
+      background-color:#dddddd;
+      padding: 2px 30px;
+      border-radius:8px;
+      text-decoration: none;
+      font-weight:bold;
   }
   .arrowlink {
-	  font-size:200%;
-	  text-decoration:none;
-	  color:black;
+      font-size:200%;
+      text-decoration:none;
+      color:black;
   }
 
   #statustab button {
-	  width: 30;
-	  height: 30;
-	  text-align: right;
-	  font-size: 80%;
+      width: 30;
+      height: 30;
+      text-align: right;
+      font-size: 75%;
   }
   .selstatus {
-	  border: 2px;
-	  border-style: solid;
-	  border-color: black;
+      border: 2px;
+      border-style: solid;
+      border-color: black;
   }
   .missing {
-	  background-color: #eeeeee;
+      background-color: #eeeeee;
   }
   .poor {
-	  background-color: #ff8888;
+      background-color: #ff8888;
   }
   .fair {
-	  background-color: #ffff88;
+      background-color: #ffff88;
   }
   .good {
-	  background-color: #88ff88;
+      background-color: #88ff88;
   }
   </style>
   <script>
   function disable_form_if_different(ev, field, orig) {
-	  if (ev.keyCode == 27) {  // Escape
-		  field.value = orig;
+      if (ev.keyCode == 27) {  // Escape
+	  field.value = orig;
+      }
+      var enable_action = (field.value == orig);
+      var elements = document.querySelectorAll("#compform input,textarea");
+      for (var i = 0; i < elements.length; ++i) {
+	  if (elements[i] === field) {
+	      continue;
 	  }
-	  var enable_action = (field.value == orig);
-	  var elements = document.querySelectorAll("#compform input,textarea");
-	  for (var i = 0; i < elements.length; ++i) {
-		  if (elements[i] === field) {
-			  continue;
-		  }
-		  elements[i].enable = enable_action;
-		  if (enable_action) {
-			  elements[i].style["background-color"] = 'white';
-		  } else {
-			  elements[i].style["background-color"] = '#eeeeee';
-		  }
+	  elements[i].enable = enable_action;
+	  if (enable_action) {
+	      elements[i].style["background-color"] = 'white';
+	  } else {
+	      elements[i].style["background-color"] = '#eeeeee';
 	  }
+      }
   }
   </script>
 </head>
@@ -123,7 +123,7 @@
 	    <td align="right"><label for="navigate_id">Drawer/Bin</label></td>
 	    <td>
 	      <!-- dummy submit button to catch the 'Return' action. Not sure if
-	           this works properly on all browsers. Chrome, Firefox work -->
+	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
 
 	      <button class="arrowlink" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></button>

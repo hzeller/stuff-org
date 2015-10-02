@@ -2,78 +2,78 @@
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
   <style>
   body {
-	  font-family:sans-serif;
+      font-family:sans-serif;
   }
   td {
-	  vertical-align:top;
+      vertical-align:top;
   }
   .searchbar {
-	  background-color:#eeeeee;
-	  horizontal-align: center;
-	  padding: 15px 20px;
+      background-color:#eeeeee;
+      horizontal-align: center;
+      padding: 15px 20px;
   }
   .searchinput {
-	  font-size: x-large;
-	  padding: 10px;
-	  width: 100%;
+      font-size: x-large;
+      padding: 10px;
+      width: 100%;
   }
   .infobox {
-	  font-size: small;
+      font-size: small;
   }
   .rbox {
-	  font-size: larger;
-	  border-width: 1px;
-	  border-style: solid;
-	  border-color: #cccccc;
-	  width: 260;
-	  height: 190;
-	  float: left;
-	  padding: 5px 5px;
-	  visibility:hidden;
-	  text-decoration: none;
+      font-size: larger;
+      border-width: 1px;
+      border-style: solid;
+      border-color: #cccccc;
+      width: 260;
+      height: 190;
+      float: left;
+      padding: 5px 5px;
+      visibility:hidden;
+      text-decoration: none;
   }
   .rimg {
-	  height:128;
-	  width:172;
-	  padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
+      height:128;
+      width:172;
+      padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
   }
   .rtxtbox {
-	  height: 3.5em;
-	  overflow: hidden;
-	  text-overflow: ellipsis;
-	  /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
-	  display: -webkit-box;
-	  -webkit-line-clamp: 3;
-	  -webkit-box-orient: vertical;
+      height: 3.5em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
   }
   .seltab {
-	  background-color:#ccccff;
-	  padding: 2px 30px;
-	  border-radius:8px;
-	  font-weight:bold;
+      background-color:#ccccff;
+      padding: 2px 30px;
+      border-radius:8px;
+      font-weight:bold;
   }
   .deseltab {
-	  background-color:#dddddd;
-	  padding: 2px 30px;
-	  border-radius:8px;
-	  text-decoration: none;
-	  font-weight:bold;
+      background-color:#dddddd;
+      padding: 2px 30px;
+      border-radius:8px;
+      text-decoration: none;
+      font-weight:bold;
   }
   :link { color: black; }
   :visited { color: black; }
   </style>
   <script>
   function retrieve(input_field) {
-	  xmlhttp=new XMLHttpRequest();
-	  xmlhttp.onreadystatechange = function() {
-		  if (xmlhttp.responseText == "")
-			  return;
-		  fillresults(JSON.parse(xmlhttp.responseText));
-	  };
-	  url="/api?q=" + encodeURIComponent(input_field.value);
-	  xmlhttp.open("GET", url, true);
-	  xmlhttp.send();
-	  window.location = "#" + encodeURIComponent(input_field.value);
+      xmlhttp=new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+	  if (xmlhttp.responseText == "")
+	      return;
+	  fillresults(JSON.parse(xmlhttp.responseText));
+      };
+      url="/api?q=" + encodeURIComponent(input_field.value);
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+      window.location = "#" + encodeURIComponent(input_field.value);
   }
   </script>
 </head>
@@ -124,34 +124,34 @@ var result_items = document.getElementById('result-list').childNodes;
 
 // Pre-collect all the relevant nodes for quick access
 for (var r = 0; r < result_items.length; ++r) {
-	var a = result_items[r];
-	if (a.nodeName != "A") continue
-	var div = a.childNodes[0];
-	var img = div.childNodes[0];
-	var txt = div.childNodes[1];
-	references.push({ obj: a, img: img, txt: txt});
+    var a = result_items[r];
+    if (a.nodeName != "A") continue
+    var div = a.childNodes[0];
+    var img = div.childNodes[0];
+    var txt = div.childNodes[1];
+    references.push({ obj: a, img: img, txt: txt});
 }
 
 var info_box = document.getElementById('infobox');  // we need that later
 function fillresults(resultRecord) {
-	var data = resultRecord.items;
-	var len = (resultRecord.count != 0)
-		? data.length < references.length ? data.length : references.length
-		: 0;
-	var i = 0;
-	for (i = 0; i < len; ++i) {
-		var d = data[i];
-		references[i].obj.style.visibility = 'visible';
-		references[i].obj.href = "/form?id=" + d.id;
-		references[i].img.src = "/img/" + d.id + ".jpg";
-		references[i].txt.innerHTML = d.txt;
-	}
-	// The rest invisible and prepopulated with neutral image.
-	for (; i < references.length; ++i) {
-		references[i].obj.style.visibility = 'hidden';
-		references[i].img.src = "/static/white.png"
-	}
-	infobox.innerHTML = resultRecord.info;
+    var data = resultRecord.items;
+    var len = (resultRecord.count != 0)
+	? data.length < references.length ? data.length : references.length
+	: 0;
+    var i = 0;
+    for (i = 0; i < len; ++i) {
+	var d = data[i];
+	references[i].obj.style.visibility = 'visible';
+	references[i].obj.href = "/form?id=" + d.id;
+	references[i].img.src = "/img/" + d.id + ".jpg";
+	references[i].txt.innerHTML = d.txt;
+    }
+    // The rest invisible and prepopulated with neutral image.
+    for (; i < references.length; ++i) {
+	references[i].obj.style.visibility = 'hidden';
+	references[i].img.src = "/static/white.png"
+    }
+    infobox.innerHTML = resultRecord.info;
 }
 
 // If we are here because of back button, the sbox might already contain
@@ -159,7 +159,7 @@ function fillresults(resultRecord) {
 var initial_term = window.location.hash;
 var input_box = document.getElementById('sbox');
 if (initial_term != undefined && initial_term != "") {
-	input_box.value = decodeURIComponent(initial_term.substring(1));
+    input_box.value = decodeURIComponent(initial_term.substring(1));
 }
 retrieve(input_box);
 </script>
