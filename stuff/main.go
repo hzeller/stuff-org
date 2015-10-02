@@ -313,7 +313,6 @@ type StatusItem struct {
 	Status     string
 	Separator  int
 	HasPicture bool
-	Highlight  bool
 }
 type StatusPage struct {
 	Items []StatusItem
@@ -358,6 +357,10 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 }
 
 func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *http.Request) {
+	current_edit_id := -1
+	if cookie, err := r.Cookie("last-edit"); err == nil {
+		current_edit_id, _ = strconv.Atoi(cookie.Value)
+	}
 	defer ElapsedPrint("Show status", time.Now())
 	out.Header().Set("Content-Type", "text/html; charset=utf-8")
 	page := &StatusPage{
@@ -373,6 +376,10 @@ func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *h
 				page.Items[i].Separator = 1
 			}
 		}
+		if i == current_edit_id {
+			page.Items[i].Status = page.Items[i].Status + " selstatus"
+		}
+
 	}
 	renderTemplate(out, "status-table", page)
 }
