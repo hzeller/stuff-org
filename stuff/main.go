@@ -129,9 +129,12 @@ func entryFormHandler(store StuffStore, imageDir string,
 	} else if r.FormValue("nav_id") != "" {
 		// Use the navigation buttons to choose next ID.
 		next_id, _ = strconv.Atoi(r.FormValue("nav_id"))
-	} else {
+	} else if store_id > 0 {
 		// Regular submit. Jump to next
 		next_id = store_id + 1
+	} else if cookie, err := r.Cookie("last-edit"); err == nil {
+		// Last straw: what we remember from last edit.
+		next_id, _ = strconv.Atoi(cookie.Value)
 	}
 
 	requestStore := r.FormValue("store_id") != ""
@@ -220,6 +223,10 @@ func entryFormHandler(store StuffStore, imageDir string,
 			page.Status[i].Status = page.Status[i].Status + " selstatus"
 		}
 	}
+
+	// We are not using any web-framework and want to keep track of session
+	// cookies. Simply a barebone, state-less web app: use plain cookies.
+	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	zipped := gzip.NewWriter(w)
