@@ -11,6 +11,10 @@
   span {
 	  padding: 5px 15px;
   }
+  .block {
+	  float:left;
+	  padding: 10px;
+  }
   .seltab {
 	  background-color:#ccccff;
 	  padding: 2px 30px;
@@ -56,10 +60,11 @@
       </td></tr></table>
   </p>
 
+  <div class="block"><h2>000</h2>
   <table><tr>
     {{ range $element := .Items }}
     {{ if eq $element.Separator 1}}</tr><tr>{{end}}
-    {{ if eq $element.Separator 2}}</tr></table><h2>{{$element.Number}}</h2><table><tr>{{end}}
+    {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
     <td class="{{$element.Status}}">
       <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
       <a href="/form?id={{ $element.Number }}">{{ $element.Number }}</a></td>

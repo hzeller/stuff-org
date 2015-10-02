@@ -90,7 +90,8 @@ type FormPage struct {
 	PrevId int    // For browsing
 	NextId int
 
-	Status []StatusItem
+	HundredGroup int
+	Status       []StatusItem
 }
 
 var cache_templates = flag.Bool("cache-templates", true,
@@ -173,13 +174,15 @@ func entryFormHandler(store StuffStore, imageDir string,
 		msg = "Browse item " + fmt.Sprintf("%d", next_id)
 	}
 
-	// Populate page.
+	// -- Populate page.
 	id := next_id
 	page.Id = id
 	if id > 0 {
 		page.PrevId = id - 1
 	}
 	page.NextId = id + 1
+	page.HundredGroup = (id / 100) * 100
+
 	currentItem := store.FindById(id)
 	if currentItem != nil {
 		page.Component = *currentItem
@@ -355,6 +358,7 @@ func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *h
 	}
 	for i := 0; i < 1800; i++ {
 		fillStatusItem(store, imageDir, i, &page.Items[i])
+		// Zero is a special case that we handle differently in template.
 		if i > 0 {
 			if i%100 == 0 {
 				page.Items[i].Separator = 2
