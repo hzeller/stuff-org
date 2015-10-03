@@ -10,6 +10,14 @@ func isSeparator(c byte) bool {
 	return c == ' ' || c == '\t' || c == '\n' || c == '.' || c == ',' || c == ';'
 }
 
+func preprocessTerm(term string) string {
+	// * Lowercase: we want to be case insensitive
+	// * Dash remove: we consider dashes to join words and we want to be
+	//   agnostic to various spellings (might break down with minus signs
+	//   (e.g. -50V), so might need refinement later)
+	return strings.Replace(strings.ToLower(term), "-", "", -1)
+}
+
 func StringScore(needle string, haystack string) float32 {
 	pos := strings.Index(haystack, needle)
 	if pos < 0 {
@@ -129,11 +137,11 @@ func (s *FulltextSearch) Update(c *Component) {
 	}
 	lowerCased := &Component{
 		// Only the fields we are interested in.
-		Category:    strings.ToLower(c.Category),
-		Value:       strings.ToLower(c.Value),
-		Description: strings.ToLower(c.Description),
-		Notes:       strings.ToLower(c.Notes),
-		Footprint:   strings.ToLower(c.Footprint),
+		Category:    preprocessTerm(c.Category),
+		Value:       preprocessTerm(c.Value),
+		Description: preprocessTerm(c.Description),
+		Notes:       preprocessTerm(c.Notes),
+		Footprint:   preprocessTerm(c.Footprint),
 	}
 	s.lock.Lock()
 	s.id2Component[c.Id] = &SearchComponent{
@@ -143,7 +151,7 @@ func (s *FulltextSearch) Update(c *Component) {
 	s.lock.Unlock()
 }
 func (s *FulltextSearch) Search(search_term string) []*Component {
-	search_term = strings.ToLower(search_term)
+	search_term = preprocessTerm(search_term)
 	s.lock.Lock()
 	scoredlist := make(ScoreList, 0, 10)
 	for _, search_comp := range s.id2Component {
