@@ -21,6 +21,12 @@
       text-align: right;
       font-size: 90%;
   }
+  td a {
+      text-decoration:none;
+  }
+  a:link { color: black; }
+  a:visited { color: black; }
+
   span {
       padding: 5px 15px;
   }
@@ -45,6 +51,7 @@
       background-image: url("/static/empty-box.png");
       background-position:center;
       background-repeat: no-repeat;
+      background-color: #eeeeee;
   }
   .mystery {
       background-image: url("/static/mystery.png");
@@ -105,8 +112,9 @@
       {{ if eq $element.Separator 1}}</tr><tr>{{end}}
       {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
       <td class="{{$element.Status}}">
+	<a href="/form?id={{ $element.Number }}"><div>
 	<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
-	<a href="/form?id={{ $element.Number }}">{{ $element.Number }}</a></td>
+	{{ $element.Number }}</div></a></td>
       {{end}}
       </table>
 </body>
