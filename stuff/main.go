@@ -293,7 +293,8 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 		var c = searchResults[i]
 		jsonResult.Items[i].Id = c.Id
 		jsonResult.Items[i].Label = "<b>" + html.EscapeString(c.Value) + "</b> " +
-			html.EscapeString(c.Description)
+			html.EscapeString(c.Description) +
+			fmt.Sprintf(" <span class='idtxt'>(ID:%d)</span>", c.Id)
 	}
 	json, _ := json.Marshal(jsonResult)
 	out.Write(json)
