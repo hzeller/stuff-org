@@ -41,6 +41,9 @@
       text-decoration: none;
       font-weight:bold;
   }
+  .empty {
+      background-image: url("/static/empty-box.png");
+  }
   .missing {
       background-color: #eeeeee;
   }
@@ -70,12 +73,18 @@
     <span class="good">Good; Category, Name and Description</span>
   </p>
   <p>
-    <table width="50%"><tr>
-      <td>
+    <table width="50%">
+      <tr><td>
 	<table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
       </td><td style="text-align:left;width:90%;">
 	A square indicates that there is a picture available.
-      </td></tr></table>
+      </td>
+      <tr><td>
+	<table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
+	<td style="text-align:left;width:90%;">
+	Boxes with numbers that are empty are crossed out.
+      </td>
+    </tr></table>
   </p>
 
   <div class="block"><h2>000</h2>

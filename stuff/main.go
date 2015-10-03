@@ -348,6 +348,9 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 		case 3:
 			item.Status = "good"
 		}
+		if strings.Index(strings.ToLower(comp.Value), "empty") >= 0 {
+			item.Status = "empty"
+		}
 	} else {
 		item.Status = "missing"
 	}
