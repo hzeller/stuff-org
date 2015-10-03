@@ -42,7 +42,7 @@ var available_category []string = []string{
 	"Integrated Circuit (IC)", "IC Analog", "IC Digital",
 	"Connector", "Socket", "Switch",
 	"Fuse", "Mounting", "Heat Sink",
-	"Microphone", "Transformer",
+	"Microphone", "Transformer", "? MYSTERY",
 }
 
 // Modify a user pointer. Returns 'true' if the changes should be commited.
@@ -323,6 +323,7 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 	comp := store.FindById(id)
 	item.Number = id
 	if comp != nil {
+		// Ad-hoc categorization...
 		count := 0
 		if comp.Category != "" {
 			count++
@@ -350,6 +351,10 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 		}
 		if strings.Index(strings.ToLower(comp.Value), "empty") >= 0 {
 			item.Status = "empty"
+		}
+		if strings.Index(strings.ToLower(comp.Category), "mystery") >= 0 ||
+			strings.Index(comp.Value, "?") >= 0 {
+			item.Status = "mystery"
 		}
 	} else {
 		item.Status = "missing"

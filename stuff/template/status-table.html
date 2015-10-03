@@ -44,6 +44,9 @@
   .empty {
       background-image: url("/static/empty-box.png");
   }
+  .mystery {
+      background-image: url("/static/mystery.png");
+  }
   .missing {
       background-color: #eeeeee;
   }
@@ -78,13 +81,18 @@
 	<table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
       </td><td style="text-align:left;width:90%;">
 	A square indicates that there is a picture available.
-      </td>
+      </td></tr>
       <tr><td>
 	<table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
 	<td style="text-align:left;width:90%;">
-	Boxes with numbers that are empty are crossed out.
-      </td>
-    </tr></table>
+	  Boxes with numbers that are empty are crossed out.
+	</td></tr>
+      <tr><td>
+	<table><tr><td class="mystery"><div style="vertical-align:top;"></div>42</td></tr></table>
+	<td style="text-align:left;width:90%;">
+	  Unknown component. Needs revisit.
+	</td></tr>
+    </table>
   </p>
 
   <div class="block"><h2>000</h2>
