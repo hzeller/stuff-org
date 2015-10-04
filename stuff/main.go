@@ -349,7 +349,8 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 		case 3:
 			item.Status = "good"
 		}
-		if strings.Index(strings.ToLower(comp.Value), "empty") >= 0 {
+		if strings.Index(strings.ToLower(comp.Value), "empty") >= 0 ||
+			strings.Index(strings.ToLower(comp.Category), "empty") >= 0 {
 			item.Status = "empty"
 		}
 		if strings.Index(strings.ToLower(comp.Category), "mystery") >= 0 ||
@@ -372,10 +373,11 @@ func listStatus(store StuffStore, imageDir string, out http.ResponseWriter, r *h
 	}
 	defer ElapsedPrint("Show status", time.Now())
 	out.Header().Set("Content-Type", "text/html; charset=utf-8")
+	maxStatus := 2100
 	page := &StatusPage{
-		Items: make([]StatusItem, 1800),
+		Items: make([]StatusItem, maxStatus),
 	}
-	for i := 0; i < 1800; i++ {
+	for i := 0; i < maxStatus; i++ {
 		fillStatusItem(store, imageDir, i, &page.Items[i])
 		// Zero is a special case that we handle differently in template.
 		if i > 0 {
