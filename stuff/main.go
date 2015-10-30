@@ -23,6 +23,7 @@ import (
 
 type Component struct {
 	Id            int    `json:"id"`
+	Equiv_set     int    `json:"equiv_set"`
 	Value         string `json:"value"`
 	Category      string `json:"category"`
 	Description   string `json:"description"`
@@ -147,6 +148,7 @@ func entryFormHandler(store StuffStore, imageDir string,
 		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
 		fromForm := Component{
 			Id:            store_id,
+			Equiv_set:     store_id, // TBD.
 			Value:         r.FormValue("value"),
 			Description:   r.FormValue("description"),
 			Notes:         r.FormValue("notes"),

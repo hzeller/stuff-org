@@ -11,6 +11,8 @@ import (
 var create_schema string = `
 create table component (
        id            int           constraint pk_component primary key,
+       equiv_set     int not null, -- equivlennce set; points to lowest
+                                   -- component in set.
        category      varchar(40),  -- should be some foreign key
        value         varchar(80),  -- identifying the component value
        description   text,         -- additional information
@@ -23,10 +25,12 @@ create table component (
        drawersize    int,          -- 0=small, 1=medium, 2=large
 
        created timestamp,
-       updated timestamp
+       updated timestamp,
 
        -- also, we need the following eventually
        -- labeltext, drawer-type, location. Several of these should have foreign keys.
+
+      foreign key(equiv_set) references component(id)
 );
 `
 
@@ -44,9 +48,11 @@ func emptyIfNull(s *string) string {
 		return *s
 	}
 }
+
 func row2Component(row *sql.Rows) (*Component, error) {
 	type ReadRecord struct {
 		id          int
+		equiv_set   int
 		category    *string
 		value       *string
 		description *string
@@ -59,7 +65,7 @@ func row2Component(row *sql.Rows) (*Component, error) {
 	rec := &ReadRecord{}
 	err := row.Scan(&rec.id, &rec.category, &rec.value,
 		&rec.description, &rec.notes, &rec.quantity, &rec.datasheet,
-		&rec.drawersize, &rec.footprint)
+		&rec.drawersize, &rec.footprint, &rec.equiv_set)
 	drawersize := 0
 	if rec.drawersize != nil {
 		drawersize = *rec.drawersize
@@ -72,6 +78,7 @@ func row2Component(row *sql.Rows) (*Component, error) {
 	default:
 		result := &Component{
 			Id:            rec.id,
+			Equiv_set:     rec.equiv_set,
 			Category:      emptyIfNull(rec.category),
 			Value:         emptyIfNull(rec.value),
 			Description:   emptyIfNull(rec.description),
@@ -101,18 +108,18 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 			log.Fatal(err)
 		}
 	}
-	all_fields := "category, value, description, notes, quantity, datasheet_url,drawersize,footprint"
+	all_fields := "category, value, description, notes, quantity, datasheet_url,drawersize,footprint,equiv_set"
 	findById, err := db.Prepare("SELECT id, " + all_fields + " FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
 	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, " + all_fields + ") " +
-		" VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)")
+		" VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=?2, category=?3, value=?4, description=?5, notes=?6, quantity=?7, datasheet_url=?8, drawersize=?9, footprint=?10 WHERE id=?1")
+		"updated=?2, category=?3, value=?4, description=?5, notes=?6, quantity=?7, datasheet_url=?8, drawersize=?9, footprint=?10, equiv_set=?11 WHERE id=?1")
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +159,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	rec := d.FindById(id)
 	if rec == nil {
 		needsInsert = true
-		rec = &Component{Id: id}
+		rec = &Component{Id: id, Equiv_set: id}
 	}
 	before := *rec
 	if update(rec) {
@@ -174,7 +181,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
 			nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
 			nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-			rec.Drawersize, rec.Footprint)
+			rec.Drawersize, rec.Footprint, rec.Equiv_set)
 
 		if err != nil {
 			log.Printf("Oops: %s", err)
