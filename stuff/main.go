@@ -57,7 +57,15 @@ type StuffStore interface {
 	// Edit record of given ID. If ID is new, it is inserted and an empty
 	// record returned to be edited.
 	// Returns if record has been saved, possibly with message.
+	// This does _not_ influence the equivalence set settings, use
+	// the JoinSet()/LeaveSet() functions for that.
 	EditRecord(id int, updater ModifyFun) (bool, string)
+
+	// Have component with id join set.
+	JoinSet(id int, set int)
+
+	// Leave any set we are in.
+	LeaveSet(id int)
 
 	// Given a search term, returns all the components that match, ordered
 	// by some internal scoring system. Don't modify the returned objects!
@@ -148,7 +156,6 @@ func entryFormHandler(store StuffStore, imageDir string,
 		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
 		fromForm := Component{
 			Id:            store_id,
-			Equiv_set:     store_id, // TBD.
 			Value:         r.FormValue("value"),
 			Description:   r.FormValue("description"),
 			Notes:         r.FormValue("notes"),

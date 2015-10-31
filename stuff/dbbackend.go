@@ -98,6 +98,8 @@ type DBBackend struct {
 	findById     *sql.Stmt
 	insertRecord *sql.Stmt
 	updateRecord *sql.Stmt
+	joinSet      *sql.Stmt
+	leaveSet     *sql.Stmt
 	fts          *FulltextSearch
 }
 
@@ -108,18 +110,34 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 			log.Fatal(err)
 		}
 	}
+	// All the fields in a component.
 	all_fields := "category, value, description, notes, quantity, datasheet_url,drawersize,footprint,equiv_set"
 	findById, err := db.Prepare("SELECT id, " + all_fields + " FROM component where id=$1")
 	if err != nil {
 		return nil, err
 	}
+
+	// For writing a component, we need insert and update. In the full
+	// component update, we explicitly do not want to update the
+	// membership to the set, so we don't touch these fields.
 	insertRecord, err := db.Prepare("INSERT INTO component (id, created, updated, " + all_fields + ") " +
-		" VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)")
+		" VALUES (?1, ?2, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?1)")
 	if err != nil {
 		return nil, err
 	}
 	updateRecord, err := db.Prepare("UPDATE component SET " +
-		"updated=?2, category=?3, value=?4, description=?5, notes=?6, quantity=?7, datasheet_url=?8, drawersize=?9, footprint=?10, equiv_set=?11 WHERE id=?1")
+		"updated=?2, category=?3, value=?4, description=?5, notes=?6, quantity=?7, datasheet_url=?8, drawersize=?9, footprint=?10 WHERE id=?1")
+	if err != nil {
+		return nil, err
+	}
+
+	// Statements for set operations.
+	joinSet, err := db.Prepare("UPDATE component SET equiv_set = MIN(?1, ?2) WHERE equiv_set = ?2 OR id = ?1")
+	if err != nil {
+		return nil, err
+	}
+
+	leaveSet, err := db.Prepare("UPDATE component SET equiv_set = CASE WHEN id = ?1 THEN ?1 ELSE (select min(id) from component where equiv_set = (select equiv_set from component where id = ?1) and id != ?1) end where equiv_set = (select equiv_set from component WHERE id = ?1)")
 	if err != nil {
 		return nil, err
 	}
@@ -139,6 +157,8 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		findById:     findById,
 		insertRecord: insertRecord,
 		updateRecord: updateRecord,
+		joinSet:      joinSet,
+		leaveSet:     leaveSet,
 		fts:          fts}, nil
 }
 
@@ -159,7 +179,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	rec := d.FindById(id)
 	if rec == nil {
 		needsInsert = true
-		rec = &Component{Id: id, Equiv_set: id}
+		rec = &Component{Id: id}
 	}
 	before := *rec
 	if update(rec) {
@@ -181,7 +201,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			nullIfEmpty(rec.Category), nullIfEmpty(rec.Value),
 			nullIfEmpty(rec.Description), nullIfEmpty(rec.Notes),
 			nullIfEmpty(rec.Quantity), nullIfEmpty(rec.Datasheet_url),
-			rec.Drawersize, rec.Footprint, rec.Equiv_set)
+			rec.Drawersize, rec.Footprint)
 
 		if err != nil {
 			log.Printf("Oops: %s", err)
@@ -196,6 +216,15 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 		return true, ""
 	}
 	return false, ""
+}
+
+func (d *DBBackend) JoinSet(id int, set int) {
+	d.LeaveSet(id) // precondition.
+	d.joinSet.Exec(id, set)
+}
+
+func (d *DBBackend) LeaveSet(id int) {
+	d.leaveSet.Exec(id)
 }
 
 func (d *DBBackend) Search(search_term string) []*Component {
