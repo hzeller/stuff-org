@@ -139,7 +139,7 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		return nil, err
 	}
 
-	leaveSet, err := db.Prepare("UPDATE component SET equiv_set = CASE WHEN id = ?1 THEN ?1 ELSE (select min(id) from component where equiv_set = (select equiv_set from component where id = ?1) and id != ?1) end where equiv_set = (select equiv_set from component WHERE id = ?1)")
+	leaveSet, err := db.Prepare("UPDATE component SET equiv_set = CASE WHEN id = ?1 THEN ?1 ELSE (select min(id) from component where equiv_set = ?2 and id != ?1) end where equiv_set = ?2")
 	if err != nil {
 		return nil, err
 	}
@@ -250,7 +250,14 @@ func (d *DBBackend) JoinSet(id int, set int) {
 }
 
 func (d *DBBackend) LeaveSet(id int) {
-	d.leaveSet.Exec(id)
+	// The limited way SQLite works, we have to find the equivalence
+	// set first before we can update. Not really efficient, and we
+	// would need a transaction here, but, yeah, good enough for a
+	// 0.001 qps service :)
+	c := d.FindById(id)
+	if c != nil {
+		d.leaveSet.Exec(id, c.Equiv_set)
+	}
 }
 
 func (d *DBBackend) MatchingEquivSetForComponent(id int) []*Component {

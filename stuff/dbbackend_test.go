@@ -99,6 +99,47 @@ func TestJoinSets(t *testing.T) {
 	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#15")
 	ExpectTrue(t, store.FindById(2).Equiv_set == 2, "#16")
 	ExpectTrue(t, store.FindById(3).Equiv_set == 2, "#17")
+
+	// If we add lowest again, then the new equiv-set is back to 1.
+	store.JoinSet(1, 2)
+	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#18")
+	ExpectTrue(t, store.FindById(2).Equiv_set == 1, "#19")
+	ExpectTrue(t, store.FindById(3).Equiv_set == 1, "#20")
+
+	store.LeaveSet(2)
+	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#18")
+	ExpectTrue(t, store.FindById(2).Equiv_set == 2, "#19")
+	ExpectTrue(t, store.FindById(3).Equiv_set == 1, "#20")
+}
+
+func TestLeaveSetRegression(t *testing.T) {
+	dbfile, _ := ioutil.TempFile("", "join-sets")
+	defer syscall.Unlink(dbfile.Name())
+	db, err := sql.Open("sqlite3", dbfile.Name())
+	if err != nil {
+		log.Fatal(err)
+	}
+	store, _ := NewDBBackend(db, true)
+
+	// We store components in a slightly different
+	// sequence.
+	store.EditRecord(2, func(c *Component) bool { c.Value = "two"; return true })
+	store.EditRecord(1, func(c *Component) bool { c.Value = "one"; return true })
+	store.EditRecord(3, func(c *Component) bool { c.Value = "three"; return true })
+
+	store.JoinSet(2, 1)
+	store.JoinSet(3, 1)
+
+	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#1")
+	ExpectTrue(t, store.FindById(2).Equiv_set == 1, "#2")
+	ExpectTrue(t, store.FindById(3).Equiv_set == 1, "#3")
+
+	// The way LeaveSet() was implemented, it used an SQL in a way that
+	// SQLite didn't process correctly wrt. sequence of operations.
+	store.LeaveSet(2)
+	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#4")
+	ExpectTrue(t, store.FindById(2).Equiv_set == 2, "#5")
+	ExpectTrue(t, store.FindById(3).Equiv_set == 1, "#6")
 }
 
 func TestQueryEquiv(t *testing.T) {
