@@ -149,8 +149,7 @@
 	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
 
-	      <button class="arrowlink" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
-	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	      <button class="arrowlink" style="float:left;" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
 
 	      <input style="font-weight:bold; font-size:200%;"
 		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
@@ -158,8 +157,7 @@
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
-	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	      <button class="arrowlink" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
+	      <button class="arrowlink" style="float:right;" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
 	    </td>
 	  </tr>
 
