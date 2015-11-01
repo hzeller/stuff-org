@@ -2,7 +2,7 @@
   (file-encoding 'UTF-8')
   (dump-version 1 1)
   (henplus-version '0.9.8')
-  (time '2015-10-29 21:05:41.871')
+  (time '2015-11-01 10:05:01.543')
   (database-info 'SQLite - 3.8.11')
   (estimated-rows '841')
   (meta ('id'     , 'equiv_set', 'category', 'value' , 'description', 'notes' , 'datasheet_url', 'vendor', 'auto_notes', 'footprint', 'quantity', 'drawersize', 'created', 'updated')
@@ -239,7 +239,7 @@ Power Amp, High Voltage, Switch','http://www.weisd.com/store2/NTE379.pdf',NULL,N
 https://octopart.com/search?q=LM334','http://www.ti.com/lit/ds/symlink/lm334.pdf',NULL,NULL,'TO-92',NULL,0,'1443333837590','2015-10-22 05:58:43.479742585')
 	(380,380,'Power Diode','1N1184A','U=100V I=40A',NULL,'http://www.mouser.com/ds/2/427/vs-1n1183series-63289.pdf',NULL,NULL,'','1',0,'1443390484937','2015-09-30 04:24:01.505211859')
 	(381,381,'Transistor','TIP36B','PNP, Vce=80V, Ic=25A',NULL,'http://www.onsemi.com/pub_link/Collateral/TIP35A-D.PDF',NULL,NULL,'',NULL,0,'1443390674674','1443390674674')
-	(385,385,'Power Transistor','Power Transistor','complementary silicon Darlington power transistors in a TO220 type package ','NTE261 (NPN) and NTE262 (PNP)','http://www.weisd.com/store2/NTE261.pdf',NULL,NULL,'TO220','100',0,'1443390705804','2015-09-30 04:58:30.78758506')
+	(385,385,'Power Transistor','Power Transistor','Complementary silicon Darlington power transistors in a TO220 type package. ','NTE261 (NPN) and NTE262 (PNP)','http://www.weisd.com/store2/NTE261.pdf',NULL,NULL,'TO220','100',0,'1443390705804','2015-10-30 04:08:33.687400055')
 	(295,295,'Resistor','22',NULL,NULL,NULL,NULL,NULL,'','15',0,'1443392366552','1443393021374')
 	(294,294,'Resistor','27k',NULL,NULL,NULL,NULL,NULL,'','80',0,'1443391681042','1443393140807')
 	(293,293,'Resistor','22k',NULL,NULL,NULL,NULL,NULL,'','15',0,'1443391651561','1443391651561')
@@ -356,7 +356,7 @@ General Purpose, Fast Recovery','http://www.weisd.com/store2/NTE552.pdf',NULL,NU
 	(391,391,'Rectifier','ECG5306','Silicon Bridge Rectifier, 1.5A','Equivalent to: NTE5306','http://www.weisd.com/store2/NTE5306.pdf',NULL,NULL,'','4',0,'2015-10-01 03:29:36.201855312','2015-10-01 03:29:36.201855312')
 	(392,392,'Transistor','SK-9131','Bipolar Transistor',NULL,'http://www.datasheetarchive.com/dlmain/Datasheets-37/DSA-733591.pdf',NULL,NULL,'T-047','34',0,'2015-10-01 03:36:50.776504749','2015-10-01 03:36:50.776504749')
 	(393,393,'Diode (D)','ECG170','Single Phase Bridge Rectifier
-2.0 Amp','Equivalent to: NTE170','http://www.weisd.com/store2/NTE170.pdf',NULL,NULL,'','28',0,'2015-10-01 03:40:12.491820797','2015-10-01 03:41:41.577729307')
+2.0 Amp','Equivalent to: NTE170','http://www.weisd.com/store2/NTE170.pdf',NULL,NULL,'','28',0,'2015-10-01 03:40:12.491820797','2015-10-30 04:09:31.138145265')
 	(394,394,NULL,'1236-3.3 5.0VAT',NULL,NULL,NULL,NULL,NULL,'','2',0,'2015-10-01 03:45:03.949981776','2015-10-01 03:45:03.949981776')
 	(395,395,'Transistor','ECG107','NPN Silicon Transistor',NULL,'http://www.datasheetarchive.com/dlmain/Datasheets-X2/DSA879000-90.pdf',NULL,NULL,'','5',0,'2015-10-01 03:48:09.893093022','2015-10-01 03:49:55.983770401')
 	(396,396,'Diode (D)','ECG134A',NULL,'Equivalent to: NTE134A','http://www.weisd.com/store2/NTE134A.pdf',NULL,NULL,'','30',0,'2015-10-01 03:55:45.282387278','2015-10-01 03:55:45.282387278')
@@ -368,7 +368,7 @@ General Purpose, Fast Recovery','http://www.weisd.com/store2/NTE552.pdf',NULL,NU
 	(409,409,'Resistor','RN25X ','Metal Film Resistor, 10 Ohm, 1%, Axial Lead',NULL,'http://www.33audio.com/enter/data/TexInst66.pdf',NULL,NULL,'','123',0,'2015-10-02 00:07:10.44701552','2015-10-02 00:07:10.44701552')
 	(405,405,NULL,NULL,NULL,'Combined with Bin 411',NULL,NULL,NULL,'',NULL,0,'2015-10-02 00:10:59.724205252','2015-10-02 00:10:59.724205252')
 	(408,408,NULL,NULL,NULL,'Combined with Bin 411
-',NULL,NULL,NULL,'',NULL,0,'2015-10-02 00:19:05.604421209','2015-10-02 00:19:05.604421209')
+',NULL,NULL,NULL,'',NULL,0,'2015-10-02 00:19:05.604421209','2015-10-30 04:10:34.460238437')
 	(403,403,NULL,NULL,NULL,'Empty',NULL,NULL,NULL,'',NULL,0,'2015-10-02 00:21:37.914295973','2015-10-02 00:21:37.914295973')
 	(407,407,NULL,NULL,NULL,'Combined with Bin 411',NULL,NULL,NULL,'',NULL,0,'2015-10-02 00:23:55.399690176','2015-10-02 00:23:55.399690176')
 	(404,404,'Resistor','RN25X','Metal Film Resistor, 10 Ohm',NULL,'http://www.33audio.com/enter/data/TexInst66.pdf',NULL,NULL,'','19',0,'2015-10-02 00:28:01.101777485','2015-10-02 00:28:01.101777485')
@@ -671,9 +671,9 @@ COMPLEMENTARY SILICON
 3/4” Rectangular
 Multiturn
 Cermet Trimming
-Potentiometer',NULL,'http://www.mouser.com/ds/2/414/tt%20electronics_89-334285.pdf',NULL,NULL,'Pin Style Rectangular','3',0,'2015-10-10 23:37:34.577004747','2015-10-10 23:37:34.577004747')
+Potentiometer',NULL,'http://www.mouser.com/ds/2/414/tt%20electronics_89-334285.pdf',NULL,NULL,'Pin Style Rectangular','3',0,'2015-10-10 23:37:34.577004747','2015-10-30 04:12:52.731536206')
 	(987,987,'Fuse Holder','LittelFuse Fuse Holder','345 Series - Shock-Safe Fuse Holder for 5x20mm and 3AG Fuses',NULL,'http://www.littelfuse.com/products/fuse-blocks-fuseholders-and-fuse-accessories/fuseholders/345.aspx',NULL,NULL,'Fuse Holder','3',0,'2015-10-10 23:40:47.129904676','2015-10-10 23:40:57.493970533')
-	(985,985,'? MYSTERY',NULL,'3 pins out, rectangle, 85W UK 81 36 CW 2000K',NULL,NULL,NULL,NULL,'','4',0,'2015-10-10 23:46:11.658760102','2015-10-10 23:46:11.658760102')
+	(985,985,'? MYSTERY','Trimmer 2M','3 pins out, rectangle, 85W UK 81 36 CW 2000K','Reason for mystery: check if 2000k means 2M',NULL,NULL,NULL,'','4',0,'2015-10-10 23:46:11.658760102','2015-10-30 04:12:49.489743857')
 	(979,979,'Fuse','AGA 15','Buss Fuses AGA 15',NULL,NULL,NULL,NULL,'Cartridge','5',0,'2015-10-10 23:47:11.754610161','2015-10-10 23:47:11.754610161')
 	(988,988,NULL,'PUSH-RE-CIRC-IT','PUSH RE CIRC IT 3A','Heinemann',NULL,NULL,NULL,'','1',0,'2015-10-10 23:57:32.57931838','2015-10-10 23:57:32.57931838')
 	(1107,1107,'Integrated Circuit (IC)','SN74165N Brazil','Shift Register Parallel in, Serial out','DIP16','http://www.alldatasheet.com/datasheet-pdf/pdf/27379/TI/SN74165N.html',NULL,NULL,'DIL16','40',0,'2015-10-11 00:03:20.026607298','2015-10-11 00:17:52.59143731')
@@ -808,10 +808,10 @@ Slide Projector',NULL,'http://www.topbulb.com/dek-bulb-500w-120v-t12-incandescen
 	(653,653,'Transistor','D44C11','Complementary Silicon Transistor, NPN',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/56464/BOCA/D44C11.html',NULL,NULL,'TO-220','48',0,'2015-10-24 18:35:32.465454843','2015-10-24 18:35:32.465454843')
 	(654,654,'Transistor','MPSA05','NPN General Purpose Amplifier',NULL,'https://www.fairchildsemi.com/datasheets/MP/MPSA05.pdf',NULL,NULL,'TO-92','400',0,'2015-10-24 18:42:03.236962365','2015-10-24 18:42:03.236962365')
 	(655,655,'Integrated Circuit (IC)','UC3842P','Current Mode PWM Controller','Texas Instruments','http://www.ti.com/lit/ds/symlink/uc3842.pdf',NULL,NULL,'DIL-8','95',0,'2015-10-24 18:53:45.747668919','2015-10-24 18:54:13.272133721')
-	(657,657,'Integrated Circuit (IC)','DEC555',NULL,NULL,'f',NULL,NULL,'DIL-8','21',0,'2015-10-24 19:57:06.772451792','2015-10-24 20:04:19.066928619')
+	(657,657,'? MYSTERY','DEC555',NULL,NULL,'f',NULL,NULL,'DIL-8','21',0,'2015-10-24 19:57:06.772451792','2015-10-30 05:46:11.28048298')
 	(656,656,'Transistor','TIP121','Plastic Medium-Power
 Complementary Silicon
-Transistors, NPN',NULL,'http://www.onsemi.com/pub_link/Collateral/TIP120-D.PDF',NULL,NULL,'TO-220','35',0,'2015-10-24 20:01:53.686983768','2015-10-24 20:01:53.686983768')
+Transistors, NPN',NULL,'http://www.onsemi.com/pub_link/Collateral/TIP120-D.PDF',NULL,NULL,'TO-220','35',0,'2015-10-24 20:01:53.686983768','2015-10-30 04:48:05.969692307')
 	(658,658,'Capacitor (C)','100uf 200v',NULL,NULL,NULL,NULL,NULL,'','4',0,'2015-10-24 20:47:20.734673504','2015-10-24 20:47:20.734673504')
 	(659,659,'Capacitor (C)','22uF 100v',NULL,NULL,NULL,NULL,NULL,'','123',0,'2015-10-24 20:51:22.736840475','2015-10-24 21:33:26.713295025')
 	(660,660,'Capacitor (C)','100uF 160v',NULL,'Wrong picture - bin change',NULL,NULL,NULL,'','1',1,'2015-10-24 20:54:19.627589853','2015-10-24 20:57:40.381525927')
@@ -835,9 +835,9 @@ Transistors, NPN',NULL,'http://www.onsemi.com/pub_link/Collateral/TIP120-D.PDF',
 	(606,606,'Transistor','PNP Transistor',NULL,NULL,'http://pdf1.alldatasheet.es/datasheet-pdf/view/10350/NTE/NTE398.html',NULL,NULL,'',NULL,0,'2015-10-24 21:39:20.903421578','2015-10-24 21:39:20.903421578')
 	(671,671,'Capacitor (C)','330uf 35v',NULL,NULL,NULL,NULL,NULL,'','26',0,'2015-10-24 21:40:49.071519819','2015-10-24 21:40:49.071519819')
 	(1086,1086,NULL,'DM7403','Quad 2-input NAND
-Four NAND gates on a chip!',NULL,'http://www.mouser.com/catalog/specsheets/7403.pdf',NULL,NULL,'',NULL,0,'2015-10-24 21:42:56.145156581','2015-10-24 21:42:56.145156581')
+Four NAND gates on a chip!',NULL,'http://www.mouser.com/catalog/specsheets/7403.pdf',NULL,NULL,'',NULL,0,'2015-10-24 21:42:56.145156581','2015-10-30 05:21:51.709270759')
 	(1087,1087,NULL,'74S05N','Hex-Inverters
-6 NOT gates.',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/27372/TI/74S05.html',NULL,NULL,'DIP-14',NULL,0,'2015-10-24 21:44:40.111792633','2015-10-24 21:44:40.111792633')
+6 NOT gates.',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/27372/TI/74S05.html',NULL,NULL,'DIP-14',NULL,0,'2015-10-24 21:44:40.111792633','2015-10-30 05:22:56.472368044')
 	(693,693,'Diode (D)','1W 3.7V','IN4729',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/94913/FAIRCHILD/IN4729A.html',NULL,NULL,'','15',0,'2015-10-27 02:19:10.49291027','2015-10-27 02:19:10.49291027')
 	(694,694,'Diode (D)','5.6v 400mW','IN752A',NULL,'http://www.futurlec.com/Diodes/1N752.shtml',NULL,NULL,'','30',0,'2015-10-27 02:21:22.578786516','2015-10-27 02:21:22.578786516')
 	(695,695,'Diode (D)','60V 5A','506',NULL,'http://www.nteinc.com/specs/500to599/pdf/nte506.pdf',NULL,NULL,'','10',0,'2015-10-27 02:24:38.385871003','2015-10-27 02:24:38.385871003')
@@ -880,7 +880,7 @@ Typical forward voltage: 1.8/2.1V
 Typical brightness: 90/40 mcd
 Wavelength: 660/565 nm
 Viewing angle: 60 degrees
-Number of LEDs: 1','http://www.jameco.com/Jameco/Products/ProdDS/2183058.pdf',NULL,NULL,'','6',0,'2015-10-29 01:29:20.964160005','2015-10-29 01:29:20.964160005')
+Number of LEDs: 1','http://www.jameco.com/Jameco/Products/ProdDS/2183058.pdf',NULL,NULL,'','6',0,'2015-10-29 01:29:20.964160005','2015-10-30 04:11:08.499529673')
 	(728,728,'Diode (D)','1N758A Zener Diode','10.5V',NULL,'http://pdf.datasheetcatalog.com/datasheet/good-ark/1N758.pdf',NULL,NULL,'','75',0,'2015-10-29 01:33:52.815495709','2015-10-29 01:33:52.815495709')
 	(729,729,'LED','550-0406-004','Red',NULL,'http://www.ic72.com/pdf_file/5/95483.pdf',NULL,NULL,'','2',0,'2015-10-29 01:37:08.160286894','2015-10-29 01:37:08.160286894')
 	(730,730,'Transistor','3-Terminal Negative Regulator','1.5A LM320T-12',NULL,'http://pdf.datasheetcatalog.com/datasheets/270/49347_DS.pdf',NULL,NULL,'','26',0,'2015-10-29 01:53:10.250887634','2015-10-29 01:55:21.539672126')
