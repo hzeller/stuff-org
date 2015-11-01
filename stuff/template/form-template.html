@@ -61,7 +61,7 @@
       border-color: black;
   }
 
-  .set-frame {
+  .set-frame {  /* The frame a set is displayed in */
       background-color: #eeeeee;
       border: 2px;
       border-radius:8px;
@@ -71,7 +71,7 @@
       padding: 10px;  /* inside */
       margin: 4px 30px 4px 4px;   /* outside */
   }
-  .comp-frame {
+  .comp-frame { /* a component displayed inside a set */
       vertical-align: text-top;
       border: 2px;
       border-style: solid;
@@ -81,22 +81,19 @@
       width: 128px;
       height: 64px;
       display: inline-block;
+
       overflow: hidden;
       text-overflow: ellipsis;
-      /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
 
       box-shadow: 5px 5px 5px #888888;
   }
-  .current-comp {
+  .current-comp {  /* Current component in set; standing out */
       vertical-align: text-top;
       border: 2px;
       border-style: dotted;
       border-color: blue;
   }
-  .set-display {
+  .set-area {
       padding-bottom: 400px;  /* leave some room to drop item */
   }
   .id-disp {
@@ -280,8 +277,9 @@
   }
   </script>
 
-  <div id="set-display" class="set-display"
+  <div id="set-display" class="set-area"
 	  ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
+    <!-- To be filled dynamically -->
   </div>
 
 
