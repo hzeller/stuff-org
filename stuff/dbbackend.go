@@ -94,13 +94,14 @@ func row2Component(row *sql.Rows) (*Component, error) {
 }
 
 type DBBackend struct {
-	db           *sql.DB
-	findById     *sql.Stmt
-	insertRecord *sql.Stmt
-	updateRecord *sql.Stmt
-	joinSet      *sql.Stmt
-	leaveSet     *sql.Stmt
-	fts          *FulltextSearch
+	db            *sql.DB
+	findById      *sql.Stmt
+	insertRecord  *sql.Stmt
+	updateRecord  *sql.Stmt
+	joinSet       *sql.Stmt
+	leaveSet      *sql.Stmt
+	findEquivById *sql.Stmt
+	fts           *FulltextSearch
 }
 
 func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
@@ -142,6 +143,20 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		return nil, err
 	}
 
+	// We want all articles that match the same (category, name), but also
+	// all that are in the sets that are covered in any set the matching
+	// components are in.
+	// Todo: maybe in-memory and more lenient way to match values
+	findEquivById, err := db.Prepare(`
+	    SELECT id, ` + all_fields + ` FROM component where equiv_set in
+	        (select c2.equiv_set from component c1, component c2
+	          where lower(c1.value) = lower(c2.value)
+	            and c1.category = c2.category and c1.id = ?1)
+	    ORDER BY equiv_set, id`)
+	if err != nil {
+		return nil, err
+	}
+
 	// Populate fts with existing components.
 	fts := NewFulltextSearch()
 	rows, _ := db.Query("SELECT id, " + all_fields + " FROM component")
@@ -151,15 +166,18 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		fts.Update(c)
 		count++
 	}
+	rows.Close()
+
 	log.Printf("Prepopulated full text search with %d items", count)
 	return &DBBackend{
-		db:           db,
-		findById:     findById,
-		insertRecord: insertRecord,
-		updateRecord: updateRecord,
-		joinSet:      joinSet,
-		leaveSet:     leaveSet,
-		fts:          fts}, nil
+		db:            db,
+		findById:      findById,
+		insertRecord:  insertRecord,
+		updateRecord:  updateRecord,
+		joinSet:       joinSet,
+		leaveSet:      leaveSet,
+		findEquivById: findEquivById,
+		fts:           fts}, nil
 }
 
 func (d *DBBackend) FindById(id int) *Component {
@@ -225,6 +243,17 @@ func (d *DBBackend) JoinSet(id int, set int) {
 
 func (d *DBBackend) LeaveSet(id int) {
 	d.leaveSet.Exec(id)
+}
+
+func (d *DBBackend) MatchingEquivSetForComponent(id int) []*Component {
+	result := make([]*Component, 0, 10)
+	rows, _ := d.findEquivById.Query(id)
+	for rows != nil && rows.Next() {
+		c, _ := row2Component(rows)
+		result = append(result, c)
+	}
+	rows.Close()
+	return result
 }
 
 func (d *DBBackend) Search(search_term string) []*Component {

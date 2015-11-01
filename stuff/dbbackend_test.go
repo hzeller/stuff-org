@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
 	"log"
@@ -51,7 +52,7 @@ func TestBasicStore(t *testing.T) {
 }
 
 func TestJoinSets(t *testing.T) {
-	dbfile, _ := ioutil.TempFile("", "basic-store")
+	dbfile, _ := ioutil.TempFile("", "join-sets")
 	defer syscall.Unlink(dbfile.Name())
 	db, err := sql.Open("sqlite3", dbfile.Name())
 	if err != nil {
@@ -98,4 +99,50 @@ func TestJoinSets(t *testing.T) {
 	ExpectTrue(t, store.FindById(1).Equiv_set == 1, "#15")
 	ExpectTrue(t, store.FindById(2).Equiv_set == 2, "#16")
 	ExpectTrue(t, store.FindById(3).Equiv_set == 2, "#17")
+}
+
+func TestQueryEquiv(t *testing.T) {
+	dbfile, _ := ioutil.TempFile("", "equiv-query")
+	defer syscall.Unlink(dbfile.Name())
+	db, err := sql.Open("sqlite3", dbfile.Name())
+	if err != nil {
+		log.Fatal(err)
+	}
+	store, _ := NewDBBackend(db, true)
+
+	// Three components, each in their own equiv-class
+	store.EditRecord(1, func(c *Component) bool {
+		c.Value = "10k"
+		c.Category = "Resist"
+		return true
+	})
+	store.EditRecord(2, func(c *Component) bool {
+		c.Value = "foo"
+		c.Category = "Resist"
+		return true
+	})
+	store.EditRecord(3, func(c *Component) bool {
+		c.Value = "three"
+		c.Category = "Resist"
+		return true
+	})
+	store.EditRecord(4, func(c *Component) bool {
+		c.Value = "10K" // different case, but should work
+		c.Category = "Resist"
+		return true
+	})
+
+	matching := store.MatchingEquivSetForComponent(1)
+	ExpectTrue(t, len(matching) == 2, fmt.Sprintf("Expected 2 10k, got %d", len(matching)))
+	ExpectTrue(t, matching[0].Id == 1, "#1")
+	ExpectTrue(t, matching[1].Id == 4, "#2")
+
+	// Add one component to the set one is in. Even though it does not
+	// match the value name, it should show up in the result
+	store.JoinSet(2, 1)
+	matching = store.MatchingEquivSetForComponent(1)
+	ExpectTrue(t, len(matching) == 3, fmt.Sprintf("Expected 3 got %d", len(matching)))
+	ExpectTrue(t, matching[0].Id == 1, "#10")
+	ExpectTrue(t, matching[1].Id == 2, "#11")
+	ExpectTrue(t, matching[2].Id == 4, "#12")
 }

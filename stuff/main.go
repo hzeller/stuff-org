@@ -61,11 +61,18 @@ type StuffStore interface {
 	// the JoinSet()/LeaveSet() functions for that.
 	EditRecord(id int, updater ModifyFun) (bool, string)
 
-	// Have component with id join set.
-	JoinSet(id int, set int)
+	// Have component with id join set with given ID.
+	JoinSet(id int, equiv_set int)
 
-	// Leave any set we are in.
+	// Leave any set we are in and go back to the default set
+	// (which is equiv_set == id)
 	LeaveSet(id int)
+
+	// Get possible matching components of given component,
+	// including all the components that are in the sets the matches
+	// are in.
+	// Ordered by equivalence set, id.
+	MatchingEquivSetForComponent(component int) []*Component
 
 	// Given a search term, returns all the components that match, ordered
 	// by some internal scoring system. Don't modify the returned objects!
