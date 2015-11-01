@@ -1,12 +1,10 @@
 <head>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
   <title>Noisebridge Electronic Component Declutter Project</title>
+  <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <style>
-  body {
-      font-family:sans-serif;
-  }
-
-  @media print {     /* Print formatting is a huge .. mess */
+  /** Print formatting is a huge .. mess; no idea how to make this look nice **/
+  @media print {
       body {
 	  -webkit-print-color-adjust: exact;
       }
@@ -24,8 +22,6 @@
   td a {
       text-decoration:none;
   }
-  a:link { color: black; }
-  a:visited { color: black; }
 
   span {
       padding: 5px 15px;
@@ -33,43 +29,6 @@
   .block {
       float:left;
       padding: 10px;
-  }
-  .seltab {
-      background-color:#ccccff;
-      padding: 2px 30px;
-      border-radius:8px;
-      font-weight:bold;
-  }
-  .deseltab {
-      background-color:#dddddd;
-      padding: 2px 30px;
-      border-radius:8px;
-      text-decoration: none;
-      font-weight:bold;
-  }
-  .empty {
-      background-image: url("/static/empty-box.png");
-      background-position:center;
-      background-repeat: no-repeat;
-      background-color: #eeeeee;
-  }
-  .mystery {
-      background-image: url("/static/mystery.png");
-      background-position:center;
-      background-repeat: no-repeat;
-      background-color: #eeeeee;
-  }
-  .missing {
-      background-color: #eeeeee;
-  }
-  .poor {
-      background-color: #ff8888;
-  }
-  .fair {
-      background-color: #ffff88;
-  }
-  .good {
-      background-color: #88ff88;
   }
   .selstatus {
       border: 2px;

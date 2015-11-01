@@ -1,0 +1,44 @@
+body {font-family:sans-serif;}
+:link { color: black; }
+:visited { color: black; }
+
+/** Application TABs **/
+.seltab {
+    background-color:#ccccff;
+    padding: 2px 30px;
+    border-radius:8px;
+    font-weight:bold;
+}
+.deseltab {
+    background-color:#dddddd;
+    padding: 2px 30px;
+    border-radius:8px;
+    text-decoration: none;
+    font-weight:bold;
+}
+
+/** Status display related styles, needed in various places **/
+.empty {
+    background-image: url("/static/empty-box.png");
+    background-position:center;
+    background-repeat: no-repeat;
+    background-color: #eeeeee;
+}
+.mystery {
+    background-image: url("/static/mystery.png");
+    background-position:center;
+    background-repeat: no-repeat;
+    background-color: #eeeeee;
+}
+.missing {
+    background-color: #eeeeee;
+}
+.poor {
+    background-color: #ff8888;
+}
+.fair {
+    background-color: #ffff88;
+}
+.good {
+    background-color: #88ff88;
+}

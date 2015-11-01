@@ -204,6 +204,9 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 		if rec.Id != id {
 			return false, "ID was modified."
 		}
+		// We're not in the business in modifying this.
+		rec.Equiv_set = before.Equiv_set
+
 		if *rec == before {
 			return false, "No change."
 		}

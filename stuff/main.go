@@ -250,9 +250,9 @@ func entryFormHandler(store StuffStore, imageDir string,
 	zipped.Close()
 }
 
-func imageServe(prefix_len int, imgPath string, fallbackPath string,
+func staticServe(prefix_len int, imgPath string, fallbackPath string,
 	out http.ResponseWriter, r *http.Request) {
-	defer ElapsedPrint("Image serve", time.Now())
+	defer ElapsedPrint("Static serve", time.Now())
 	path := r.URL.Path[prefix_len:]
 	content, _ := ioutil.ReadFile(imgPath + "/" + path)
 	if content == nil && fallbackPath != "" {
@@ -262,6 +262,8 @@ func imageServe(prefix_len int, imgPath string, fallbackPath string,
 	switch {
 	case strings.HasSuffix(path, ".png"):
 		out.Header().Set("Content-Type", "image/png")
+	case strings.HasSuffix(path, ".css"):
+		out.Header().Set("Content-Type", "text/css")
 	default:
 		out.Header().Set("Content-Type", "image/jpg")
 	}
@@ -449,10 +451,10 @@ func main() {
 	}
 
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
-		imageServe(len("/img/"), *imageDir, *staticResource, w, r)
+		staticServe(len("/img/"), *imageDir, *staticResource, w, r)
 	})
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		imageServe(len("/static/"), *staticResource, "", w, r)
+		staticServe(len("/static/"), *staticResource, "", w, r)
 	})
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
