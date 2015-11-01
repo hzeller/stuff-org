@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -32,6 +33,26 @@ type FormPage struct {
 	Status       []StatusItem
 }
 
+// -- TODO: For cleanup, we need some kind of category-aware plugin structure.
+
+func cleanupResistor(component *Component) {
+	optional_percent, _ := regexp.Compile(`,?\s*(\d\%)`)
+	if match := optional_percent.FindStringSubmatch(component.Value); match != nil {
+		component.Description = match[1] + " " + component.Description
+		component.Value = optional_percent.ReplaceAllString(component.Value, "")
+	}
+	optional_ohm, _ := regexp.Compile(`(?i)\s*ohm`)
+	component.Value = optional_ohm.ReplaceAllString(component.Value, "")
+
+	if last_pos := len(component.Value) - 1; last_pos > 0 {
+		if component.Value[last_pos] == 'K' {
+			component.Value = component.Value[:last_pos] + "k"
+		}
+	}
+	component.Description = cleanString(component.Description)
+	component.Value = cleanString(component.Value)
+}
+
 func cleanString(input string) string {
 	result := strings.TrimSpace(input)
 	return strings.Replace(result, "\r\n", "\n", -1)
@@ -45,6 +66,13 @@ func cleanupCompoent(component *Component) {
 	component.Notes = cleanString(component.Notes)
 	component.Datasheet_url = cleanString(component.Datasheet_url)
 	component.Footprint = cleanString(component.Footprint)
+
+	// We should have pluggable cleanup modules per category. For
+	// now just a quick hack.
+	switch component.Category {
+	case "Resistor":
+		cleanupResistor(component)
+	}
 }
 
 func entryFormHandler(store StuffStore, imageDir string,
