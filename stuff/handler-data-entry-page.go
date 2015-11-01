@@ -194,6 +194,7 @@ type EquivalenceSet struct {
 }
 type EquivalenceSetList struct {
 	HighlightComp int
+	Message       string
 	Sets          []*EquivalenceSet
 }
 
@@ -203,12 +204,21 @@ func relatedComponentSetHtml(store StuffStore,
 	if err != nil {
 		return
 	}
-	var current_set *EquivalenceSet = nil
 	page := &EquivalenceSetList{
 		HighlightComp: comp_id,
 		Sets:          make([]*EquivalenceSet, 0, 0),
 	}
+	var current_set *EquivalenceSet = nil
 	components := store.MatchingEquivSetForComponent(comp_id)
+	switch len(components) {
+	case 0:
+		page.Message = "No Value or Category set"
+	case 1:
+		page.Message = "Only one component with this Category/Name"
+	default:
+		page.Message = "Organize matching components into same virtual drawer (drag'n drop)"
+	}
+
 	for _, c := range components {
 		if current_set != nil && c.Equiv_set != current_set.Id {
 			current_set = nil

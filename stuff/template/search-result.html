@@ -129,7 +129,7 @@ function fillresults(resultRecord) {
 	var d = data[i];
 	references[i].obj.style.visibility = 'visible';
 	references[i].obj.href = "/form?id=" + d.id;
-	references[i].img.src = "/img/" + d.id + ".jpg";
+	references[i].img.src = "/img/" + d.id;
 	references[i].txt.innerHTML = d.txt;
     }
     // The rest invisible and prepopulated with neutral image.

@@ -110,26 +110,36 @@ func renderTemplate(w io.Writer, tmpl string, p interface{}) {
 	}
 }
 
-func staticServe(prefix_len int, imgPath string, fallbackPath string,
-	out http.ResponseWriter, r *http.Request) {
-	defer ElapsedPrint("Static serve", time.Now())
-	path := r.URL.Path[prefix_len:]
-	content, _ := ioutil.ReadFile(imgPath + "/" + path)
-	if content == nil && fallbackPath != "" {
-		content, _ = ioutil.ReadFile(fallbackPath + "/fallback.jpg")
+func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
+	content, _ := ioutil.ReadFile(local_path)
+	if content == nil && fallback_resource != "" {
+		local_path = fallback_resource
+		content, _ = ioutil.ReadFile(local_path)
 	}
 	out.Header().Set("Cache-Control", "max-age=900")
 	switch {
-	case strings.HasSuffix(path, ".png"):
+	case strings.HasSuffix(local_path, ".png"):
 		out.Header().Set("Content-Type", "image/png")
-	case strings.HasSuffix(path, ".css"):
+	case strings.HasSuffix(local_path, ".css"):
 		out.Header().Set("Content-Type", "text/css")
 	default:
 		out.Header().Set("Content-Type", "image/jpg")
 	}
 
 	out.Write(content)
-	return
+}
+
+func compImageServe(imgPath string, staticPath string,
+	out http.ResponseWriter, r *http.Request) {
+	prefix_len := len("/img/")
+	requested := r.URL.Path[prefix_len:]
+	sendResource(imgPath+"/"+requested+".jpg", staticPath+"/fallback.jpg", out)
+}
+
+func staticServe(staticPath string, out http.ResponseWriter, r *http.Request) {
+	prefix_len := len("/static/")
+	resource := r.URL.Path[prefix_len:]
+	sendResource(staticPath+"/"+resource, "", out)
 }
 
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
@@ -174,10 +184,10 @@ func main() {
 	}
 
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
-		staticServe(len("/img/"), *imageDir, *staticResource, w, r)
+		compImageServe(*imageDir, *staticResource, w, r)
 	})
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		staticServe(len("/static/"), *staticResource, "", w, r)
+		staticServe(*staticResource, w, r)
 	})
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {

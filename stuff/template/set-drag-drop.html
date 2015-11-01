@@ -1,10 +1,11 @@
 {{/* HTML generated to show the drag-drop UI. To avoid fiddeling with assembling
 this with JavaScript, we simply fill this HTML template manually.
 Might move to JSON-filled thing */}}
+{{.Message}}<p>
 {{range $set := .Sets}}
 <div class="set-frame" id="{{$set.Id}}" ondrop="drop(event, this.id);">
   {{range $item := $set.Items}}
-  <div class="comp-frame {{if eq $item.Id $.HighlightComp}}current-comp{{end}}" style="background:#aaaaaa url(/static/fallback.jpg); background-size:100%; background-blend-mode: lighten;" draggable="true" id="{{$item.Id}}" ondragstart="drag(event)">
+  <div class="comp-frame {{if eq $item.Id $.HighlightComp}}current-comp{{end}}" style="background:url(/img/{{$item.Id}}) #777777; background-size:100%; background-blend-mode: lighten;" draggable="true" id="{{$item.Id}}" ondragstart="drag(event)">
     <span class="id-disp">({{$item.Id}})</span>
     <b>{{$item.Value}}</b><br/>
     <span class="fp-disp">{{$item.Footprint}}</span>

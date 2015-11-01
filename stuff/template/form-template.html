@@ -149,7 +149,7 @@
 	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
 
-	      <button class="arrowlink" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}.jpg"/></button>
+	      <button class="arrowlink" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 	      <input style="font-weight:bold; font-size:200%;"
@@ -159,7 +159,7 @@
 		      onchange="form.submit();">
 
 	      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	      <button class="arrowlink" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}.jpg"/> ▶</button>
+	      <button class="arrowlink" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
 	    </td>
 	  </tr>
 
@@ -236,7 +236,7 @@
       <td style="vertical-align:top;" align="left">
 	<!-- fixed size to help browser layout. TODO: this happens to be the
 	image size we use right	now, but that needs to be adapted of course -->
-	<img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
+	<img height="320" widt="400" src="/img/{{.Id}}"/>
 	<div class="msgbox">{{.Msg}}</div>
 
 	<!-- Status around -->
