@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"time"
 )
@@ -234,6 +235,10 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 			return false, "ERR: not updated"
 		}
 		d.fts.Update(rec)
+
+		json, _ := json.Marshal(rec)
+		log.Printf("STORE %s", json)
+
 		return true, ""
 	}
 	return false, ""

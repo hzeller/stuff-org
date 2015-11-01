@@ -184,8 +184,6 @@ func entryFormHandler(store StuffStore, imageDir string,
 		})
 		if was_stored {
 			msg = fmt.Sprintf("Stored item %d; Proceed to %d", store_id, next_id)
-			json, _ := json.Marshal(fromForm)
-			log.Printf("STORE %s", json)
 		} else {
 			msg = fmt.Sprintf("Item %d (%s); Proceed to %d", store_id, store_msg, next_id)
 		}
