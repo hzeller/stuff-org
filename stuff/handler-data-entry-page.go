@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -29,6 +30,21 @@ type FormPage struct {
 
 	HundredGroup int
 	Status       []StatusItem
+}
+
+func cleanString(input string) string {
+	result := strings.TrimSpace(input)
+	return strings.Replace(result, "\r\n", "\n", -1)
+}
+
+func cleanupCompoent(component *Component) {
+	component.Value = cleanString(component.Value)
+	component.Category = cleanString(component.Category)
+	component.Description = cleanString(component.Description)
+	component.Quantity = cleanString(component.Quantity)
+	component.Notes = cleanString(component.Notes)
+	component.Datasheet_url = cleanString(component.Datasheet_url)
+	component.Footprint = cleanString(component.Footprint)
 }
 
 func entryFormHandler(store StuffStore, imageDir string,
@@ -80,6 +96,8 @@ func entryFormHandler(store StuffStore, imageDir string,
 		} else {
 			fromForm.Category = r.FormValue("category_select")
 		}
+
+		cleanupCompoent(&fromForm)
 
 		was_stored, store_msg := store.EditRecord(store_id, func(comp *Component) bool {
 			*comp = fromForm
