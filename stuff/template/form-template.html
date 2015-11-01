@@ -60,6 +60,55 @@
       border-style: solid;
       border-color: black;
   }
+
+  .set-frame {
+      background-color: #eeeeee;
+      border: 2px;
+      border-radius:8px;
+      border-style: solid;
+      border-color: black;
+      display: inline-block;
+      padding: 10px;  /* inside */
+      margin: 4px 30px 4px 4px;   /* outside */
+  }
+  .comp-frame {
+      vertical-align: text-top;
+      border: 2px;
+      border-style: solid;
+      border-color: #888888;
+      padding: 5px;  /* inside */
+      margin: 5px;   /* outside */
+      width: 128px;
+      height: 64px;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+
+      box-shadow: 5px 5px 5px #888888;
+  }
+  .current-comp {
+      vertical-align: text-top;
+      border: 2px;
+      border-style: dotted;
+      border-color: blue;
+  }
+  .set-display {
+      padding-bottom: 400px;  /* leave some room to drop item */
+  }
+  .id-disp {
+      font-size: 70%;
+  }
+  .fp-disp {
+      font-size: 80%;
+      font-style: italic;
+  }
+  .desc-disp {
+      font-size: 80%;
+  }
   </style>
   <script>
   function disable_form_if_different(ev, field, orig) {
@@ -186,16 +235,19 @@
 	</table>
       </td>  <!-- - end of form column -->
 
-      <td style="vertical-align:top;" align="left">        <!-- Second column: Picture  -->
-	<!-- fixed size to help browser layout. TODO: this happens to be the image size we use right
-	now, but that needs to be adapted of course -->
+      <!-- Second column: Picture  -->
+      <td style="vertical-align:top;" align="left">
+	<!-- fixed size to help browser layout. TODO: this happens to be the
+	image size we use right	now, but that needs to be adapted of course -->
 	<img height="320" widt="400" src="/img/{{.Id}}.jpg"/>
 	<div class="msgbox">{{.Msg}}</div>
+
+	<!-- Status around -->
 	<div>Status adjacent drawers/bins</div>
 	<table id="statustab"><tr>
 	  {{ range $element := .Status }}
 	  <td class="{{$element.Status}}">
-	    <button style="background-color:inherit;" name="nav_id" value="{{$element.Number}}">
+	    <button style="background-color:transparent;" name="nav_id" value="{{$element.Number}}">
 	      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
 	      {{ $element.Number }}</button></td>
 	  {{end}}</tr>
@@ -204,6 +256,50 @@
 	  </tr>
     </table>
   </form>
+
+  <script>
+  function allowDrop(ev) {
+      ev.preventDefault();
+  }
+  function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+  }
+  function drop(ev, in_set) {
+      var from_id = ev.dataTransfer.getData("text");
+      //console.log("GOT drop from " + from_id + " into set " + in_set);
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      doOperation("join", "comp=" + from_id + "&set=" + in_set);
+  }
+  function removeFromSet(ev) {
+      ev.preventDefault();
+      var from_id = ev.dataTransfer.getData("text");
+      //console.log("GOT remove from set for " + from_id);
+      doOperation("remove", "comp=" + from_id);
+  }
+  </script>
+
+  <div id="set-display" class="set-display"
+	  ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
+  </div>
+
+
+  <script>
+  function doOperation(op, params) {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+	  document.getElementById('set-display').innerHTML = xmlhttp.responseText;
+      };
+
+      var url="/api/related-set?op=" + op + "&id={{.Id}}&" + params;
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+  }
+
+  doOperation("html");  // Initial filling.
+  </script>
+
+  <!-- General footer -->
   For instructions, have a look at the <a target="epart-howto" href="https://noisebridge.net/wiki/Electronic_Parts#Enter_parts_in_database">Electronic Parts wiki page</a>
-  <!-- todo: recent list -->
 </body>

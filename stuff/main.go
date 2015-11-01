@@ -88,7 +88,8 @@ var cache_templates = flag.Bool("cache-templates", true,
 	"Cache templates. False for online editing.")
 var templates = template.Must(template.ParseFiles(
 	"template/form-template.html",
-	"template/status-table.html"))
+	"template/status-table.html",
+	"template/set-drag-drop.html"))
 
 // for now, render templates directly to easier edit them.
 func renderTemplate(w io.Writer, tmpl string, p interface{}) {
@@ -182,11 +183,14 @@ func main() {
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
 		entryFormHandler(store, *imageDir, w, r)
 	})
+	http.HandleFunc("/api/related-set", func(w http.ResponseWriter, r *http.Request) {
+		relatedComponentSetOperations(store, w, r)
+	})
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		showSearchPage(w, r)
 	})
-	http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/search", func(w http.ResponseWriter, r *http.Request) {
 		apiSearch(store, w, r)
 	})
 

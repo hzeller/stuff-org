@@ -33,10 +33,17 @@ type FormPage struct {
 
 func entryFormHandler(store StuffStore, imageDir string,
 	w http.ResponseWriter, r *http.Request) {
+
+	// Look at the request and see what we need to display,
+	// and if we have to store something.
+
+	// Store-ID is a hidden field and only set if the form
+	// is submitted.
 	store_id, _ := strconv.Atoi(r.FormValue("store_id"))
 	var next_id int
 	if r.FormValue("id") != r.FormValue("store_id") {
-		// The ID field was edited. Use that as the next ID
+		// The ID field was edited. Use that as the next ID the
+		// user wants to jump to.
 		next_id, _ = strconv.Atoi(r.FormValue("id"))
 	} else if r.FormValue("nav_id") != "" {
 		// Use the navigation buttons to choose next ID.
@@ -87,7 +94,7 @@ func entryFormHandler(store StuffStore, imageDir string,
 		msg = "Browse item " + fmt.Sprintf("%d", next_id)
 	}
 
-	// -- Populate page.
+	// -- Populate form relevant fields.
 	id := next_id
 	page.Id = id
 	if id > 0 {
@@ -121,7 +128,7 @@ func entryFormHandler(store StuffStore, imageDir string,
 	}
 	page.Msg = msg
 
-	// Show status for 10 entries around
+	// -- Populate status of fields in current block of 10
 	page.Status = make([]StatusItem, 12)
 	startStatusId := (id/10)*10 - 1
 	if startStatusId <= 0 {
@@ -134,7 +141,8 @@ func entryFormHandler(store StuffStore, imageDir string,
 		}
 	}
 
-	// We are not using any web-framework and want to keep track of session
+	// -- Output
+	// We are not using any web-framework or want to keep track of session
 	// cookies. Simply a barebone, state-less web app: use plain cookies.
 	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
 	w.Header().Set("Content-Encoding", "gzip")
@@ -142,4 +150,78 @@ func entryFormHandler(store StuffStore, imageDir string,
 	zipped := gzip.NewWriter(w)
 	renderTemplate(zipped, "form-template", page)
 	zipped.Close()
+}
+
+func relatedComponentSetOperations(store StuffStore,
+	out http.ResponseWriter, r *http.Request) {
+	switch r.FormValue("op") {
+	case "html":
+		relatedComponentSetHtml(store, out, r)
+	case "join":
+		relatedComponentSetJoin(store, out, r)
+	case "remove":
+		relatedComponentSetRemove(store, out, r)
+	}
+}
+
+func relatedComponentSetJoin(store StuffStore,
+	out http.ResponseWriter, r *http.Request) {
+	comp, err := strconv.Atoi(r.FormValue("comp"))
+	if err != nil {
+		return
+	}
+	set, err := strconv.Atoi(r.FormValue("set"))
+	if err != nil {
+		return
+	}
+	store.JoinSet(comp, set)
+	relatedComponentSetHtml(store, out, r)
+}
+
+func relatedComponentSetRemove(store StuffStore,
+	out http.ResponseWriter, r *http.Request) {
+	comp, err := strconv.Atoi(r.FormValue("comp"))
+	if err != nil {
+		return
+	}
+	store.LeaveSet(comp)
+	relatedComponentSetHtml(store, out, r)
+}
+
+type EquivalenceSet struct {
+	Id    int
+	Items []*Component
+}
+type EquivalenceSetList struct {
+	HighlightComp int
+	Sets          []*EquivalenceSet
+}
+
+func relatedComponentSetHtml(store StuffStore,
+	out http.ResponseWriter, r *http.Request) {
+	comp_id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil {
+		return
+	}
+	var current_set *EquivalenceSet = nil
+	page := &EquivalenceSetList{
+		HighlightComp: comp_id,
+		Sets:          make([]*EquivalenceSet, 0, 0),
+	}
+	components := store.MatchingEquivSetForComponent(comp_id)
+	for _, c := range components {
+		if current_set != nil && c.Equiv_set != current_set.Id {
+			current_set = nil
+		}
+
+		if current_set == nil {
+			current_set = &EquivalenceSet{
+				Id:    c.Equiv_set,
+				Items: make([]*Component, 0, 5),
+			}
+			page.Sets = append(page.Sets, current_set)
+		}
+		current_set.Items = append(current_set.Items, c)
+	}
+	renderTemplate(out, "set-drag-drop", page)
 }

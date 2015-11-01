@@ -50,13 +50,13 @@
   </style>
   <script>
   function retrieve(input_field) {
-      xmlhttp=new XMLHttpRequest();
+      var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() {
 	  if (xmlhttp.responseText == "")
 	      return;
 	  fillresults(JSON.parse(xmlhttp.responseText));
       };
-      url="/api?q=" + encodeURIComponent(input_field.value);
+      var url="/api/search?q=" + encodeURIComponent(input_field.value);
       xmlhttp.open("GET", url, true);
       xmlhttp.send();
       window.location = "#" + encodeURIComponent(input_field.value);
@@ -74,7 +74,7 @@
 	  onkeyup="retrieve(this);"
 	  onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 	  autofocus><br/>
-  <spn class="infobox" id="infobox" style="float:right;"></span>
+  <span class="infobox" id="infobox" style="float:right;"></span>
 </div>
 &nbsp;
 <!-- only up to 24 search results - everything beyond that is too irrelevant -->
