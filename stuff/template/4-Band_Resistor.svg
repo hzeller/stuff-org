@@ -1,0 +1,125 @@
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.0"
+   width="200"
+   height="160"
+   id="svg2">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3938">
+      <stop
+         style="stop-color:#d57c00;stop-opacity:1"
+         offset="0"
+         id="stop3940" />
+      <stop
+         style="stop-color:#d57c00;stop-opacity:0.74901962"
+         offset="0.25"
+         id="stop3948" />
+      <stop
+         style="stop-color:#d57c00;stop-opacity:0.49803922"
+         offset="1"
+         id="stop3946" />
+    </linearGradient>
+    <linearGradient
+       x1="120"
+       y1="45.5"
+       x2="130"
+       y2="45.5"
+       id="linearGradient9206"
+       xlink:href="#linearGradient3938"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(7.702266e-2,0.404888)" />
+  </defs>
+  <g
+     id="layer1">
+    <path
+       d="M 60,90 L 65,85 L 65,65"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path10128" />
+    <path
+       d="M 70,105 L 75,105 L 80,100 L 80,75 L 80,65"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path10130" />
+    <path
+       d="M 120,105 L 105,105 L 95,95 L 95,65"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path10132" />
+    <path
+       d="M 135,90.065025 L 130,90.065025 L 125,85.750345 L 125,68.491627"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:2.09012294;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path10134" />
+    <path
+       d="M 60.077022,20.404888 L 60.077022,70.404888 C 63.670772,70.404888 66.61444,69.763508 70.077022,68.936138 L 70.077022,21.873638 C 66.61444,21.046268 63.670772,20.404888 60.077022,20.404888 z "
+       style="fill:#e50000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path1307" />
+    <path
+       d="M 75.077021,23.436138 L 75.077021,68.373638 C 77.833064,67.764415 81.056653,67.145981 85.077021,66.686138 L 85.077021,25.123638 C 81.056653,24.663795 77.833064,24.045361 75.077021,23.436138 z "
+       style="fill:#a700e0;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path1309" />
+    <path
+       d="M 90.077021,25.561138 L 90.077021,66.248638 C 93.012712,66.045115 96.309486,65.914842 100.07702,65.904888 L 100.07702,25.904888 C 96.309486,25.894934 93.012712,25.764661 90.077021,25.561138 z "
+       style="fill:#008f00;fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2188" />
+    <path
+       d="M 130.07702,22.498638 C 127.28962,23.167726 124.15989,23.922306 120.07702,24.561138 L 120.07702,67.248638 C 124.15989,67.88747 127.28962,68.64205 130.07702,69.311138 L 130.07702,22.498638 z "
+       style="opacity:1;fill:url(#linearGradient9206);fill-opacity:1;stroke:none;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:1, 1;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2190" />
+    <path
+       d="M 25.577023,45.904888 C 25.577023,20.904888 50.577022,20.904888 60.577022,20.904888 C 70.577022,20.904888 75.577021,25.904888 100.57702,25.904888 C 125.57702,25.904888 130.57702,20.904888 140.57702,20.904888 C 150.57702,20.904888 175.57702,20.904888 175.57702,45.904888 C 175.57702,70.904888 150.57702,70.904888 140.57702,70.904888 C 130.57702,70.904888 125.57702,65.904888 100.57702,65.904888 C 75.577021,65.904888 70.577022,70.904888 60.577022,70.904888 C 50.577022,70.904888 25.778858,71.620488 25.577023,45.904888 z "
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path7450" />
+    <rect
+       width="20.32258"
+       height="10"
+       x="5.4157324"
+       y="40.904888"
+       style="opacity:1;fill:#000000;fill-opacity:0.27160495;stroke:#000000;stroke-width:0.82305491;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:0.82305488, 0.82305488;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect9208" />
+    <rect
+       width="19.672131"
+       height="10"
+       x="175.40489"
+       y="40.404888"
+       style="opacity:1;fill:#000000;fill-opacity:0.27160495;stroke:#000000;stroke-width:0.80977631;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:0.80977632, 0.80977632;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect10083" />
+    <text
+       x="3.3710938"
+       y="95"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text10112"
+       xml:space="preserve"><tspan
+         x="3.3710938"
+         y="95"
+         id="tspan10114">1st Band</tspan></text>
+    <text
+       x="9.0566406"
+       y="109.11719"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text10116"
+       xml:space="preserve"><tspan
+         x="9.0566406"
+         y="109.11719"
+         id="tspan10118">2nd Band</tspan></text>
+    <text
+       x="123.82813"
+       y="109.11719"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text10120"
+       xml:space="preserve"><tspan
+         x="123.82813"
+         y="109.11719"
+         id="tspan10122">Multiplier</tspan></text>
+    <text
+       x="137.13281"
+       y="94.117188"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       id="text10124"
+       xml:space="preserve"><tspan
+         x="137.13281"
+         y="94.117188"
+         id="tspan10126">Tolerance</tspan></text>
+  </g>
+</svg>

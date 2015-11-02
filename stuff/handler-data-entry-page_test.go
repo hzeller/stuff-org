@@ -13,7 +13,7 @@ func TestCleanString(t *testing.T) {
 
 func TestCleanResistor(t *testing.T) {
 	r := &Component{
-		Value: "5.67K Ohm, 1%",
+		Value: "5.67 K Ohm, 1%",
 	}
 	cleanupResistor(r)
 	if r.Value != "5.67k" {

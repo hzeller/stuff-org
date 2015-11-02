@@ -44,11 +44,11 @@ func cleanupResistor(component *Component) {
 	optional_ohm, _ := regexp.Compile(`(?i)\s*ohm`)
 	component.Value = optional_ohm.ReplaceAllString(component.Value, "")
 
-	if last_pos := len(component.Value) - 1; last_pos > 0 {
-		if component.Value[last_pos] == 'K' {
-			component.Value = component.Value[:last_pos] + "k"
-		}
-	}
+	// Upper-case kilo at end or with spaces before are replaced
+	// with simple 'k'.
+	spaced_upper_kilo, _ := regexp.Compile(`(?i)\s*k$`)
+	component.Value = spaced_upper_kilo.ReplaceAllString(component.Value, "k")
+
 	component.Description = cleanString(component.Description)
 	component.Value = cleanString(component.Value)
 }
