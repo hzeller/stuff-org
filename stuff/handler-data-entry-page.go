@@ -36,7 +36,7 @@ type FormPage struct {
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
 
 func cleanupResistor(component *Component) {
-	optional_percent, _ := regexp.Compile(`,?\s*((0?.)?\d+\%)`)
+	optional_percent, _ := regexp.Compile(`,?\s*(\d+\%)`)
 	if match := optional_percent.FindStringSubmatch(component.Value); match != nil {
 		component.Description = match[1] + " " + component.Description
 		component.Value = optional_percent.ReplaceAllString(component.Value, "")
