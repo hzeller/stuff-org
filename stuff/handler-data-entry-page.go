@@ -36,7 +36,7 @@ type FormPage struct {
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
 
 func cleanupResistor(component *Component) {
-	optional_percent, _ := regexp.Compile(`,?\s*(\d\%)`)
+	optional_percent, _ := regexp.Compile(`,?\s*((0?.)?\d+\%)`)
 	if match := optional_percent.FindStringSubmatch(component.Value); match != nil {
 		component.Description = match[1] + " " + component.Description
 		component.Value = optional_percent.ReplaceAllString(component.Value, "")
@@ -194,7 +194,7 @@ func entryFormHandler(store StuffStore, imageDir string,
 	w.Header().Set("Content-Encoding", "gzip")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	zipped := gzip.NewWriter(w)
-	renderTemplate(zipped, "form-template", page)
+	renderTemplate(zipped, "form-template.html", page)
 	zipped.Close()
 }
 
@@ -279,5 +279,5 @@ func relatedComponentSetHtml(store StuffStore,
 		}
 		current_set.Items = append(current_set.Items, c)
 	}
-	renderTemplate(out, "set-drag-drop", page)
+	renderTemplate(out, "set-drag-drop.html", page)
 }

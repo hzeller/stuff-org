@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -89,12 +90,13 @@ var cache_templates = flag.Bool("cache-templates", true,
 var templates = template.Must(template.ParseFiles(
 	"template/form-template.html",
 	"template/status-table.html",
-	"template/set-drag-drop.html"))
+	"template/set-drag-drop.html",
+	"template/4-Band_Resistor.svg",
+	"template/5-Band_Resistor.svg"))
 
 // for now, render templates directly to easier edit them.
-func renderTemplate(w io.Writer, tmpl string, p interface{}) {
+func renderTemplate(w io.Writer, template_name string, p interface{}) {
 	var err error
-	template_name := tmpl + ".html"
 	if *cache_templates {
 		err = templates.ExecuteTemplate(w, template_name, p)
 	} else {
@@ -111,17 +113,21 @@ func renderTemplate(w io.Writer, tmpl string, p interface{}) {
 }
 
 func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
+	cache_time := 900
 	content, _ := ioutil.ReadFile(local_path)
 	if content == nil && fallback_resource != "" {
 		local_path = fallback_resource
 		content, _ = ioutil.ReadFile(local_path)
+		cache_time = 10 // fallbacks might change more often.
 	}
-	out.Header().Set("Cache-Control", "max-age=900")
+	out.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", cache_time))
 	switch {
 	case strings.HasSuffix(local_path, ".png"):
 		out.Header().Set("Content-Type", "image/png")
 	case strings.HasSuffix(local_path, ".css"):
 		out.Header().Set("Content-Type", "text/css")
+	case strings.HasSuffix(local_path, ".svg"):
+		out.Header().Set("Content-Type", "image/svg+xml")
 	default:
 		out.Header().Set("Content-Type", "image/jpg")
 	}
@@ -129,11 +135,33 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 	out.Write(content)
 }
 
-func compImageServe(imgPath string, staticPath string,
+func serveComponentImage(component *Component, out http.ResponseWriter) bool {
+	if component.Category == "Resistor" {
+		return serveResistorImage(component, out)
+	}
+	return false
+}
+
+func compImageServe(store StuffStore, imgPath string, staticPath string,
 	out http.ResponseWriter, r *http.Request) {
 	prefix_len := len("/img/")
 	requested := r.URL.Path[prefix_len:]
-	sendResource(imgPath+"/"+requested+".jpg", staticPath+"/fallback.jpg", out)
+	path := imgPath + "/" + requested + ".jpg"
+	if _, err := os.Stat(path); err == nil { // we have an image.
+		fmt.Printf("%s: found image", requested)
+		sendResource(path, staticPath+"/fallback.jpg", out)
+		return
+	}
+	// No image, but let's see if we can do something from the
+	// component
+	if comp_id, err := strconv.Atoi(requested); err == nil {
+		component := store.FindById(comp_id)
+		if component != nil &&
+			serveComponentImage(component, out) {
+			return
+		}
+	}
+	sendResource(staticPath+"/fallback.jpg", "", out)
 }
 
 func staticServe(staticPath string, out http.ResponseWriter, r *http.Request) {
@@ -184,7 +212,7 @@ func main() {
 	}
 
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
-		compImageServe(*imageDir, *staticResource, w, r)
+		compImageServe(store, *imageDir, *staticResource, w, r)
 	})
 	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
 		staticServe(*staticResource, w, r)
