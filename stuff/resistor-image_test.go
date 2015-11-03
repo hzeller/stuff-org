@@ -38,5 +38,8 @@ func TestExtractResistorValue(t *testing.T) {
 	ExpectValue(t, []int{1, 5, 10, 10}, "1.5", "5%")
 	ExpectValue(t, []int{1, 5, 11, 10}, "0.15", "5%")
 
-	ExpectValue(t, nil, "10k x", "5%") // garbage.
+	ExpectValue(t, nil, "10k x", "5%") // garbage in.
+
+	ExpectValue(t, nil, "0.111", "5%") // impossible multiplier
+	ExpectValue(t, []int{1, 1, 1, 11, 10}, "1.11", "5%")
 }

@@ -44,7 +44,7 @@ func expToIndex(exp int) int {
 	case exp == -1:
 		return 10
 	default:
-		return 0 // ugh
+		return -1 // cannot be shown
 	}
 }
 
@@ -121,12 +121,19 @@ func extractResistorDigits(value string, tolerance string) []int {
 		relevant_digits = relevant_digits + post_dot_digits
 	}
 	var result []int
+	var multiplier_digit int
 	if relevant_digits <= 2 {
-		result = []int{digits[0], digits[1], expToIndex(exp - 2), tolerance_digit}
+		multiplier_digit = expToIndex(exp - 2)
+		result = []int{digits[0], digits[1], multiplier_digit, tolerance_digit}
 	} else {
-		result = []int{digits[0], digits[1], digits[2], expToIndex(exp - 3), tolerance_digit}
+		multiplier_digit = expToIndex(exp - 3)
+		result = []int{digits[0], digits[1], digits[2], multiplier_digit, tolerance_digit}
 	}
-	return result
+	if multiplier_digit >= 0 {
+		return result
+	} else {
+		return nil
+	}
 }
 
 var tolerance_regexp, _ = regexp.Compile(`((0?.)?\d+\%)`)
