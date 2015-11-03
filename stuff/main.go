@@ -114,13 +114,15 @@ func renderTemplate(w io.Writer, template_name string, p interface{}) {
 
 func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
 	cache_time := 900
+	header_addon := ""
 	content, _ := ioutil.ReadFile(local_path)
 	if content == nil && fallback_resource != "" {
 		local_path = fallback_resource
 		content, _ = ioutil.ReadFile(local_path)
 		cache_time = 10 // fallbacks might change more often.
+		header_addon = ",must-revalidate"
 	}
-	out.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", cache_time))
+	out.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d%s", cache_time, header_addon))
 	switch {
 	case strings.HasSuffix(local_path, ".png"):
 		out.Header().Set("Content-Type", "image/png")
@@ -167,7 +169,8 @@ func compImageServe(store StuffStore, imgPath string, staticPath string,
 			return
 		}
 	}
-	sendResource(staticPath+"/fallback.jpg", "", out)
+	// Use fallback-resource straight away to get short cache times.
+	sendResource("", staticPath+"/fallback.jpg", out)
 }
 
 func staticServe(staticPath string, out http.ResponseWriter, r *http.Request) {
