@@ -138,15 +138,20 @@ func extractResistorDigits(value string, tolerance string) []int {
 
 var tolerance_regexp, _ = regexp.Compile(`((0?.)?\d+\%)`)
 
-func serveResistorImage(component *Component, out http.ResponseWriter) bool {
+func serveResistorImage(component *Component, value string, out http.ResponseWriter) bool {
 	defer ElapsedPrint("resistor", time.Now())
 
 	tolerance := "5%" // default;
-	if match := tolerance_regexp.FindStringSubmatch(component.Description); match != nil {
-		tolerance = match[1]
+	if component != nil {
+		if len(value) == 0 {
+			value = component.Value
+		}
+		if match := tolerance_regexp.FindStringSubmatch(component.Description); match != nil {
+			tolerance = match[1]
+		}
 	}
 
-	digits := extractResistorDigits(component.Value, tolerance)
+	digits := extractResistorDigits(value, tolerance)
 	if digits == nil {
 		return false
 	}

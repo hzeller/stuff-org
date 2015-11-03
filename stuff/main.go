@@ -135,9 +135,14 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 	out.Write(content)
 }
 
-func serveComponentImage(component *Component, out http.ResponseWriter) bool {
-	if component.Category == "Resistor" {
-		return serveResistorImage(component, out)
+func serveComponentImage(component *Component, category string, value string,
+	out http.ResponseWriter) bool {
+	// If we got a category string, it takes precedence
+	if len(category) == 0 && component != nil {
+		category = component.Category
+	}
+	if category == "Resistor" {
+		return serveResistorImage(component, value, out)
 	}
 	return false
 }
@@ -156,8 +161,10 @@ func compImageServe(store StuffStore, imgPath string, staticPath string,
 	// component
 	if comp_id, err := strconv.Atoi(requested); err == nil {
 		component := store.FindById(comp_id)
-		if component != nil &&
-			serveComponentImage(component, out) {
+		category := r.FormValue("c") // We also allow these if available
+		value := r.FormValue("v")
+		if (component != nil || len(category) > 0 || len(value) > 0) &&
+			serveComponentImage(component, category, value, out) {
 			return
 		}
 	}

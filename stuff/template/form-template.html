@@ -108,6 +108,8 @@
   }
   </style>
   <script>
+  // If we change the ID input field, the other values are not
+  // a valid representation of the component; gray things out.
   function disable_form_if_different(ev, field, orig) {
       if (ev.keyCode == 27) {  // Escape
 	  field.value = orig;
@@ -125,6 +127,25 @@
 	      elements[i].style["background-color"] = '#eeeeee';
 	  }
       }
+  }
+
+  function getRadioValue(for_name) {
+      var all_radios = document.forms[0].elements[for_name];
+      for(var i = 0; i < all_radios.length; ++i) {
+	  if (all_radios[i].checked) {
+	      return all_radios[i].value;
+	  }
+      }
+      return "";
+  }
+
+  function category_value_changed(value) {
+      // Update the URL of the image with category/value. E.g. Resistors
+      // can change the look then.
+      var doc_img = document.getElementById("component-image");
+      var value = document.getElementById("cvalue").value;
+      var category = getRadioValue("category_select");
+      doc_img.src = "/img/{{.Id}}?c=" + category + "&v=" + value
   }
   </script>
 </head>
@@ -168,12 +189,13 @@
 	      {{range $i, $element := .CatChoice}}
 	      {{if $element.AddSeparator}}<tr>{{end}}
 	      <td><input type="radio" name="category_select" value="{{$element.Value}}"
-			  id="cat{{$i}}"
+			  id="cat{{$i}}" onchange="category_value_changed();"
 			  {{if $element.IsSelected}}checked{{end}}>
 		<label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
 	      <tr><td colspan="3">
 		<input type="radio" name="category_select"
 			value="{{.CatFallback.Value}}" id="catother"
+			onchange="category_value_changed();"
 			{{if .CatFallback.IsSelected}}checked{{end}}>
 		<label for="catother">(other)</label>
 		<input type="text" name="category_txt" value="{{.CategoryText}}"
@@ -185,6 +207,7 @@
 	    <td align="right"><label for="cvalue">Name/Value</label></td>
 	    <td><input type="text" id="cvalue" size="40"
 			name="value" value="{{.Value}}"
+			onkeyup="category_value_changed();"
 			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 			autofocus></td>
 	  </tr>
@@ -234,7 +257,7 @@
       <td style="vertical-align:top;" align="left">
 	<!-- fixed size to help browser layout. TODO: this happens to be the
 	image size we use right	now, but that needs to be adapted of course -->
-	<img height="320" widt="400" src="/img/{{.Id}}"/>
+	<img height="320" widt="400" id="component-image" src="/img/{{.Id}}"/>
 	<div class="msgbox">{{.Msg}}</div>
 
 	<!-- Status around -->
