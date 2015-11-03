@@ -18,6 +18,7 @@ type Selection struct {
 }
 type FormPage struct {
 	Component // All these values are shown in the form
+	Version   int
 
 	// Category choice.
 	CatChoice    []Selection
@@ -102,7 +103,13 @@ func entryFormHandler(store StuffStore, imageDir string,
 
 	requestStore := r.FormValue("store_id") != ""
 	msg := ""
-	page := &FormPage{}
+	page := &FormPage{
+		// Version number is some value to be added to the image
+		// URL so that the browser is forced to fetch it, independent of
+		// its cache. This could be the last updated timestamp,
+		// but for now, we just give it a sufficiently random number.
+		Version: int(time.Now().UnixNano() % 10000),
+	}
 
 	defer ElapsedPrint("Form action", time.Now())
 

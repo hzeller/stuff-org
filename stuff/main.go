@@ -153,7 +153,6 @@ func compImageServe(store StuffStore, imgPath string, staticPath string,
 	requested := r.URL.Path[prefix_len:]
 	path := imgPath + "/" + requested + ".jpg"
 	if _, err := os.Stat(path); err == nil { // we have an image.
-		fmt.Printf("%s: found image", requested)
 		sendResource(path, staticPath+"/fallback.jpg", out)
 		return
 	}
