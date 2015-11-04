@@ -49,6 +49,27 @@ func expToIndex(exp int) int {
 	}
 }
 
+func toleranceFromString(tolerance_string string, default_value int) int {
+	switch tolerance_string {
+	case "5%":
+		return 10
+	case "10%":
+		return 11
+	case "1%":
+		return 1
+	case "2%":
+		return 2
+	case "0.5%", ".5%":
+		return 5
+	case "0.25%", ".25%":
+		return 6
+	case "0.1%", ".1%":
+		return 7
+	default:
+		return default_value
+	}
+}
+
 // Extract the values from the given string.
 // Returns an array of either 4 or 5 integers depending
 // on precision.
@@ -56,25 +77,6 @@ func expToIndex(exp int) int {
 func extractResistorDigits(value string, tolerance string) []int {
 	if len(value) == 0 {
 		return nil
-	}
-
-	// Tolerance
-	tolerance_digit := 10 // Default: 5%
-	switch tolerance {
-	case "5%":
-		tolerance_digit = 10
-	case "10%":
-		tolerance_digit = 11
-	case "1%":
-		tolerance_digit = 1
-	case "2%":
-		tolerance_digit = 2
-	case "0.5%":
-		tolerance_digit = 5
-	case "0.25%":
-		tolerance_digit = 6
-	case "0.1%":
-		tolerance_digit = 7
 	}
 
 	exp := 0
@@ -125,10 +127,12 @@ func extractResistorDigits(value string, tolerance string) []int {
 	var multiplier_digit int
 	if relevant_digits <= 2 {
 		multiplier_digit = expToIndex(exp - 2)
-		result = []int{digits[0], digits[1], multiplier_digit, tolerance_digit}
+		result = []int{digits[0], digits[1], multiplier_digit,
+			toleranceFromString(tolerance /*default 5%:*/, 10)}
 	} else {
 		multiplier_digit = expToIndex(exp - 3)
-		result = []int{digits[0], digits[1], digits[2], multiplier_digit, tolerance_digit}
+		result = []int{digits[0], digits[1], digits[2], multiplier_digit,
+			toleranceFromString(tolerance /*default 1%:*/, 1)}
 	}
 	if multiplier_digit >= 0 {
 		return result
@@ -142,7 +146,7 @@ var tolerance_regexp, _ = regexp.Compile(`((0?.)?\d+\%)`)
 func serveResistorImage(component *Component, value string, out http.ResponseWriter) bool {
 	defer ElapsedPrint("resistor", time.Now())
 
-	tolerance := "5%" // default;
+	tolerance := ""
 	if component != nil {
 		if len(value) == 0 {
 			value = component.Value

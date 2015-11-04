@@ -25,21 +25,28 @@ func ExpectValue(t *testing.T, expected []int, value string, tolerance string) b
 
 func TestExtractResistorValue(t *testing.T) {
 	ExpectValue(t, []int{1, 0, 2, 10}, "1k", "5%")
+	ExpectValue(t, []int{1, 0, 2, 10}, "1k", "")
+
 	ExpectValue(t, []int{1, 0, 2, 1}, "1k", "1%")
-	ExpectValue(t, []int{1, 0, 2, 1}, "1.0k", "1%")
-	ExpectValue(t, []int{1, 0, 0, 1, 1}, "1.00k", "1%")
+	ExpectValue(t, []int{1, 0, 2, 5}, "1k", "0.5%")
+	ExpectValue(t, []int{1, 0, 2, 5}, "1k", ".5%")
 
-	ExpectValue(t, []int{1, 0, 3, 10}, "10k", "5%")
-	ExpectValue(t, []int{1, 0, 4, 10}, "100k", "5%")
-	ExpectValue(t, []int{1, 0, 4, 10}, "100000", "5%")
+	// Without tolerance, we assume 5% for two digit, 1% for
+	// three digit values.
+	ExpectValue(t, []int{1, 0, 2, 10}, "1.0k", "")
+	ExpectValue(t, []int{1, 0, 0, 1, 1}, "1.00k", "")
 
-	ExpectValue(t, []int{2, 3, 7, 2, 10}, "23.7k", "5%")
+	ExpectValue(t, []int{1, 0, 3, 10}, "10k", "")
+	ExpectValue(t, []int{1, 0, 4, 10}, "100k", "")
+	ExpectValue(t, []int{1, 0, 4, 10}, "100000", "")
 
-	ExpectValue(t, []int{1, 5, 10, 10}, "1.5", "5%")
-	ExpectValue(t, []int{1, 5, 11, 10}, "0.15", "5%")
+	ExpectValue(t, []int{2, 3, 7, 2, 1}, "23.7k", "")
+
+	ExpectValue(t, []int{1, 5, 10, 10}, "1.5", "")
+	ExpectValue(t, []int{1, 5, 11, 10}, "0.15", "")
 
 	ExpectValue(t, nil, "10k x", "5%") // garbage in.
 
 	ExpectValue(t, nil, "0.111", "5%") // impossible multiplier
-	ExpectValue(t, []int{1, 1, 1, 11, 10}, "1.11", "5%")
+	ExpectValue(t, []int{1, 1, 1, 11, 1}, "1.11", "")
 }
