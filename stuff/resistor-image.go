@@ -14,14 +14,14 @@ type ResistorDigit struct {
 }
 
 var resistorColorConstants []ResistorDigit = []ResistorDigit{
-	{Color: "#000000", Digit: "0 (Black)", Multiplier: "x1Ω"},
-	{Color: "#885500", Digit: "1 (Brown)", Multiplier: "x10Ω", Tolerance: "1% (Brown)"},
-	{Color: "#ff0000", Digit: "2 (Red)", Multiplier: "x100Ω", Tolerance: "2% (Red)"},
-	{Color: "#ff9900", Digit: "3 (Orange)", Multiplier: "x1000Ω"},
-	{Color: "#ffff00", Digit: "4 (Yellow)", Multiplier: "x10kΩ"},
-	{Color: "#00ff00", Digit: "5 (Green)", Multiplier: "x100kΩ", Tolerance: "0.5% (Green)"},
-	{Color: "#0000ff", Digit: "6 (Blue)", Multiplier: "x1MΩ", Tolerance: "0.25% (Blue)"},
-	{Color: "#cd65ff", Digit: "7 (Violet)", Multiplier: "x10MΩ", Tolerance: "0.1% (Violet)"},
+	{Color: "#000000", Digit: "0 (Black)", Multiplier: "x1Ω (Black)"},
+	{Color: "#885500", Digit: "1 (Brown)", Multiplier: "x10Ω (Brown)", Tolerance: "1% (Brown)"},
+	{Color: "#ff0000", Digit: "2 (Red)", Multiplier: "x100Ω (Red)", Tolerance: "2% (Red)"},
+	{Color: "#ff9900", Digit: "3 (Orange)", Multiplier: "x1kΩ (Orange)"},
+	{Color: "#ffff00", Digit: "4 (Yellow)", Multiplier: "x10kΩ (Yellow)"},
+	{Color: "#00ff00", Digit: "5 (Green)", Multiplier: "x100kΩ (Green)", Tolerance: ".5% (Green)"},
+	{Color: "#0000ff", Digit: "6 (Blue)", Multiplier: "x1MΩ (Blue)", Tolerance: ".25% (Blue)"},
+	{Color: "#cd65ff", Digit: "7 (Violet)", Multiplier: "x10MΩ (Violet)", Tolerance: ".1% (Violet)"},
 	{Color: "#a0a0a0", Digit: "8 (Gray)", Tolerance: "0.05%"},
 	{Color: "#ffffff", Digit: "9 (White)"},
 	// Tolerances
@@ -30,6 +30,7 @@ var resistorColorConstants []ResistorDigit = []ResistorDigit{
 }
 
 type ResistorTemplate struct {
+	Value                string
 	First, Second, Third ResistorDigit
 	Multiplier           ResistorDigit
 	Tolerance            ResistorDigit
@@ -156,7 +157,9 @@ func serveResistorImage(component *Component, value string, out http.ResponseWri
 		return false
 	}
 
-	bands := &ResistorTemplate{}
+	bands := &ResistorTemplate{
+		Value: value + "Ω",
+	}
 	out.Header().Set("Content-Type", "image/svg+xml")
 	if len(digits) == 4 {
 		bands.First = resistorColorConstants[digits[0]]
