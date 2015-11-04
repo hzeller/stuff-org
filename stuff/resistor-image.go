@@ -17,7 +17,7 @@ var resistorColorConstants []ResistorDigit = []ResistorDigit{
 	{Color: "#000000", Digit: "0 (Black)", Multiplier: "x1Ω (Black)"},
 	{Color: "#885500", Digit: "1 (Brown)", Multiplier: "x10Ω (Brown)", Tolerance: "1% (Brown)"},
 	{Color: "#ff0000", Digit: "2 (Red)", Multiplier: "x100Ω (Red)", Tolerance: "2% (Red)"},
-	{Color: "#ff9900", Digit: "3 (Orange)", Multiplier: "x1kΩ (Orange)"},
+	{Color: "#ffbb22", Digit: "3 (Orange)", Multiplier: "x1kΩ (Orange)"},
 	{Color: "#ffff00", Digit: "4 (Yellow)", Multiplier: "x10kΩ (Yellow)"},
 	{Color: "#00ff00", Digit: "5 (Green)", Multiplier: "x100kΩ (Green)", Tolerance: ".5% (Green)"},
 	{Color: "#0000ff", Digit: "6 (Blue)", Multiplier: "x1MΩ (Blue)", Tolerance: ".25% (Blue)"},
