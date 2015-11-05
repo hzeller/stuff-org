@@ -37,11 +37,26 @@ type FormPage struct {
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
 
 func cleanupResistor(component *Component) {
-	optional_percent, _ := regexp.Compile(`,?\s*(\d+\%)`)
+	optional_ppm, _ := regexp.Compile(`(?i)[,;]\s*(\d+\s*ppm)`)
+	if match := optional_ppm.FindStringSubmatch(component.Value); match != nil {
+		component.Description = strings.ToLower(match[1]) + "; " + component.Description
+		component.Value = optional_ppm.ReplaceAllString(component.Value, "")
+	}
+
+	// Move percent into description.
+	optional_percent, _ := regexp.Compile(`[,;]\s*((\+/-\s*)?(0?\.)?\d+\%)`)
 	if match := optional_percent.FindStringSubmatch(component.Value); match != nil {
-		component.Description = match[1] + " " + component.Description
+		component.Description = match[1] + "; " + component.Description
 		component.Value = optional_percent.ReplaceAllString(component.Value, "")
 	}
+
+	optional_watt, _ := regexp.Compile(`(?i)[,;]\s*((((\d*\.)?\d+)|(\d+/\d+))\s*W(att)?)`)
+	if match := optional_watt.FindStringSubmatch(component.Value); match != nil {
+		component.Description = match[1] + "; " + component.Description
+		component.Value = optional_watt.ReplaceAllString(component.Value, "")
+	}
+
+	// Get rid of Ohm
 	optional_ohm, _ := regexp.Compile(`(?i)\s*ohm`)
 	component.Value = optional_ohm.ReplaceAllString(component.Value, "")
 
