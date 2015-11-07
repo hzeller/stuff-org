@@ -69,6 +69,22 @@ func cleanupResistor(component *Component) {
 	component.Value = cleanString(component.Value)
 }
 
+func cleanFootprint(component *Component) {
+	component.Footprint = cleanString(component.Footprint)
+
+	to_package, _ := regexp.Compile(`(?i)^to-?(\d+)`)
+	component.Footprint = to_package.ReplaceAllString(component.Footprint, "TO-$1")
+
+	// For sip/dip packages: canonicalize to _p_ and end and move digits to end.
+	sdip_package, _ := regexp.Compile(`(?i)^((\d+)[ -]?)?([sd])i[lp][ -]?(\d+)?`)
+	if match := sdip_package.FindStringSubmatch(component.Footprint); match != nil {
+		component.Footprint = sdip_package.ReplaceAllStringFunc(component.Footprint,
+			func(string) string {
+				return strings.ToUpper(match[3] + "IP-" + match[2] + match[4])
+			})
+	}
+}
+
 func cleanString(input string) string {
 	result := strings.TrimSpace(input)
 	return strings.Replace(result, "\r\n", "\n", -1)
@@ -81,7 +97,7 @@ func cleanupCompoent(component *Component) {
 	component.Quantity = cleanString(component.Quantity)
 	component.Notes = cleanString(component.Notes)
 	component.Datasheet_url = cleanString(component.Datasheet_url)
-	component.Footprint = cleanString(component.Footprint)
+	cleanFootprint(component)
 
 	// We should have pluggable cleanup modules per category. For
 	// now just a quick hack.

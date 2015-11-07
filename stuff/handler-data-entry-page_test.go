@@ -69,3 +69,24 @@ func TestCleanResistor(t *testing.T) {
 		t.Errorf("Description was '%s'\n", r.Description)
 	}
 }
+
+func testPackage(t *testing.T, input string, expected string) {
+	c := &Component{
+		Footprint: input,
+	}
+	cleanFootprint(c)
+	if c.Footprint != expected {
+		t.Errorf("Expected '%s', but value was '%s'\n", expected, c.Footprint)
+	}
+
+}
+
+func TestCleanPackage(t *testing.T) {
+	testPackage(t, "TO-3", "TO-3")
+	testPackage(t, "   to220-3  ", "TO-220-3")
+	testPackage(t, "  dil16 ", "DIP-16")
+	testPackage(t, "  sil10-32 ", "SIP-10-32")
+	testPackage(t, "16sil", "SIP-16")
+	testPackage(t, "12dip", "DIP-12")
+	testPackage(t, "12-dip, lowercase stuff", "DIP-12, lowercase stuff")
+}

@@ -3,6 +3,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
@@ -190,6 +191,7 @@ func main() {
 	port := flag.Int("port", 2000, "Port to serve from")
 	dbFile := flag.String("dbfile", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
+	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
 
 	flag.Parse()
 
@@ -218,6 +220,26 @@ func main() {
 	store, err = NewDBBackend(db, is_dbfilenew)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Very crude way to run all the cleanup routines if
+	// requested. This is the only thing we do.
+	if *do_cleanup {
+		for i := 0; i < 3000; i++ {
+			if c := store.FindById(i); c != nil {
+				store.EditRecord(i, func(c *Component) bool {
+					before := *c
+					cleanupCompoent(c)
+					if *c == before {
+						return false
+					}
+					json, _ := json.Marshal(before)
+					log.Printf("----- %s", json)
+					return true
+				})
+			}
+		}
+		return
 	}
 
 	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
