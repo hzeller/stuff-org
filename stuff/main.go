@@ -94,9 +94,11 @@ var templates = template.Must(template.ParseFiles(
 	"template/set-drag-drop.html",
 	"template/4-Band_Resistor.svg",
 	"template/5-Band_Resistor.svg",
+	"template/package-TO-39.svg",
 	"template/package-TO-220.svg",
 	"template/package-DIP-14.svg",
-	"template/package-DIP-16.svg"))
+	"template/package-DIP-16.svg",
+	"template/package-DIP-28.svg"))
 
 func setContentTypeFromTemplateName(template_name string, header http.Header) {
 	switch {
