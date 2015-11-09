@@ -92,6 +92,9 @@ var templates = template.Must(template.ParseFiles(
 	"template/form-template.html",
 	"template/status-table.html",
 	"template/set-drag-drop.html",
+	"template/category-Diode.svg",
+	"template/category-LED.svg",
+	"template/category-Capacitor.svg",
 	"template/4-Band_Resistor.svg",
 	"template/5-Band_Resistor.svg",
 	"template/package-TO-39.svg",
@@ -168,8 +171,15 @@ func serveComponentImage(component *Component, category string, value string,
 	if len(category) == 0 && component != nil {
 		category = component.Category
 	}
-	if category == "Resistor" {
+	switch category {
+	case "Resistor":
 		return serveResistorImage(component, value, out)
+	case "Diode (D)":
+		return renderTemplate(out, out.Header(), "category-Diode.svg", component)
+	case "LED":
+		return renderTemplate(out, out.Header(), "category-LED.svg", component)
+	case "Capacitor (C)":
+		return renderTemplate(out, out.Header(), "category-Capacitor.svg", component)
 	}
 	return false
 }
