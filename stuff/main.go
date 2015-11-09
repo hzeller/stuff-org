@@ -93,24 +93,44 @@ var templates = template.Must(template.ParseFiles(
 	"template/status-table.html",
 	"template/set-drag-drop.html",
 	"template/4-Band_Resistor.svg",
-	"template/5-Band_Resistor.svg"))
+	"template/5-Band_Resistor.svg",
+	"template/package-TO-220.svg",
+	"template/package-DIP-14.svg",
+	"template/package-DIP-16.svg"))
+
+func setContentTypeFromTemplateName(template_name string, header http.Header) {
+	switch {
+	case strings.HasSuffix(template_name, ".svg"):
+		header.Set("Content-Type", "image/svg+xml")
+	default:
+		header.Set("Content-Type", "text/html; charset=utf-8")
+	}
+}
 
 // for now, render templates directly to easier edit them.
-func renderTemplate(w io.Writer, template_name string, p interface{}) {
+func renderTemplate(w io.Writer, header http.Header, template_name string, p interface{}) bool {
 	var err error
 	if *cache_templates {
-		err = templates.ExecuteTemplate(w, template_name, p)
+		template := templates.Lookup(template_name)
+		if template == nil {
+			return false
+		}
+		setContentTypeFromTemplateName(template_name, header)
+		err = template.Execute(w, p)
 	} else {
 		t, err := template.ParseFiles("template/" + template_name)
 		if err != nil {
-			log.Printf("Template broken %s", err)
-			return
+			log.Printf("Template broken %s %s", template_name, err)
+			return false
 		}
+		setContentTypeFromTemplateName(template_name, header)
 		err = t.Execute(w, p)
 	}
 	if err != nil {
-		log.Print("Template broken")
+		log.Printf("Template broken %s", template_name)
+		return false
 	}
+	return true
 }
 
 func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
@@ -138,6 +158,8 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 	out.Write(content)
 }
 
+// TODO: this component image serving stuff needs to move somewhere else.
+
 func serveComponentImage(component *Component, category string, value string,
 	out http.ResponseWriter) bool {
 	// If we got a category string, it takes precedence
@@ -148,6 +170,13 @@ func serveComponentImage(component *Component, category string, value string,
 		return serveResistorImage(component, value, out)
 	}
 	return false
+}
+
+func servePackageImage(component *Component, out http.ResponseWriter) bool {
+	if component == nil || component.Footprint == "" {
+		return false
+	}
+	return renderTemplate(out, out.Header(), "package-"+component.Footprint+".svg", component)
 }
 
 func compImageServe(store StuffStore, imgPath string, staticPath string,
@@ -167,6 +196,9 @@ func compImageServe(store StuffStore, imgPath string, staticPath string,
 		value := r.FormValue("v")
 		if (component != nil || len(category) > 0 || len(value) > 0) &&
 			serveComponentImage(component, category, value, out) {
+			return
+		}
+		if servePackageImage(component, out) {
 			return
 		}
 	}

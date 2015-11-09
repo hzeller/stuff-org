@@ -230,9 +230,8 @@ func entryFormHandler(store StuffStore, imageDir string,
 	// cookies. Simply a barebone, state-less web app: use plain cookies.
 	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
 	w.Header().Set("Content-Encoding", "gzip")
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	zipped := gzip.NewWriter(w)
-	renderTemplate(zipped, "form-template.html", page)
+	renderTemplate(zipped, w.Header(), "form-template.html", page)
 	zipped.Close()
 }
 
@@ -317,5 +316,5 @@ func relatedComponentSetHtml(store StuffStore,
 		}
 		current_set.Items = append(current_set.Items, c)
 	}
-	renderTemplate(out, "set-drag-drop.html", page)
+	renderTemplate(out, out.Header(), "set-drag-drop.html", page)
 }

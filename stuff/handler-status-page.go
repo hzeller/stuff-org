@@ -92,5 +92,5 @@ func showStatusPage(store StuffStore, imageDir string, out http.ResponseWriter, 
 		}
 
 	}
-	renderTemplate(out, "status-table.html", page)
+	renderTemplate(out, out.Header(), "status-table.html", page)
 }
