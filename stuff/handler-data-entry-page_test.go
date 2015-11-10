@@ -63,7 +63,9 @@ func testCapacitor(t *testing.T, input string, expected string, expected_desc st
 }
 
 func TestCleanCapacitor(t *testing.T) {
-	testCapacitor(t, "150Nf", "150nF", "") // fix case
+	// -- direct value codes
+	testCapacitor(t, "150Nf", "150nF", "")  // fix case
+	testCapacitor(t, "0.1 uF", "100nF", "") // Space between value
 
 	// Small fractions translated back to right multiplier
 	testCapacitor(t, "0.12uF", "120nF", "")
@@ -88,4 +90,14 @@ func TestCleanCapacitor(t *testing.T) {
 	// Extract trailing things from value
 	testCapacitor(t, "100uF 250V", "100uF", "250V")
 	testCapacitor(t, "100uF1%", "100uF", "1%")
+
+	// -- Three digit codes
+	testCapacitor(t, "104", "100nF", "")
+	testCapacitor(t, "104k", "100nF", "+/- 10%")
+	testCapacitor(t, "123", "12nF", "")
+	testCapacitor(t, "150", "15pF", "")
+	testCapacitor(t, "155", "1.5uF", "")
+
+	// Non-three digit values are untouched
+	testCapacitor(t, "1000", "1000", "")
 }

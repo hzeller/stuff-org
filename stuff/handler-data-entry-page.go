@@ -3,6 +3,7 @@ package main
 import (
 	"compress/gzip"
 	"fmt"
+	"math"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -97,9 +98,45 @@ func fmtFloatNoZero(f float64) string {
 	}
 }
 
+func makeCapacitanceString(farad float64) string {
+	switch {
+	case farad < 1000e-12:
+		return fmtFloatNoZero(farad*1e12) + "pF"
+	case farad < 1000e-9:
+		return fmtFloatNoZero(farad*1e9) + "nF"
+	default:
+		return fmtFloatNoZero(farad*1e6) + "uF"
+	}
+}
+
+func translateCapacitorToleranceLetter(letter string) string {
+	switch strings.ToLower(letter) {
+	case "d":
+		return "+/- 0.5pF"
+	case "f":
+		return "+/- 1%"
+	case "g":
+		return "+/- 2%"
+	case "h":
+		return "+/- 3%"
+	case "j":
+		return "+/- 5%"
+	case "k":
+		return "+/- 10%"
+	case "m":
+		return "+/- 20%"
+	case "p":
+		return "+100%,-0%"
+	case "z":
+		return "+80%,-20%"
+	}
+	return ""
+}
+
 func cleanupCapacitor(component *Component) {
-	valid_value, _ := regexp.Compile(`(?i)((\d*.)?\d+)([uµnp])F(.*)$`)
-	if match := valid_value.FindStringSubmatch(component.Value); match != nil {
+	farad_value, _ := regexp.Compile(`(?i)^((\d*.)?\d+)\s*([uµnp])F(.*)$`)
+	three_digit, _ := regexp.Compile(`(?i)^(\d\d)(\d)\s*([dfghjkmpz])?$`)
+	if match := farad_value.FindStringSubmatch(component.Value); match != nil {
 		number_digits := match[1]
 		factor_character := match[3]
 		trailing := cleanString(match[4])
@@ -118,20 +155,28 @@ func cleanupCapacitor(component *Component) {
 		if err != nil || val < 0 {
 			return // Strange value. Don't touch.
 		}
-		val = val * factor
-		switch {
-		case val < 1000e-12:
-			component.Value = fmtFloatNoZero(val*1e12) + "pF"
-		case val < 1000e-9:
-			component.Value = fmtFloatNoZero(val*1e9) + "nF"
-		default:
-			component.Value = fmtFloatNoZero(val*1e6) + "uF"
-		}
+		component.Value = makeCapacitanceString(val * factor)
 		if len(trailing) > 0 {
 			if len(component.Description) > 0 {
 				component.Description = trailing + "; " + component.Description
 			} else {
 				component.Description = trailing
+			}
+		}
+	} else if match := three_digit.FindStringSubmatch(component.Value); match != nil {
+		value, _ := strconv.ParseFloat(match[1], 32)
+		magnitude, _ := strconv.ParseFloat(match[2], 32)
+		tolerance_letter := match[3]
+		if magnitude >= 0 && magnitude <= 5 {
+			multiplier := math.Exp(magnitude*math.Log(10)) * 1e-12
+			component.Value = makeCapacitanceString(value * multiplier)
+		}
+		tolerance := translateCapacitorToleranceLetter(tolerance_letter)
+		if len(tolerance) > 0 {
+			if len(component.Description) > 0 {
+				component.Description = tolerance + "; " + component.Description
+			} else {
+				component.Description = tolerance
 			}
 		}
 	}
