@@ -2,7 +2,7 @@
   (file-encoding 'UTF-8')
   (dump-version 1 1)
   (henplus-version '0.9.8')
-  (time '2015-11-06 18:51:55.86')
+  (time '2015-11-09 18:27:38.387')
   (database-info 'SQLite - 3.8.11')
   (estimated-rows '909')
   (meta ('id'     , 'equiv_set', 'category', 'value' , 'description', 'notes' , 'datasheet_url', 'vendor', 'auto_notes', 'footprint', 'quantity', 'drawersize', 'created', 'updated')
@@ -64,7 +64,7 @@
 	(1,1,'Resistor','120','P=0.25w',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'1442851307954')
 	(76,76,'Transformer',NULL,'Transformer, Switch Invert',NULL,NULL,NULL,NULL,'','2',0,NULL,'2015-11-07 02:51:12.889160028')
 	(77,77,'Resistor','750','P=1/4w, 1% High Precision',NULL,NULL,NULL,NULL,NULL,'100',NULL,NULL,'1442849309595')
-	(78,78,'Diode (D)','3.4','P=1/4w, low precision R',NULL,NULL,NULL,NULL,NULL,'7',NULL,NULL,'1442849325330')
+	(78,78,'Resistor','3.4','P=1/4w, low precision R',NULL,NULL,NULL,NULL,'','7',0,NULL,'2015-11-10 02:17:59.014385477')
 	(79,79,'Resistor','38.k','P=1/4w, 1%',NULL,NULL,NULL,NULL,NULL,'100',NULL,NULL,'1442849337780')
 	(80,80,'Inductor (L)',NULL,'bead Ferrite',NULL,NULL,NULL,NULL,NULL,'50',NULL,NULL,'1442849351086')
 	(92,92,'Connector','Dsub 9pin','D-Subminiature  housing only, no pins',NULL,NULL,NULL,NULL,NULL,'20',NULL,NULL,'1442849540133')
@@ -331,20 +331,20 @@ https://octopart.com/search?q=LM334','http://www.ti.com/lit/ds/symlink/lm334.pdf
 	(384,384,'Transistor','AA2N 1125','Bipolar Junction Transistor, PNP Type, CAN',NULL,NULL,NULL,NULL,'','15',0,'2015-09-30 04:58:23.923164665','2015-09-30 05:03:49.920982478')
 	(386,386,'Transistor','NTE-85','Silicon NPN Transistor, General Purpose Amplifier',NULL,'http://www.nteinc.com/specs/10to99/pdf/nte85.pdf',NULL,NULL,'TO-92','10',0,'2015-09-30 05:07:14.589552628','2015-09-30 05:07:14.589552628')
 	(383,383,'Diode (D)','DAN208','Silicon Twin Rectifiers',NULL,'http://diotec.com/tl_files/diotec/files/pdf/datasheets/dan208',NULL,NULL,'','20',0,'2015-09-30 05:09:03.626238981','2015-09-30 05:20:55.65249567')
-	(387,387,'Rectifier','1N4002','100V/1A/1.1V General Purpose Rectifier',NULL,'https://www.fairchildsemi.com/products/discretes/diodes-rectifiers/rectifiers/1N4002.html',NULL,NULL,'','80',0,'2015-09-30 05:12:41.562683717','2015-09-30 05:12:41.562683717')
+	(387,387,'Diode (D)','1N4002','100V/1A/1.1V General Purpose Rectifier',NULL,'https://www.fairchildsemi.com/products/discretes/diodes-rectifiers/rectifiers/1N4002.html',NULL,NULL,'','80',0,'2015-09-30 05:12:41.562683717','2015-11-10 02:13:55.853482452')
 	(388,388,'Diode (D)',NULL,NULL,NULL,NULL,NULL,NULL,'','50',0,'2015-09-30 05:14:50.519583408','2015-09-30 05:14:50.519583408')
 	(371,371,'Transistor','2N3416','NPN, Uce=50V, Ic=500mA',NULL,'http://www.digikey.com/product-detail/en/2N3416/2N3416-ND/975912',NULL,NULL,'','8',0,'2015-10-01 01:19:48.477362723','2015-10-02 07:11:50.76017711')
-	(372,372,'Rectifier','1N5400','Axial Lead, Standard Recovery Rectifier		
+	(372,372,'Diode (D)','1N5400','Axial Lead, Standard Recovery Rectifier		
   
-  ',NULL,'http://www.alldatasheet.com/datasheet-pdf/pdf/2815/MOTOROLA/1N5400.html',NULL,NULL,'','17',0,'2015-10-01 01:25:29.94601576','2015-10-01 01:25:29.94601576')
-	(374,374,'Rectifier','ECG552','Silicon Rectifier','Equivalent= NTE552
+  ',NULL,'http://www.alldatasheet.com/datasheet-pdf/pdf/2815/MOTOROLA/1N5400.html',NULL,NULL,'','17',0,'2015-10-01 01:25:29.94601576','2015-11-10 02:13:44.134222431')
+	(374,374,'Diode (D)','ECG552','Silicon Rectifier, 600V, 1A','Equivalent= NTE552
 Silicon Rectifier
-General Purpose, Fast Recovery','http://www.weisd.com/store2/NTE552.pdf',NULL,NULL,'','6',0,'2015-10-01 01:40:44.739246211','2015-10-01 01:40:44.739246211')
+General Purpose, Fast Recovery','http://www.weisd.com/store2/NTE552.pdf',NULL,NULL,'','6',0,'2015-10-01 01:40:44.739246211','2015-11-10 02:12:32.530199052')
 	(375,375,'Amplifier','PE8050','NPN-PNP General Purpose Complementary Amplifiers & Output Drivers',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/54289/FAIRCHILD/PE8050.html',NULL,NULL,'TO-92','25',0,'2015-10-01 01:46:04.174813432','2015-10-01 01:47:22.642013142')
 	(376,376,'Amplifier','PE8550','NPN-PNP General Purpose Complementary Amplifiers & Output Drivers',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/54290/FAIRCHILD/PE8550.html',NULL,NULL,'TO-92','4',0,'2015-10-01 01:49:42.190888767','2015-10-01 01:50:29.671894637')
 	(377,377,'Voltage Regulator','LM120H-12','Linear Voltage Regulators Series 3-Terminal Negative Regs',NULL,'http://www.mouser.com/ds/2/405/lm120-452959.pdf',NULL,NULL,'TO-39','21',0,'2015-10-01 01:54:34.487575061','2015-10-01 01:54:34.487575061')
 	(378,378,'Power Amplifier','MR817','Fast Recovery Power Amplifier, Axial Lead',NULL,'http://eeshop.unl.edu/pdf/MR817.pdf',NULL,NULL,'5904','40',0,'2015-10-01 02:01:13.855450253','2015-10-01 02:01:13.855450253')
-	(379,379,'Power Rectifier','MR851','Axial Lead Fast Recover Rectifier',NULL,'http://pdf.datasheetcatalog.com/datasheet/motorola/MR851.pdf',NULL,NULL,'267-03','50',0,'2015-10-01 02:04:48.947281506','2015-10-01 02:04:48.947281506')
+	(379,379,'Diode (D)','MR851','Axial Lead Fast Recover Rectifier, 100V, 3A',NULL,'http://pdf.datasheetcatalog.com/datasheet/motorola/MR851.pdf',NULL,NULL,'267-03','50',0,'2015-10-01 02:04:48.947281506','2015-11-10 02:16:05.269452041')
 	(389,389,'Transistor','TIP105','PNP Epitaxial Silicon Darlington Transistor',NULL,'https://www.fairchildsemi.com/datasheets/TI/TIP105.pdf',NULL,NULL,'TO-220','16',0,'2015-10-01 03:18:11.401385936','2015-10-01 03:18:11.401385936')
 	(390,390,'Diode (D)','DAN208','Silicon Twin Diodes',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/81819/DIOTEC/DAN208.html',NULL,NULL,'','2',0,'2015-10-01 03:22:15.319486782','2015-10-01 03:22:15.319486782')
 	(391,391,'Rectifier','ECG5306','Silicon Bridge Rectifier, 1.5A','Equivalent to: NTE5306','http://www.weisd.com/store2/NTE5306.pdf',NULL,NULL,'','4',0,'2015-10-01 03:29:36.201855312','2015-10-01 03:29:36.201855312')
@@ -506,8 +506,8 @@ Color: Red',NULL,'http://www.farnell.com/datasheets/1912665.pdf',NULL,NULL,'','1
 	(452,452,'Resistor','100k','1% p=1/4w',NULL,NULL,NULL,NULL,'','125',0,'2015-10-03 05:56:47.247743931','2015-10-03 05:56:47.247743931')
 	(453,453,'Resistor','100k','5% p=1/4w',NULL,NULL,NULL,NULL,'','30',0,'2015-10-03 05:59:29.703316058','2015-11-01 19:51:33.660702607')
 	(454,454,'Resistor','330k','5% p=1/2w',NULL,NULL,NULL,NULL,'',NULL,0,'2015-10-03 05:59:59.689231326','2015-10-03 06:00:12.059085828')
-	(225,225,'Fuse','3/4A',NULL,'250Volts',NULL,NULL,NULL,'','50',0,'2015-10-03 06:00:31.608453442','2015-10-03 06:00:31.608453442')
-	(226,226,'screws, msc.,',NULL,NULL,'mixed screws, elec. projects;',NULL,NULL,NULL,'',NULL,0,'2015-10-03 06:01:41.38749545','2015-11-03 08:40:29.848435123')
+	(225,225,'Fuse','750mA',NULL,'250Volts',NULL,NULL,NULL,'','50',0,'2015-10-03 06:00:31.608453442','2015-11-10 02:18:19.245465909')
+	(226,226,'Mounting','Screws',NULL,'mixed screws, elec. projects;',NULL,NULL,NULL,'',NULL,0,'2015-10-03 06:01:41.38749545','2015-11-10 02:18:30.444554588')
 	(455,455,'Resistor','820k','5% p=1/2w',NULL,NULL,NULL,NULL,'','85',0,'2015-10-03 06:04:52.995611851','2015-10-03 06:04:52.995611851')
 	(629,629,'Resistor','56','5%',NULL,NULL,NULL,NULL,'','8',0,'2015-10-03 06:06:56.013491031','2015-10-03 08:36:07.267491061')
 	(227,227,'Resistor','470k',NULL,NULL,NULL,NULL,NULL,'','40',0,'2015-10-03 06:07:31.344164766','2015-11-03 08:40:32.601543378')
@@ -518,9 +518,8 @@ Color: Red',NULL,'http://www.farnell.com/datasheets/1912665.pdf',NULL,NULL,'','1
 	(458,458,'Resistor','8.2M','5% p=1/4w',NULL,NULL,NULL,NULL,'',NULL,0,'2015-10-03 06:11:55.796813427','2015-10-03 06:11:55.796813427')
 	(632,632,'Resistor','10','5%',NULL,NULL,NULL,NULL,'','20',0,'2015-10-03 06:12:43.989635419','2015-10-03 06:12:43.989635419')
 	(633,633,'Resistor','15','5%',NULL,NULL,NULL,NULL,'','5',0,'2015-10-03 06:13:48.920875178','2015-10-03 06:13:48.920875178')
-	(228,228,'Integrated Circuit (IC)','Voltage Regulator',NULL,'The MC1723C is a positive or negative voltage regulator designed to
-deliver load current to 150 mAdc. ]
-  and one or mor other ic types',NULL,NULL,NULL,'',NULL,0,'2015-10-03 06:16:16.015816458','2015-10-03 06:16:16.015816458')
+	(228,228,'Integrated Circuit (IC)','MC1723C','The MC1723C is a positive or negative voltage regulator designed to
+deliver load current to 150 mAdc',NULL,NULL,NULL,NULL,'',NULL,0,'2015-10-03 06:16:16.015816458','2015-11-10 02:17:35.445629634')
 	(459,459,'R-Network','150','101C151, Resistor network 5 resistors',NULL,'http://datasheet.octopart.com/L101C151-BI-Technologies-datasheet-11551528.pdf',NULL,NULL,'SIP-10','60',0,'2015-10-03 06:19:11.649457513','2015-11-07 02:51:13.948508458')
 	(634,634,'Potentiometer','50k','Trimmer',NULL,NULL,NULL,NULL,'','35',0,'2015-10-03 06:21:58.829111529','2015-10-03 08:36:14.529853361')
 	(635,635,'Resistor','18','5%',NULL,NULL,NULL,NULL,'','75',0,'2015-10-03 06:22:25.872874958','2015-10-03 06:22:40.966518412')
@@ -624,15 +623,15 @@ Also contains 10-1-822
 	(509,509,'Diode (D)','1N3920','Diode Rectifier, Stud Package',NULL,NULL,NULL,NULL,'','14',0,'2015-10-08 00:31:02.165379705','2015-10-08 00:31:02.165379705')
 	(508,508,'Diode (D)',NULL,NULL,NULL,NULL,NULL,NULL,'','77',0,'2015-10-08 00:51:49.138090026','2015-10-08 00:51:49.138090026')
 	(507,507,'Diode (D)','1N1184A','Silicon Power Rectifier Diode, 100 V, 40 A, 1.19 V, Single',NULL,'http://www.newark.com/pdfs/datasheets/SSI/10P3916.pdf',NULL,NULL,'','14',0,'2015-10-08 00:57:52.08538902','2015-10-08 00:57:52.08538902')
-	(506,506,'Transistor','FBN-L198A',NULL,NULL,NULL,NULL,NULL,'TO-3','24',1,'2015-10-08 01:12:35.501993789','2015-10-27 02:23:43.676457851')
-	(505,505,NULL,NULL,NULL,'Empty Bin - Combined with Bin 506',NULL,NULL,NULL,'',NULL,0,'2015-10-08 01:19:40.573490538','2015-10-08 01:19:40.573490538')
+	(506,505,'Transistor','FBN-L198A',NULL,NULL,NULL,NULL,NULL,'TO-3','24',1,'2015-10-08 01:12:35.501993789','2015-10-27 02:23:43.676457851')
+	(505,505,'Transistor','FBN-L198A',NULL,'Empty Bin - Combined with Bin 506',NULL,NULL,NULL,'',NULL,0,'2015-10-08 01:19:40.573490538','2015-11-10 02:26:17.682137328')
 	(517,517,'Transistor','C681','Transistor, N-Channel JFET',NULL,'http://www.datasheetlib.com/datasheet/1455309/c681a_american-microsemiconductor.html',NULL,NULL,'','58',2,'2015-10-08 03:26:44.054478776','2015-10-08 03:26:44.054478776')
 	(500,500,'Varistor','08Z2','Metal oxide varistor. 4VAC 5.5VDC 0.8 Joules. Mount: PCB, radial leads. Dimensions: 10mm D. Note: Marked 08Z2.',NULL,'http://www.datasheetarchive.com/dl/Datasheets-IS20/DSA00396553.pdf',NULL,NULL,'','86',0,'2015-10-08 03:54:31.548052476','2015-10-08 03:54:31.548052476')
 	(501,501,'Rectifier','2N3896','Silicon Controlled Rectifier',NULL,'http://html.alldatasheet.com/html-pdf/80514/MOTOROLA/2N3896/320/1/2N3896.html',NULL,NULL,'Case 175-02','20',0,'2015-10-08 04:00:18.396431559','2015-10-08 04:00:18.396431559')
 	(502,502,'Transistor','BU208','Horizontal Deflection Transistor, 5 Amp, 1300-1500 Volts, 55 Watts',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/2595/MOSPEC/BU208.html',NULL,NULL,'TO-2','14',0,'2015-10-08 04:06:07.493756941','2015-10-08 04:06:07.493756941')
 	(503,503,'Resistor','200','5% Resistor, Axial Lead',NULL,NULL,NULL,NULL,'','130',0,'2015-10-08 04:12:11.481523055','2015-11-03 08:38:16.036651418')
 	(959,959,'Inductor (L)','Silicon Controlled Rectifier','2N3896 8751, 9024,',NULL,'http://www.alldatasheet.com/datasheet-pdf/pdf/80514/MOTOROLA/2N3896.html',NULL,NULL,'TO-203','4',0,'2015-10-10 22:49:21.775253667','2015-11-03 08:45:22.25977631')
-	(960,960,'Rectifier','1N3899R 8634 Ultra Fast Rectifier','Fast Recovery Rectifier, 20A','Standard polarity, stud is cathode','http://www.digchip.com/datasheets/parts/datasheet/300/1N3899R.php',NULL,NULL,'TO-203','1',0,'2015-10-10 22:50:20.662427186','2015-10-10 23:50:03.230000272')
+	(960,960,'Diode (D)','1N3899R','Fast Recovery Rectifier, 20A','Standard polarity, stud is cathode','http://www.digchip.com/datasheets/parts/datasheet/300/1N3899R.php',NULL,NULL,'TO-203','1',0,'2015-10-10 22:50:20.662427186','2015-11-10 02:14:06.635821814')
 	(961,961,'Fuse',NULL,NULL,NULL,NULL,NULL,NULL,'Cartridge','8',0,'2015-10-10 22:50:33.391821135','2015-10-10 23:47:32.525626491')
 	(962,962,'Fuse',NULL,NULL,NULL,NULL,NULL,NULL,'Cartridge','8',0,'2015-10-10 22:52:19.116513934','2015-10-10 23:25:24.629012503')
 	(963,963,'Fuse',NULL,NULL,NULL,NULL,NULL,NULL,'Cartridge','35',0,'2015-10-10 22:52:30.84466324','2015-10-10 23:25:31.082896492')
@@ -734,12 +733,12 @@ Potentiometer',NULL,'http://www.mouser.com/ds/2/414/tt%20electronics_89-334285.p
 	(803,803,'Integrated Circuit (IC)','MC6850','Medium size 24 pin ic',NULL,NULL,NULL,NULL,'','7',0,'2015-10-20 02:59:16.67285713','2015-10-20 02:59:16.67285713')
 	(804,804,'Integrated Circuit (IC)','TL 497ACN','7 pin ic',NULL,NULL,NULL,NULL,'','6',0,'2015-10-20 03:00:10.144830375','2015-10-20 03:01:10.533122219')
 	(805,805,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,0,'2015-10-20 03:02:27.087550454','2015-10-20 03:02:56.140738545')
-	(808,808,'Integrated Circuit (IC)','Atari ic','Medium size 28pin ic',NULL,NULL,NULL,NULL,'','1',0,'2015-10-20 03:03:38.403409585','2015-10-20 03:03:38.403409585')
-	(809,809,'Integrated Circuit (IC)','Atari ic','Medium size 28 pin ic',NULL,NULL,NULL,NULL,'','1',0,'2015-10-20 03:04:42.12850415','2015-10-20 03:04:42.12850415')
-	(810,810,'Integrated Circuit (IC)','C101648-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'','6',0,'2015-10-20 03:05:43.74501175','2015-10-20 03:05:43.74501175')
-	(811,811,'Integrated Circuit (IC)','C101647-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'',NULL,0,'2015-10-20 03:06:32.106835697','2015-10-20 03:06:32.106835697')
-	(812,812,'Integrated Circuit (IC)','C026164-001','Medium 28pin ic',NULL,NULL,NULL,NULL,'','1',0,'2015-10-20 03:07:49.078166832','2015-10-20 03:07:49.078166832')
-	(813,813,'Integrated Circuit (IC)','C026165-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'','2',0,'2015-10-20 03:08:23.140412183','2015-10-20 03:08:23.140412183')
+	(808,808,'Integrated Circuit (IC)','Atari ic','Medium size 28pin ic',NULL,NULL,NULL,NULL,'DIP-28','1',0,'2015-10-20 03:03:38.403409585','2015-11-09 06:14:38.812129595')
+	(809,809,'Integrated Circuit (IC)','Atari ic','Medium size 28 pin ic',NULL,NULL,NULL,NULL,'DIP-28','1',0,'2015-10-20 03:04:42.12850415','2015-11-09 06:14:19.303507564')
+	(810,810,'Integrated Circuit (IC)','C101648-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'DIP-28','6',0,'2015-10-20 03:05:43.74501175','2015-11-09 06:14:07.753798794')
+	(811,811,'Integrated Circuit (IC)','C101647-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'DIP-28',NULL,0,'2015-10-20 03:06:32.106835697','2015-11-09 06:13:57.877746355')
+	(812,812,'Integrated Circuit (IC)','C026164-001','Medium 28pin ic',NULL,NULL,NULL,NULL,'DIP-28','1',0,'2015-10-20 03:07:49.078166832','2015-11-09 06:14:29.371084102')
+	(813,813,'Integrated Circuit (IC)','C026165-001','Medium 28 pin ic',NULL,NULL,NULL,NULL,'DIP-28','2',0,'2015-10-20 03:08:23.140412183','2015-11-09 06:13:47.154416869')
 	(814,814,'Integrated Circuit (IC)','MC68010LB 12TA28647','Medium64pin ic',NULL,NULL,NULL,NULL,'','3',0,'2015-10-20 03:08:43.579537824','2015-10-20 03:10:05.280818073')
 	(815,815,'Integrated Circuit (IC)','Atari C101629-001','28 pin ic',NULL,NULL,NULL,NULL,'','4',0,'2015-10-20 03:11:13.276930968','2015-10-20 03:11:36.851658044')
 	(571,571,'Fuse','5A 250V',NULL,NULL,NULL,NULL,NULL,'','4',0,'2015-10-21 04:31:19.666061705','2015-10-21 04:31:19.666061705')
@@ -829,10 +828,10 @@ Transistors, NPN',NULL,'http://www.onsemi.com/pub_link/Collateral/TIP120-D.PDF',
 Four NAND gates on a chip!',NULL,'http://www.mouser.com/catalog/specsheets/7403.pdf',NULL,NULL,'',NULL,0,'2015-10-24 21:42:56.145156581','2015-11-07 02:51:14.567232408')
 	(1087,1087,NULL,'74S05N','Hex-Inverters
 6 NOT gates.',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/27372/TI/74S05.html',NULL,NULL,'DIP-14',NULL,0,'2015-10-24 21:44:40.111792633','2015-11-07 02:51:14.595319445')
-	(693,693,'Diode (D)','1W 3.7V','IN4729',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/94913/FAIRCHILD/IN4729A.html',NULL,NULL,'','15',0,'2015-10-27 02:19:10.49291027','2015-10-27 02:19:10.49291027')
-	(694,694,'Diode (D)','5.6v 400mW','IN752A',NULL,'http://www.futurlec.com/Diodes/1N752.shtml',NULL,NULL,'','30',0,'2015-10-27 02:21:22.578786516','2015-10-27 02:21:22.578786516')
-	(695,695,'Diode (D)','60V 5A','506',NULL,'http://www.nteinc.com/specs/500to599/pdf/nte506.pdf',NULL,NULL,'','10',0,'2015-10-27 02:24:38.385871003','2015-10-27 02:24:38.385871003')
-	(696,696,'Diode (D)','3A','IN5407',NULL,'http://pdf.datasheetcatalog.com/datasheet/jgd/1N5407.pdf',NULL,NULL,'','100',0,'2015-10-27 02:26:01.820343873','2015-10-27 02:43:11.87253177')
+	(693,693,'Diode (D)','IN4729','1W 3.7V',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/94913/FAIRCHILD/IN4729A.html',NULL,NULL,'','15',0,'2015-10-27 02:19:10.49291027','2015-11-10 02:19:04.61913965')
+	(694,694,'Diode (D)','IN752A','5.6v 400mW',NULL,'http://www.futurlec.com/Diodes/1N752.shtml',NULL,NULL,'','30',0,'2015-10-27 02:21:22.578786516','2015-11-10 02:19:19.664597136')
+	(695,695,'? MYSTERY','NTE506','60V 5A',NULL,'http://www.nteinc.com/specs/500to599/pdf/nte506.pdf',NULL,NULL,'','10',0,'2015-10-27 02:24:38.385871003','2015-11-10 02:20:06.004238072')
+	(696,696,'Diode (D)','IN5407','3A',NULL,'http://pdf.datasheetcatalog.com/datasheet/jgd/1N5407.pdf',NULL,NULL,'','100',0,'2015-10-27 02:26:01.820343873','2015-11-10 02:20:17.784826294')
 	(697,697,'Resistor','51k','1% 1/4w',NULL,NULL,NULL,NULL,'','10',0,'2015-10-27 02:28:14.465486381','2015-10-27 02:28:14.465486381')
 	(698,698,'Diode (D)','24V 1W','IN4749A',NULL,'http://pdf.datasheetcatalog.com/datasheets/70/496900_DS.pdf',NULL,NULL,'','12',0,'2015-10-27 02:30:06.452970302','2015-10-27 02:30:06.452970302')
 	(699,699,'Diode (D)','600V 3A','FR305',NULL,'http://www.diodes.com/_files/datasheets/products_inactive_data/ds26003.pdf',NULL,NULL,'','11',0,'2015-10-27 02:31:12.791487798','2015-10-27 02:40:41.76491396')
@@ -952,7 +951,7 @@ Number of LEDs: 1','http://www.jameco.com/Jameco/Products/ProdDS/2183058.pdf',NU
 	(847,847,'Integrated Circuit (IC)','P21256-12','16-Pin DIP',NULL,'http://images.ihscontent.net/vipimages/VipMasterIC/IC/INTL/INTLS03162/INTLS03162-1.pdf',NULL,NULL,'','7',0,'2015-11-04 06:08:22.923116099','2015-11-04 06:08:22.923116099')
 	(844,844,'Integrated Circuit (IC)','D41256C',NULL,NULL,NULL,NULL,NULL,'','4',0,'2015-11-04 06:10:45.017196666','2015-11-04 06:10:45.017196666')
 	(845,845,'Integrated Circuit (IC)','DS3487N','Quad TRI-STATE® Line Driver',NULL,'http://pdf1.alldatasheet.com/datasheet-pdf/view/8427/NSC/DS3487N.html',NULL,NULL,'','7',0,'2015-11-04 06:11:51.768666736','2015-11-04 06:11:51.768666736')
-	(840,840,'LED',NULL,'125V 2A',NULL,NULL,NULL,NULL,'','23',0,'2015-11-04 06:12:52.915643689','2015-11-04 06:12:52.915643689')
+	(840,840,'? MYSTERY',NULL,'125V 2A','Mystery: this was marked as LED, but the 125V 2A indicate that this is something different. A Fuse ?',NULL,NULL,NULL,'','23',0,'2015-11-04 06:12:52.915643689','2015-11-10 02:22:17.635074646')
 	(848,848,'Integrated Circuit (IC)','EP9206--075','14-pin DIP',NULL,'http://datasheet.eeworld.com.cn/pdf/225686,ETC,EP9206-006.pdf',NULL,NULL,'','2',0,'2015-11-04 06:14:50.392542121','2015-11-04 06:14:58.399947382')
 	(850,850,'? MYSTERY',NULL,NULL,NULL,NULL,NULL,NULL,'',NULL,0,'2015-11-04 06:15:34.232902416','2015-11-04 06:15:34.232902416')
 	(851,851,'rubber bands','rubber bands',NULL,NULL,NULL,NULL,NULL,'','25',0,'2015-11-04 06:15:50.185023349','2015-11-04 06:15:50.185023349')
