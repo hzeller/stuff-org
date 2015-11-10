@@ -69,7 +69,7 @@ func cleanupResistor(component *Component) {
 	component.Value = cleanString(component.Value)
 }
 
-func cleanFootprint(component *Component) {
+func cleanupFootprint(component *Component) {
 	component.Footprint = cleanString(component.Footprint)
 
 	to_package, _ := regexp.Compile(`(?i)^to-?(\d+)`)
@@ -85,6 +85,58 @@ func cleanFootprint(component *Component) {
 	}
 }
 
+// Format a float value with single digit precision, but remove unneccessary .0
+// (mmh, this looks like there should be some standard formatting modifier that
+// does exactly that.
+func fmtFloatNoZero(f float64) string {
+	result := fmt.Sprintf("%.1f", f)
+	if strings.HasSuffix(result, ".0") {
+		return result[:len(result)-2] // remove trailing zero
+	} else {
+		return result
+	}
+}
+
+func cleanupCapacitor(component *Component) {
+	valid_value, _ := regexp.Compile(`(?i)((\d*.)?\d+)([uµnp])F(.*)$`)
+	if match := valid_value.FindStringSubmatch(component.Value); match != nil {
+		number_digits := match[1]
+		factor_character := match[3]
+		trailing := cleanString(match[4])
+		// Sometimes, values are written as strange multiples, e.g. 100nF is
+		// sometimes written as 0.1uF. Normalize here.
+		factor := 1e-6
+		switch factor_character {
+		case "u", "U", "µ":
+			factor = 1e-6
+		case "n", "N":
+			factor = 1e-9
+		case "p", "P":
+			factor = 1e-12
+		}
+		val, err := strconv.ParseFloat(number_digits, 32)
+		if err != nil || val < 0 {
+			return // Strange value. Don't touch.
+		}
+		val = val * factor
+		switch {
+		case val < 1000e-12:
+			component.Value = fmtFloatNoZero(val*1e12) + "pF"
+		case val < 1000e-9:
+			component.Value = fmtFloatNoZero(val*1e9) + "nF"
+		default:
+			component.Value = fmtFloatNoZero(val*1e6) + "uF"
+		}
+		if len(trailing) > 0 {
+			if len(component.Description) > 0 {
+				component.Description = trailing + "; " + component.Description
+			} else {
+				component.Description = trailing
+			}
+		}
+	}
+}
+
 func cleanString(input string) string {
 	result := strings.TrimSpace(input)
 	return strings.Replace(result, "\r\n", "\n", -1)
@@ -97,13 +149,15 @@ func cleanupCompoent(component *Component) {
 	component.Quantity = cleanString(component.Quantity)
 	component.Notes = cleanString(component.Notes)
 	component.Datasheet_url = cleanString(component.Datasheet_url)
-	cleanFootprint(component)
+	cleanupFootprint(component)
 
 	// We should have pluggable cleanup modules per category. For
 	// now just a quick hack.
 	switch component.Category {
 	case "Resistor":
 		cleanupResistor(component)
+	case "Capacitor (C)", "Aluminum Cap":
+		cleanupCapacitor(component)
 	}
 }
 

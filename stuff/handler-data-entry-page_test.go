@@ -11,70 +11,37 @@ func TestCleanString(t *testing.T) {
 	}
 }
 
-func TestCleanResistor(t *testing.T) {
+func testComponentCleaner(t *testing.T, cleanup_call func(*Component),
+	input string, expected_value, expected_desc string) {
 	r := &Component{
-		Value: "5.67 K Ohm, 1%", // Uppercase K, Ohm and percent.
+		Value: input,
 	}
-	cleanupResistor(r)
-	if r.Value != "5.67k" {
-		t.Errorf("Value was '%s'\n", r.Value)
+	cleanup_call(r)
+	if r.Value != expected_value {
+		t.Errorf("Expected value %s, but was '%s'\n", expected_value, r.Value)
 	}
-	if r.Description != "1%;" {
-		t.Errorf("Description was '%s'\n", r.Description)
-	}
-
-	r = &Component{
-		Value: "15  , 0.5%",
-	}
-	cleanupResistor(r)
-	if r.Value != "15" {
-		t.Errorf("Value was '%s'\n", r.Value)
-	}
-	if r.Description != "0.5%;" {
-		t.Errorf("Description was '%s'\n", r.Description)
+	if r.Description != expected_desc {
+		t.Errorf("Expected description %s but was '%s'\n", expected_desc, r.Description)
 	}
 
-	r = &Component{
-		Value: "150K, .1%, 1/4W", // tolerance without leading digit
-	}
-	cleanupResistor(r)
-	if r.Value != "150k" {
-		t.Errorf("Value was '%s'\n", r.Value)
-	}
-	if r.Description != "1/4W; .1%;" {
-		t.Errorf("Description was '%s'\n", r.Description)
-	}
+}
+func testResistor(t *testing.T, input string, expected_value, expected_desc string) {
+	testComponentCleaner(t, cleanupResistor, input, expected_value, expected_desc)
+}
 
-	// Same with +/-
-	r = &Component{
-		Value: "150K, +/- .1%, 100ppm", // tolerance without leading digit, temp coefficent
-	}
-	cleanupResistor(r)
-	if r.Value != "150k" {
-		t.Errorf("Value was '%s'\n", r.Value)
-	}
-	if r.Description != "+/- .1%; 100ppm;" {
-		t.Errorf("Description was '%s'\n", r.Description)
-	}
-
-	// Same with +/-
-	r = &Component{
-		Value: "150K; +/- 0.25%; 5 wAtT, 100 PPM", // tolerance without leading digit, temp coefficent
-	}
-	cleanupResistor(r)
-	if r.Value != "150k" {
-		t.Errorf("Value was '%s'\n", r.Value)
-	}
-	if r.Description != "5 wAtT; +/- 0.25%; 100 ppm;" {
-		t.Errorf("Description was '%s'\n", r.Description)
-	}
+func TestCleanResistor(t *testing.T) {
+	testResistor(t, "5.67 K Ohm, 1%", "5.67k", "1%;")
+	testResistor(t, "15  , 0.5%", "15", "0.5%;")
+	testResistor(t, "150K, .1%, 1/4W", "150k", "1/4W; .1%;")
+	testResistor(t, "150K, +/- .1%, 100ppm", "150k", "+/- .1%; 100ppm;")
+	testResistor(t, "150K; +/- 0.25%; 5 wAtT, 100 PPM", "150k", "5 wAtT; +/- 0.25%; 100 ppm;")
 }
 
 func testPackage(t *testing.T, input string, expected string) {
 	c := &Component{
 		Footprint: input,
 	}
-	cleanFootprint(c)
+	cleanupFootprint(c)
 	if c.Footprint != expected {
 		t.Errorf("Expected '%s', but value was '%s'\n", expected, c.Footprint)
 	}
@@ -89,4 +56,36 @@ func TestCleanPackage(t *testing.T) {
 	testPackage(t, "16sil", "SIP-16")
 	testPackage(t, "12dip", "DIP-12")
 	testPackage(t, "12-dip, lowercase stuff", "DIP-12, lowercase stuff")
+}
+
+func testCapacitor(t *testing.T, input string, expected string, expected_desc string) {
+	testComponentCleaner(t, cleanupCapacitor, input, expected, expected_desc)
+}
+
+func TestCleanCapacitor(t *testing.T) {
+	testCapacitor(t, "150Nf", "150nF", "") // fix case
+
+	// Small fractions translated back to right multiplier
+	testCapacitor(t, "0.12uF", "120nF", "")
+	testCapacitor(t, ".180uF", "180nF", "")
+	testCapacitor(t, ".022uF", "22nF", "")
+	testCapacitor(t, "0000.026uF", "26nF", "")
+
+	// Rounding of too specific value
+	testCapacitor(t, "10000pf", "10nF", "")
+	testCapacitor(t, "10000.0pf", "10nF", "")
+
+	// Trailing zeros are suppressed
+	testCapacitor(t, "8.2pf", "8.2pF", "")
+	testCapacitor(t, "8.0pf", "8pF", "")
+
+	testCapacitor(t, "1.2uf", "1.2uF", "")
+	testCapacitor(t, "1.0uf", "1uF", "")
+
+	testCapacitor(t, "1.2nf", "1.2nF", "")
+	testCapacitor(t, "1.0nf", "1nF", "")
+
+	// Extract trailing things from value
+	testCapacitor(t, "100uF 250V", "100uF", "250V")
+	testCapacitor(t, "100uF1%", "100uF", "1%")
 }
