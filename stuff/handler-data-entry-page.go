@@ -167,10 +167,11 @@ func cleanupCapacitor(component *Component) {
 		value, _ := strconv.ParseFloat(match[1], 32)
 		magnitude, _ := strconv.ParseFloat(match[2], 32)
 		tolerance_letter := match[3]
-		if magnitude >= 0 && magnitude <= 5 {
-			multiplier := math.Exp(magnitude*math.Log(10)) * 1e-12
-			component.Value = makeCapacitanceString(value * multiplier)
+		if magnitude < 0 || magnitude > 6 {
+			return
 		}
+		multiplier := math.Exp(magnitude*math.Log(10)) * 1e-12
+		component.Value = makeCapacitanceString(value * multiplier)
 		tolerance := translateCapacitorToleranceLetter(tolerance_letter)
 		if len(tolerance) > 0 {
 			if len(component.Description) > 0 {

@@ -97,7 +97,9 @@ func TestCleanCapacitor(t *testing.T) {
 	testCapacitor(t, "123", "12nF", "")
 	testCapacitor(t, "150", "15pF", "")
 	testCapacitor(t, "155", "1.5uF", "")
+	testCapacitor(t, "156K", "15uF", "+/- 10%")
 
 	// Non-three digit values are untouched
 	testCapacitor(t, "1000", "1000", "")
+	testCapacitor(t, "157k", "157k", "")
 }
