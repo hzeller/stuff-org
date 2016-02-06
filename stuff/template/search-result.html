@@ -56,7 +56,7 @@
 	      return;
 	  fillresults(JSON.parse(xmlhttp.responseText));
       };
-      var url="/api/search?q=" + encodeURIComponent(input_field.value);
+      var url="/api/search-formatted?q=" + encodeURIComponent(input_field.value);
       xmlhttp.open("GET", url, true);
       xmlhttp.send();
       window.location = "#" + encodeURIComponent(input_field.value);

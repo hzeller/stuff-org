@@ -21,15 +21,15 @@ import (
 
 type Component struct {
 	Id            int    `json:"id"`
-	Equiv_set     int    `json:"equiv_set"`
+	Equiv_set     int    `json:"equiv_set,omitempty"`
 	Value         string `json:"value"`
 	Category      string `json:"category"`
 	Description   string `json:"description"`
 	Quantity      string `json:"quantity"` // at this point just a string.
-	Notes         string `json:"notes"`
-	Datasheet_url string `json:"datasheet_url"`
-	Drawersize    int    `json:"drawersize"`
-	Footprint     string `json:"footprint"`
+	Notes         string `json:"notes,omitempty"`
+	Datasheet_url string `json:"datasheet_url,omitempty"`
+	Drawersize    int    `json:"drawersize,omitempty"`
+	Footprint     string `json:"footprint,omitempty"`
 }
 
 // Some useful pre-defined set of categories
@@ -302,6 +302,10 @@ func main() {
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		showSearchPage(w, r)
+	})
+	// Pre-formatted for quick page display
+	http.HandleFunc("/api/search-formatted", func(w http.ResponseWriter, r *http.Request) {
+		apiSearchPageItem(store, w, r)
 	})
 	http.HandleFunc("/api/search", func(w http.ResponseWriter, r *http.Request) {
 		apiSearch(store, w, r)
