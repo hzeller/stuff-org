@@ -1,4 +1,5 @@
 // Handling search: show page, deal with JSON requests.
+// Also: provide a more clean API.
 package main
 
 import (
@@ -41,7 +42,10 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	if limit > maxOutLen {
 		limit = maxOutLen
 	}
-	searchResults := store.Search(query)
+	var searchResults []*Component
+	if query != "" {
+		searchResults = store.Search(query)
+	}
 	outlen := limit
 	if len(searchResults) < limit {
 		outlen = len(searchResults)
