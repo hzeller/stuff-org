@@ -8,6 +8,7 @@ import (
 	"html"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -27,6 +28,13 @@ type JsonApiSearchResult struct {
 	Items      []JsonComponent `json:"components"`
 }
 
+func encodeUriComponent(str string) string {
+	u, err := url.Parse(str)
+	if err != nil {
+		return ""
+	}
+	return u.String()
+}
 func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	// Allow very brief caching, so that editing the query does not
 	// necessarily has to trigger a new server roundtrip.
@@ -51,7 +59,7 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 		outlen = len(searchResults)
 	}
 	jsonResult := &JsonApiSearchResult{
-		Directlink: "/search#" + query,
+		Directlink: encodeUriComponent("/search#" + query),
 		Items:      make([]JsonComponent, outlen),
 	}
 
