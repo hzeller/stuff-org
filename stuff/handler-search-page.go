@@ -69,7 +69,7 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 		jsonResult.Items[i].Image = fmt.Sprintf("/img/%d", c.Id)
 	}
 
-	json, _ := json.Marshal(jsonResult)
+	json, _ := json.MarshalIndent(jsonResult, "", "  ")
 	out.Write(json)
 }
 
