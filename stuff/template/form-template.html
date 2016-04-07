@@ -106,27 +106,30 @@
   .desc-disp {
       font-size: 80%;
   }
+  .nav-item {}  /* tagging class */
   </style>
   <script>
-  // If we change the ID input field, the other values are not
-  // a valid representation of the component; gray things out.
-  function disable_form_if_different(ev, field, orig) {
-      if (ev.keyCode == 27) {  // Escape
-	  field.value = orig;
-      }
-      var enable_action = (field.value == orig);
-      var elements = document.querySelectorAll("#compform input,textarea");
+  var form_is_enabled;
+  function enable_form(enable_action) {
+      var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
       for (var i = 0; i < elements.length; ++i) {
-	  if (elements[i] === field) {
-	      continue;
-	  }
-	  elements[i].enable = enable_action;
+	  elements[i].disabled = !enable_action;
 	  if (enable_action) {
 	      elements[i].style["background-color"] = 'white';
 	  } else {
 	      elements[i].style["background-color"] = '#eeeeee';
 	  }
       }
+      form_is_enabled = enable_action;
+  }
+
+  // If we change the ID input field, the other values are not
+  // a valid representation of the component; gray things out.
+  function disable_form_if_different(ev, field, orig) {
+      if (ev.keyCode == 27) {  // Escape
+	  field.value = orig;
+      }
+      enable_form(field.value == orig);
   }
 
   function getRadioValue(for_name) {
@@ -157,7 +160,7 @@
   Also, I don't know javascript, so feel free to make this right.
   -->
   <form name="compform" id="compform" action="/form" method="POST">
-    <input type="hidden" name="store_id" value="{{.Id}}"/>
+    <input type="hidden" name="edit_id" value="{{.Id}}"/>
     <table>
       <tr><td valign="top">                              <!-- First column: Form -->
 	<!-- Drawer Bin selection -->
@@ -170,15 +173,15 @@
 	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
 
-	      <button class="arrowlink" style="float:left;" name="nav_id" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
+	      <button class="arrowlink nav-item" style="float:left;" name="nav_id_button" value="{{.PrevId}}">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
 
-	      <input style="font-weight:bold; font-size:200%;"
+	      <input style="font-weight:bold; font-size:200%;" class="nav-item"
 		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
 		      onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
-	      <button class="arrowlink" style="float:right;" name="nav_id" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
+	      <button class="arrowlink nav-item" style="float:right;" name="nav_id_button" value="{{.NextId}}"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
 	    </td>
 	  </tr>
 
@@ -209,7 +212,13 @@
 			name="value" value="{{.Value}}"
 			onkeyup="category_value_changed();"
 			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-			autofocus></td>
+			autofocus>
+	   <!-- very crude edit icon -->
+           {{if eq .ShowEditToggle true}}
+           <img src="/static/edit-pen.png" height="32px" style="float:right;"
+                onclick="enable_form(!form_is_enabled);"/>
+           {{end}}
+           </td>
 	  </tr>
 
 	  <tr>
@@ -265,7 +274,7 @@
 	<table id="statustab"><tr>
 	  {{ range $element := .Status }}
 	  <td class="{{$element.Status}}">
-	    <button style="background-color:transparent;" name="nav_id" value="{{$element.Number}}">
+	    <button style="background-color:transparent;" name="nav_id_button" value="{{$element.Number}}">
 	      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
 	      {{ $element.Number }}</button></td>
 	  {{end}}</tr>
@@ -317,6 +326,8 @@
   }
 
   doOperation("html");  // Initial filling.
+  form_is_enabled = {{.FormEditable}};
+  enable_form(form_is_enabled);
   </script>
 
   <!-- General footer -->

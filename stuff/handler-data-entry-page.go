@@ -18,21 +18,25 @@ type Selection struct {
 	AddSeparator bool
 }
 type FormPage struct {
-	Component // All these values are shown in the form
-	Version   int
+	Component     // All these values are shown in the form
+	Version   int // Caching-relevant versioning of images.
 
 	// Category choice.
 	CatChoice    []Selection
 	CatFallback  Selection
 	CategoryText string
 
+	// Status around current item; link to relevant group.
+	HundredGroup int
+	Status       []StatusItem
+
 	// Additional stuff
 	Msg    string // Feedback for user
 	PrevId int    // For browsing
 	NextId int
 
-	HundredGroup int
-	Status       []StatusItem
+	FormEditable   bool
+	ShowEditToggle bool
 }
 
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
@@ -207,6 +211,12 @@ func cleanupCompoent(component *Component) {
 	}
 }
 
+// If this particular request is allowed to edit. Can depend on IP address,
+// cookies etc.
+func EditAllowed(r *http.Request) bool {
+	return true
+}
+
 func entryFormHandler(store StuffStore, imageDir string,
 	w http.ResponseWriter, r *http.Request) {
 
@@ -215,24 +225,24 @@ func entryFormHandler(store StuffStore, imageDir string,
 
 	// Store-ID is a hidden field and only set if the form
 	// is submitted.
-	store_id, _ := strconv.Atoi(r.FormValue("store_id"))
+	edit_id, _ := strconv.Atoi(r.FormValue("edit_id"))
 	var next_id int
-	if r.FormValue("id") != r.FormValue("store_id") {
+	if r.FormValue("nav_id_button") != "" {
+		// Use the navigation buttons to choose next ID.
+		next_id, _ = strconv.Atoi(r.FormValue("nav_id_button"))
+	} else if r.FormValue("id") != r.FormValue("edit_id") {
 		// The ID field was edited. Use that as the next ID the
 		// user wants to jump to.
 		next_id, _ = strconv.Atoi(r.FormValue("id"))
-	} else if r.FormValue("nav_id") != "" {
-		// Use the navigation buttons to choose next ID.
-		next_id, _ = strconv.Atoi(r.FormValue("nav_id"))
-	} else if store_id > 0 {
+	} else if edit_id > 0 {
 		// Regular submit. Jump to next
-		next_id = store_id + 1
+		next_id = edit_id + 1
 	} else if cookie, err := r.Cookie("last-edit"); err == nil {
 		// Last straw: what we remember from last edit.
 		next_id, _ = strconv.Atoi(cookie.Value)
 	}
 
-	requestStore := r.FormValue("store_id") != ""
+	requestStore := r.FormValue("edit_id") != ""
 	msg := ""
 	page := &FormPage{
 		// Version number is some value to be added to the image
@@ -244,10 +254,10 @@ func entryFormHandler(store StuffStore, imageDir string,
 
 	defer ElapsedPrint("Form action", time.Now())
 
-	if requestStore {
+	if requestStore && EditAllowed(r) {
 		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
 		fromForm := Component{
-			Id:            store_id,
+			Id:            edit_id,
 			Value:         r.FormValue("value"),
 			Description:   r.FormValue("description"),
 			Notes:         r.FormValue("notes"),
@@ -265,14 +275,14 @@ func entryFormHandler(store StuffStore, imageDir string,
 
 		cleanupCompoent(&fromForm)
 
-		was_stored, store_msg := store.EditRecord(store_id, func(comp *Component) bool {
+		was_stored, store_msg := store.EditRecord(edit_id, func(comp *Component) bool {
 			*comp = fromForm
 			return true
 		})
 		if was_stored {
-			msg = fmt.Sprintf("Stored item %d; Proceed to %d", store_id, next_id)
+			msg = fmt.Sprintf("Stored item %d; Proceed to %d", edit_id, next_id)
 		} else {
-			msg = fmt.Sprintf("Item %d (%s); Proceed to %d", store_id, store_msg, next_id)
+			msg = fmt.Sprintf("Item %d (%s); Proceed to %d", edit_id, store_msg, next_id)
 		}
 	} else {
 		msg = "Browse item " + fmt.Sprintf("%d", next_id)
@@ -286,6 +296,13 @@ func entryFormHandler(store StuffStore, imageDir string,
 	}
 	page.NextId = id + 1
 	page.HundredGroup = (id / 100) * 100
+
+	page.ShowEditToggle = EditAllowed(r)
+
+	// If the last request was an edit (requestStore), then we are on
+	// a roll and have the next page form editable as well.
+	// If we were merely viewing the page, then next edit is view as well.
+	page.FormEditable = requestStore && EditAllowed(r)
 
 	currentItem := store.FindById(id)
 	if currentItem != nil {
@@ -357,7 +374,9 @@ func relatedComponentSetJoin(store StuffStore,
 	if err != nil {
 		return
 	}
-	store.JoinSet(comp, set)
+	if EditAllowed(r) {
+		store.JoinSet(comp, set)
+	}
 	relatedComponentSetHtml(store, out, r)
 }
 
@@ -367,7 +386,9 @@ func relatedComponentSetRemove(store StuffStore,
 	if err != nil {
 		return
 	}
-	store.LeaveSet(comp)
+	if EditAllowed(r) {
+		store.LeaveSet(comp)
+	}
 	relatedComponentSetHtml(store, out, r)
 }
 
