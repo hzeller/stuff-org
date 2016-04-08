@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"math"
+	"net"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -213,11 +214,31 @@ func cleanupCompoent(component *Component) {
 
 // If this particular request is allowed to edit. Can depend on IP address,
 // cookies etc.
-func EditAllowed(r *http.Request) bool {
-	return true
+func EditAllowed(r *http.Request, allowed_nets []*net.IPNet) bool {
+	if allowed_nets == nil || len(allowed_nets) == 0 {
+		return true // No restrictions.
+	}
+	// Looks like we can't get the IP address in its raw form from
+	// the request, but have to parse it.
+	addr := r.RemoteAddr
+	if pos := strings.LastIndex(addr, ":"); pos >= 0 {
+		addr = addr[0:pos]
+	}
+	var ip net.IP
+	if ip = net.ParseIP(addr); ip == nil {
+		return false
+	}
+	for i := 0; i < len(allowed_nets); i++ {
+		if allowed_nets[i].Contains(ip) {
+			return true
+		}
+	}
+	return false
 }
 
-func entryFormHandler(store StuffStore, imageDir string,
+// TODO: all these parameters such as imageDir and edit_neds suggest that we
+// want a struct here.
+func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 	w http.ResponseWriter, r *http.Request) {
 
 	// Look at the request and see what we need to display,
@@ -252,9 +273,11 @@ func entryFormHandler(store StuffStore, imageDir string,
 		Version: int(time.Now().UnixNano() % 10000),
 	}
 
+	edit_allowed := EditAllowed(r, edit_nets)
+
 	defer ElapsedPrint("Form action", time.Now())
 
-	if requestStore && EditAllowed(r) {
+	if requestStore && edit_allowed {
 		drawersize, _ := strconv.Atoi(r.FormValue("drawersize"))
 		fromForm := Component{
 			Id:            edit_id,
@@ -297,12 +320,12 @@ func entryFormHandler(store StuffStore, imageDir string,
 	page.NextId = id + 1
 	page.HundredGroup = (id / 100) * 100
 
-	page.ShowEditToggle = EditAllowed(r)
+	page.ShowEditToggle = edit_allowed
 
 	// If the last request was an edit (requestStore), then we are on
 	// a roll and have the next page form editable as well.
 	// If we were merely viewing the page, then next edit is view as well.
-	page.FormEditable = requestStore && EditAllowed(r)
+	page.FormEditable = requestStore && edit_allowed
 
 	currentItem := store.FindById(id)
 	if currentItem != nil {
@@ -352,19 +375,19 @@ func entryFormHandler(store StuffStore, imageDir string,
 	zipped.Close()
 }
 
-func relatedComponentSetOperations(store StuffStore,
+func relatedComponentSetOperations(store StuffStore, edit_nets []*net.IPNet,
 	out http.ResponseWriter, r *http.Request) {
 	switch r.FormValue("op") {
 	case "html":
 		relatedComponentSetHtml(store, out, r)
 	case "join":
-		relatedComponentSetJoin(store, out, r)
+		relatedComponentSetJoin(store, edit_nets, out, r)
 	case "remove":
-		relatedComponentSetRemove(store, out, r)
+		relatedComponentSetRemove(store, edit_nets, out, r)
 	}
 }
 
-func relatedComponentSetJoin(store StuffStore,
+func relatedComponentSetJoin(store StuffStore, edit_nets []*net.IPNet,
 	out http.ResponseWriter, r *http.Request) {
 	comp, err := strconv.Atoi(r.FormValue("comp"))
 	if err != nil {
@@ -374,19 +397,19 @@ func relatedComponentSetJoin(store StuffStore,
 	if err != nil {
 		return
 	}
-	if EditAllowed(r) {
+	if EditAllowed(r, edit_nets) {
 		store.JoinSet(comp, set)
 	}
 	relatedComponentSetHtml(store, out, r)
 }
 
-func relatedComponentSetRemove(store StuffStore,
+func relatedComponentSetRemove(store StuffStore, edit_nets []*net.IPNet,
 	out http.ResponseWriter, r *http.Request) {
 	comp, err := strconv.Atoi(r.FormValue("comp"))
 	if err != nil {
 		return
 	}
-	if EditAllowed(r) {
+	if EditAllowed(r, edit_nets) {
 		store.LeaveSet(comp)
 	}
 	relatedComponentSetHtml(store, out, r)

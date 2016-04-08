@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -228,6 +229,23 @@ func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 	http.Redirect(out, r, "/form", 302)
 }
 
+func parseAllowedEditorCIDR(allowed string) []*net.IPNet {
+	all_allowed := strings.Split(allowed, ",")
+	allowed_nets := make([]*net.IPNet, 0, len(all_allowed))
+	for i := 0; i < len(all_allowed); i++ {
+		if all_allowed[i] == "" {
+			continue
+		}
+		_, net, err := net.ParseCIDR(all_allowed[i])
+		if err != nil {
+			log.Fatal("--edit-permission-nets: Need IP/Network format: ", err)
+		} else {
+			allowed_nets = append(allowed_nets, net)
+		}
+	}
+	return allowed_nets
+}
+
 func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with component images")
 	staticResource := flag.String("staticdir", "static",
@@ -236,8 +254,11 @@ func main() {
 	dbFile := flag.String("dbfile", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
+	permitted_nets := flag.String("edit-permission-nets", "", "Comma separated list of networks (CIDR format IP-Addr/network) that are allowed to edit content")
 
 	flag.Parse()
+
+	edit_nets := parseAllowedEditorCIDR(*permitted_nets)
 
 	if *logfile != "" {
 		f, err := os.OpenFile(*logfile,
@@ -294,10 +315,10 @@ func main() {
 	})
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
-		entryFormHandler(store, *imageDir, w, r)
+		entryFormHandler(store, *imageDir, edit_nets, w, r)
 	})
 	http.HandleFunc("/api/related-set", func(w http.ResponseWriter, r *http.Request) {
-		relatedComponentSetOperations(store, w, r)
+		relatedComponentSetOperations(store, edit_nets, w, r)
 	})
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
