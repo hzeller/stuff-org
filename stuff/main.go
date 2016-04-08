@@ -226,7 +226,7 @@ func staticServe(staticPath string, out http.ResponseWriter, r *http.Request) {
 }
 
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
-	http.Redirect(out, r, "/form", 302)
+	http.Redirect(out, r, "/search", 302)
 }
 
 func parseAllowedEditorCIDR(allowed string) []*net.IPNet {
