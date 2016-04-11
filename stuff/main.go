@@ -90,19 +90,23 @@ func ElapsedPrint(msg string, start time.Time) {
 var cache_templates = flag.Bool("cache-templates", true,
 	"Cache templates. False for online editing.")
 var templates = template.Must(template.ParseFiles(
+	// Application templates
 	"template/form-template.html",
 	"template/status-table.html",
 	"template/set-drag-drop.html",
-	"template/category-Diode.svg",
-	"template/category-LED.svg",
-	"template/category-Capacitor.svg",
-	"template/4-Band_Resistor.svg",
-	"template/5-Band_Resistor.svg",
-	"template/package-TO-39.svg",
-	"template/package-TO-220.svg",
-	"template/package-DIP-14.svg",
-	"template/package-DIP-16.svg",
-	"template/package-DIP-28.svg"))
+	// Templates to create component images
+	"template/component/category-Diode.svg",
+	"template/component/category-LED.svg",
+	"template/component/category-Capacitor.svg",
+	// Value rendering of resistors
+	"template/component/4-Band_Resistor.svg",
+	"template/component/5-Band_Resistor.svg",
+	// Some common packages
+	"template/component/package-TO-39.svg",
+	"template/component/package-TO-220.svg",
+	"template/component/package-DIP-14.svg",
+	"template/component/package-DIP-16.svg",
+	"template/component/package-DIP-28.svg"))
 
 func setContentTypeFromTemplateName(template_name string, header http.Header) {
 	switch {
@@ -176,11 +180,14 @@ func serveComponentImage(component *Component, category string, value string,
 	case "Resistor":
 		return serveResistorImage(component, value, out)
 	case "Diode (D)":
-		return renderTemplate(out, out.Header(), "category-Diode.svg", component)
+		return renderTemplate(out, out.Header(),
+			"component/category-Diode.svg", component)
 	case "LED":
-		return renderTemplate(out, out.Header(), "category-LED.svg", component)
+		return renderTemplate(out, out.Header(),
+			"component/category-LED.svg", component)
 	case "Capacitor (C)":
-		return renderTemplate(out, out.Header(), "category-Capacitor.svg", component)
+		return renderTemplate(out, out.Header(),
+			"component/category-Capacitor.svg", component)
 	}
 	return false
 }
@@ -189,7 +196,8 @@ func servePackageImage(component *Component, out http.ResponseWriter) bool {
 	if component == nil || component.Footprint == "" {
 		return false
 	}
-	return renderTemplate(out, out.Header(), "package-"+component.Footprint+".svg", component)
+	return renderTemplate(out, out.Header(),
+		"component/package-"+component.Footprint+".svg", component)
 }
 
 func compImageServe(store StuffStore, imgPath string, staticPath string,

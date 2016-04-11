@@ -169,14 +169,16 @@ func serveResistorImage(component *Component, value string, out http.ResponseWri
 		bands.Second = resistorColorConstants[digits[1]]
 		bands.Multiplier = resistorColorConstants[digits[2]]
 		bands.Tolerance = resistorColorConstants[digits[3]]
-		renderTemplate(out, out.Header(), "4-Band_Resistor.svg", bands)
+		renderTemplate(out, out.Header(),
+			"component/4-Band_Resistor.svg", bands)
 	} else {
 		bands.First = resistorColorConstants[digits[0]]
 		bands.Second = resistorColorConstants[digits[1]]
 		bands.Third = resistorColorConstants[digits[2]]
 		bands.Multiplier = resistorColorConstants[digits[3]]
 		bands.Tolerance = resistorColorConstants[digits[4]]
-		renderTemplate(out, out.Header(), "5-Band_Resistor.svg", bands)
+		renderTemplate(out, out.Header(),
+			"component/5-Band_Resistor.svg", bands)
 	}
 
 	return true
