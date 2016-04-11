@@ -82,7 +82,7 @@ func cleanupFootprint(component *Component) {
 	component.Footprint = to_package.ReplaceAllString(component.Footprint, "TO-$1")
 
 	// For sip/dip packages: canonicalize to _p_ and end and move digits to end.
-	sdip_package, _ := regexp.Compile(`(?i)^((\d+)[ -]?)?([sd])i[lp][ -]?(\d+)?`)
+	sdip_package, _ := regexp.Compile(`(?i)^((\d+)[ -]?)?p?([sd])i[lp][ -]?(\d+)?`)
 	if match := sdip_package.FindStringSubmatch(component.Footprint); match != nil {
 		component.Footprint = sdip_package.ReplaceAllStringFunc(component.Footprint,
 			func(string) string {
