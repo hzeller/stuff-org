@@ -1,0 +1,25 @@
+Package-SVGs have been derived from the SVG components found
+in this project:
+
+http://www.sebulli.com/BlackBoard/Blackboard_incl_SVG_14Nov2012.zip
+
+Name the file so that it matches the canonicalized package name, with "package-"
+prefix and ".svg" suffix (e.g. "package-DIP-16.svg").
+
+For DIP-packages, the size to 200x160 (easiest: manually in the <svg> header).
+Center the component in that area (easiest: with inkscape). With the size,
+we make sure, that the relative size of components is roughly
+(e.g. DIP-8, DIP-16, ...) is the same - otherwise the browser attempts to
+scale the images to the maximum available size. Other types of packages might
+have different base-sizes, try to set the size so that they look reasonable
+as well in browsers.
+
+After saving, mostly it is important to remove the <?xml> header (very first
+line) as the go-template thing gets confused otherwise.
+
+Then search for the title and replace it with {{.Value}}. Or add a title
+in inkscape with this very string.
+
+These files are very big (the text representation), it might be worthwhile to
+explore minimizing these (less burden in the templating engine and on the
+wire - and possibly easier to render).
