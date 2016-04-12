@@ -8,12 +8,10 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -130,8 +128,11 @@ func renderTemplate(w io.Writer, header http.Header, template_name string, p int
 	} else {
 		t, err := template.ParseFiles("template/" + template_name)
 		if err != nil {
-			log.Printf("Template broken %s %s", template_name, err)
-			return false
+			t, err = template.ParseFiles("template/component/" + template_name)
+			if err != nil {
+				log.Printf("%s: %s", template_name, err)
+				return false
+			}
 		}
 		setContentTypeFromTemplateName(template_name, header)
 		err = t.Execute(w, p)
@@ -141,96 +142,6 @@ func renderTemplate(w io.Writer, header http.Header, template_name string, p int
 		return false
 	}
 	return true
-}
-
-func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
-	cache_time := 900
-	header_addon := ""
-	content, _ := ioutil.ReadFile(local_path)
-	if content == nil && fallback_resource != "" {
-		local_path = fallback_resource
-		content, _ = ioutil.ReadFile(local_path)
-		cache_time = 10 // fallbacks might change more often.
-		header_addon = ",must-revalidate"
-	}
-	out.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d%s", cache_time, header_addon))
-	switch {
-	case strings.HasSuffix(local_path, ".png"):
-		out.Header().Set("Content-Type", "image/png")
-	case strings.HasSuffix(local_path, ".css"):
-		out.Header().Set("Content-Type", "text/css")
-	case strings.HasSuffix(local_path, ".svg"):
-		out.Header().Set("Content-Type", "image/svg+xml")
-	default:
-		out.Header().Set("Content-Type", "image/jpg")
-	}
-
-	out.Write(content)
-}
-
-// TODO: this component image serving stuff needs to move somewhere else.
-
-func serveComponentImage(component *Component, category string, value string,
-	out http.ResponseWriter) bool {
-	// If we got a category string, it takes precedence
-	if len(category) == 0 && component != nil {
-		category = component.Category
-	}
-	switch category {
-	case "Resistor":
-		return serveResistorImage(component, value, out)
-	case "Diode (D)":
-		return renderTemplate(out, out.Header(),
-			"component/category-Diode.svg", component)
-	case "LED":
-		return renderTemplate(out, out.Header(),
-			"component/category-LED.svg", component)
-	case "Capacitor (C)":
-		return renderTemplate(out, out.Header(),
-			"component/category-Capacitor.svg", component)
-	}
-	return false
-}
-
-func servePackageImage(component *Component, out http.ResponseWriter) bool {
-	if component == nil || component.Footprint == "" {
-		return false
-	}
-	return renderTemplate(out, out.Header(),
-		"component/package-"+component.Footprint+".svg", component)
-}
-
-func compImageServe(store StuffStore, imgPath string, staticPath string,
-	out http.ResponseWriter, r *http.Request) {
-	prefix_len := len("/img/")
-	requested := r.URL.Path[prefix_len:]
-	path := imgPath + "/" + requested + ".jpg"
-	if _, err := os.Stat(path); err == nil { // we have an image.
-		sendResource(path, staticPath+"/fallback.jpg", out)
-		return
-	}
-	// No image, but let's see if we can do something from the
-	// component
-	if comp_id, err := strconv.Atoi(requested); err == nil {
-		component := store.FindById(comp_id)
-		category := r.FormValue("c") // We also allow these if available
-		value := r.FormValue("v")
-		if (component != nil || len(category) > 0 || len(value) > 0) &&
-			serveComponentImage(component, category, value, out) {
-			return
-		}
-		if servePackageImage(component, out) {
-			return
-		}
-	}
-	// Use fallback-resource straight away to get short cache times.
-	sendResource("", staticPath+"/fallback.jpg", out)
-}
-
-func staticServe(staticPath string, out http.ResponseWriter, r *http.Request) {
-	prefix_len := len("/static/")
-	resource := r.URL.Path[prefix_len:]
-	sendResource(staticPath+"/"+resource, "", out)
 }
 
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
@@ -315,12 +226,10 @@ func main() {
 		return
 	}
 
-	http.HandleFunc("/img/", func(w http.ResponseWriter, r *http.Request) {
-		compImageServe(store, *imageDir, *staticResource, w, r)
-	})
-	http.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
-		staticServe(*staticResource, w, r)
-	})
+	AddImageHandler(store, *imageDir, *staticResource)
+
+	// TODO(hzeller): Now that is clear what we want, these should
+	// also become http.Handlers
 
 	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
 		entryFormHandler(store, *imageDir, edit_nets, w, r)
