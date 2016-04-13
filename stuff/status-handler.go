@@ -9,6 +9,23 @@ import (
 	"time"
 )
 
+const (
+	kStatusPage = "/status"
+)
+
+type StatusHandler struct {
+	store   StuffStore
+	imgPath string
+}
+
+func AddStatusHandler(store StuffStore, imgPath string) {
+	handler := &StatusHandler{
+		store:   store,
+		imgPath: imgPath,
+	}
+	http.Handle(kStatusPage, handler)
+}
+
 type StatusItem struct {
 	Number     int
 	Status     string
@@ -66,9 +83,9 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 
 }
 
-func showStatusPage(store StuffStore, imageDir string, out http.ResponseWriter, r *http.Request) {
+func (h *StatusHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 	current_edit_id := -1
-	if cookie, err := r.Cookie("last-edit"); err == nil {
+	if cookie, err := req.Cookie("last-edit"); err == nil {
 		current_edit_id, _ = strconv.Atoi(cookie.Value)
 	}
 	defer ElapsedPrint("Show status", time.Now())
@@ -78,7 +95,7 @@ func showStatusPage(store StuffStore, imageDir string, out http.ResponseWriter, 
 		Items: make([]StatusItem, maxStatus),
 	}
 	for i := 0; i < maxStatus; i++ {
-		fillStatusItem(store, imageDir, i, &page.Items[i])
+		fillStatusItem(h.store, h.imgPath, i, &page.Items[i])
 		// Zero is a special case that we handle differently in template.
 		if i > 0 {
 			if i%100 == 0 {

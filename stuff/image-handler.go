@@ -31,11 +31,12 @@ func AddImageHandler(store StuffStore, imgPath string, staticPath string) {
 }
 
 func (h *ImageHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
-	if strings.HasPrefix(req.URL.Path, kComponentImage) {
+	switch {
+	case strings.HasPrefix(req.URL.Path, kComponentImage):
 		prefix_len := len(kComponentImage)
 		requested := req.URL.Path[prefix_len:]
 		h.serveComponentImage(requested, out, req)
-	} else {
+	default:
 		h.serveStatic(out, req)
 	}
 }

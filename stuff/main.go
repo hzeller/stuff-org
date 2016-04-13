@@ -216,24 +216,8 @@ func main() {
 
 	AddImageHandler(store, *imageDir, *staticResource)
 	AddFormHandler(store, *imageDir, edit_nets)
-
-	// TODO(hzeller): Now that is clear what we want, these should
-	// also become http.Handlers
-
-	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
-		showSearchPage(w, r)
-	})
-	// Pre-formatted for quick page display
-	http.HandleFunc("/api/search-formatted", func(w http.ResponseWriter, r *http.Request) {
-		apiSearchPageItem(store, w, r)
-	})
-	http.HandleFunc("/api/search", func(w http.ResponseWriter, r *http.Request) {
-		apiSearch(store, w, r)
-	})
-
-	http.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-		showStatusPage(store, *imageDir, w, r)
-	})
+	AddSearchHandler(store, *imageDir)
+	AddStatusHandler(store, *imageDir)
 
 	http.HandleFunc("/", stuffStoreRoot)
 

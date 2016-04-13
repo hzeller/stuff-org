@@ -10,11 +10,45 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
-func showSearchPage(out http.ResponseWriter, r *http.Request) {
+const (
+	kSearchPage         = "/search"
+	kApiSearchFormatted = "/api/search-formatted"
+	kApiSearch          = "/api/search"
+)
+
+type SearchHandler struct {
+	store   StuffStore
+	imgPath string
+}
+
+func AddSearchHandler(store StuffStore, imgPath string) {
+	handler := &SearchHandler{
+		store:   store,
+		imgPath: imgPath,
+	}
+	http.Handle(kSearchPage, handler)
+	http.Handle(kApiSearchFormatted, handler)
+	http.Handle(kApiSearch, handler)
+}
+
+func (h *SearchHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
+	switch {
+	case strings.HasPrefix(req.URL.Path, kApiSearchFormatted):
+		h.apiSearchPageItem(out, req)
+	case strings.HasPrefix(req.URL.Path, kApiSearch):
+		h.apiSearch(out, req)
+	default:
+		h.showSearchPage(out, req)
+	}
+}
+
+func (h *SearchHandler) showSearchPage(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Content-Type", "text/html; charset=utf-8")
+	// Just static html. Maybe serve from /static ?
 	content, _ := ioutil.ReadFile("template/search-result.html")
 	out.Write(content)
 }
@@ -35,7 +69,7 @@ func encodeUriComponent(str string) string {
 	}
 	return u.String()
 }
-func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
+func (h *SearchHandler) apiSearch(out http.ResponseWriter, r *http.Request) {
 	// Allow very brief caching, so that editing the query does not
 	// necessarily has to trigger a new server roundtrip.
 	out.Header().Set("Cache-Control", "max-age=10")
@@ -52,7 +86,7 @@ func apiSearch(store StuffStore, out http.ResponseWriter, r *http.Request) {
 	}
 	var searchResults []*Component
 	if query != "" {
-		searchResults = store.Search(query)
+		searchResults = h.store.Search(query)
 	}
 	outlen := limit
 	if len(searchResults) < limit {
@@ -85,7 +119,7 @@ type JsonHtmlSearchResult struct {
 	Items []JsonHtmlSearchResultRecord `json:"items"`
 }
 
-func apiSearchPageItem(store StuffStore, out http.ResponseWriter, r *http.Request) {
+func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Request) {
 	defer ElapsedPrint("Query", time.Now())
 	// Allow very brief caching, so that editing the query does not
 	// necessarily has to trigger a new server roundtrip.
@@ -96,7 +130,7 @@ func apiSearchPageItem(store StuffStore, out http.ResponseWriter, r *http.Reques
 		return
 	}
 	start := time.Now()
-	searchResults := store.Search(query)
+	searchResults := h.store.Search(query)
 	elapsed := time.Now().Sub(start)
 	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
 	outlen := 24 // Limit max output

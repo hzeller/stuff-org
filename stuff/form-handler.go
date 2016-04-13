@@ -46,10 +46,11 @@ func AddFormHandler(store StuffStore, imgPath string, editNets []*net.IPNet) {
 }
 
 func (h *FormHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
-	if strings.HasPrefix(req.URL.Path, kFormPage) {
-		h.entryFormHandler(out, req)
-	} else {
+	switch {
+	case strings.HasPrefix(req.URL.Path, kSetApi):
 		h.relatedComponentSetOperations(out, req)
+	default:
+		h.entryFormHandler(out, req)
 	}
 }
 
