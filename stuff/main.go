@@ -31,18 +31,6 @@ type Component struct {
 	Footprint     string `json:"footprint,omitempty"`
 }
 
-// Some useful pre-defined set of categories
-var available_category []string = []string{
-	"Resistor", "Potentiometer", "R-Network",
-	"Capacitor (C)", "Aluminum Cap", "Inductor (L)",
-	"Diode (D)", "Power Diode", "LED",
-	"Transistor", "Mosfet", "IGBT",
-	"Integrated Circuit (IC)", "IC Analog", "IC Digital",
-	"Connector", "Socket", "Switch",
-	"Fuse", "Mounting", "Heat Sink",
-	"Microphone", "Transformer", "? MYSTERY",
-}
-
 // Modify a user pointer. Returns 'true' if the changes should be commited.
 type ModifyFun func(comp *Component) bool
 
@@ -227,16 +215,10 @@ func main() {
 	}
 
 	AddImageHandler(store, *imageDir, *staticResource)
+	AddFormHandler(store, *imageDir, edit_nets)
 
 	// TODO(hzeller): Now that is clear what we want, these should
 	// also become http.Handlers
-
-	http.HandleFunc("/form", func(w http.ResponseWriter, r *http.Request) {
-		entryFormHandler(store, *imageDir, edit_nets, w, r)
-	})
-	http.HandleFunc("/api/related-set", func(w http.ResponseWriter, r *http.Request) {
-		relatedComponentSetOperations(store, edit_nets, w, r)
-	})
 
 	http.HandleFunc("/search", func(w http.ResponseWriter, r *http.Request) {
 		showSearchPage(w, r)

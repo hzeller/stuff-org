@@ -144,7 +144,7 @@ func extractResistorDigits(value string, tolerance string) []int {
 var tolerance_regexp, _ = regexp.Compile(`((0?.)?\d+\%)`)
 
 func serveResistorImage(component *Component, value string, out http.ResponseWriter) bool {
-	defer ElapsedPrint("resistor", time.Now())
+	defer ElapsedPrint("resistor-image", time.Now())
 
 	tolerance := ""
 	if component != nil {

@@ -12,6 +12,47 @@ import (
 	"time"
 )
 
+const (
+	kFormPage = "/form"
+	kSetApi   = "/api/related-set"
+)
+
+// Some useful pre-defined set of categories
+var available_category []string = []string{
+	"Resistor", "Potentiometer", "R-Network",
+	"Capacitor (C)", "Aluminum Cap", "Inductor (L)",
+	"Diode (D)", "Power Diode", "LED",
+	"Transistor", "Mosfet", "IGBT",
+	"Integrated Circuit (IC)", "IC Analog", "IC Digital",
+	"Connector", "Socket", "Switch",
+	"Fuse", "Mounting", "Heat Sink",
+	"Microphone", "Transformer", "? MYSTERY",
+}
+
+type FormHandler struct {
+	store    StuffStore
+	imgPath  string
+	editNets []*net.IPNet // IP Networks that are allowed to edit
+}
+
+func AddFormHandler(store StuffStore, imgPath string, editNets []*net.IPNet) {
+	handler := &FormHandler{
+		store:    store,
+		imgPath:  imgPath,
+		editNets: editNets,
+	}
+	http.Handle(kFormPage, handler)
+	http.Handle(kSetApi, handler)
+}
+
+func (h *FormHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
+	if strings.HasPrefix(req.URL.Path, kFormPage) {
+		h.entryFormHandler(out, req)
+	} else {
+		h.relatedComponentSetOperations(out, req)
+	}
+}
+
 // First, very crude version of radio button selecions
 type Selection struct {
 	Value        string
@@ -42,49 +83,49 @@ type FormPage struct {
 
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
 
-func cleanupResistor(component *Component) {
+func cleanupResistor(c *Component) {
 	optional_ppm, _ := regexp.Compile(`(?i)[,;]\s*(\d+\s*ppm)`)
-	if match := optional_ppm.FindStringSubmatch(component.Value); match != nil {
-		component.Description = strings.ToLower(match[1]) + "; " + component.Description
-		component.Value = optional_ppm.ReplaceAllString(component.Value, "")
+	if match := optional_ppm.FindStringSubmatch(c.Value); match != nil {
+		c.Description = strings.ToLower(match[1]) + "; " + c.Description
+		c.Value = optional_ppm.ReplaceAllString(c.Value, "")
 	}
 
 	// Move percent into description.
 	optional_percent, _ := regexp.Compile(`[,;]\s*((\+/-\s*)?(0?\.)?\d+\%)`)
-	if match := optional_percent.FindStringSubmatch(component.Value); match != nil {
-		component.Description = match[1] + "; " + component.Description
-		component.Value = optional_percent.ReplaceAllString(component.Value, "")
+	if match := optional_percent.FindStringSubmatch(c.Value); match != nil {
+		c.Description = match[1] + "; " + c.Description
+		c.Value = optional_percent.ReplaceAllString(c.Value, "")
 	}
 
 	optional_watt, _ := regexp.Compile(`(?i)[,;]\s*((((\d*\.)?\d+)|(\d+/\d+))\s*W(att)?)`)
-	if match := optional_watt.FindStringSubmatch(component.Value); match != nil {
-		component.Description = match[1] + "; " + component.Description
-		component.Value = optional_watt.ReplaceAllString(component.Value, "")
+	if match := optional_watt.FindStringSubmatch(c.Value); match != nil {
+		c.Description = match[1] + "; " + c.Description
+		c.Value = optional_watt.ReplaceAllString(c.Value, "")
 	}
 
 	// Get rid of Ohm
 	optional_ohm, _ := regexp.Compile(`(?i)\s*ohm`)
-	component.Value = optional_ohm.ReplaceAllString(component.Value, "")
+	c.Value = optional_ohm.ReplaceAllString(c.Value, "")
 
 	// Upper-case kilo at end or with spaces before are replaced
 	// with simple 'k'.
 	spaced_upper_kilo, _ := regexp.Compile(`(?i)\s*k$`)
-	component.Value = spaced_upper_kilo.ReplaceAllString(component.Value, "k")
+	c.Value = spaced_upper_kilo.ReplaceAllString(c.Value, "k")
 
-	component.Description = cleanString(component.Description)
-	component.Value = cleanString(component.Value)
+	c.Description = cleanString(c.Description)
+	c.Value = cleanString(c.Value)
 }
 
-func cleanupFootprint(component *Component) {
-	component.Footprint = cleanString(component.Footprint)
+func cleanupFootprint(c *Component) {
+	c.Footprint = cleanString(c.Footprint)
 
 	to_package, _ := regexp.Compile(`(?i)^to-?(\d+)`)
-	component.Footprint = to_package.ReplaceAllString(component.Footprint, "TO-$1")
+	c.Footprint = to_package.ReplaceAllString(c.Footprint, "TO-$1")
 
 	// For sip/dip packages: canonicalize to _p_ and end and move digits to end.
 	sdip_package, _ := regexp.Compile(`(?i)^((\d+)[ -]?)?p?([sd])i[lp][ -]?(\d+)?`)
-	if match := sdip_package.FindStringSubmatch(component.Footprint); match != nil {
-		component.Footprint = sdip_package.ReplaceAllStringFunc(component.Footprint,
+	if match := sdip_package.FindStringSubmatch(c.Footprint); match != nil {
+		c.Footprint = sdip_package.ReplaceAllStringFunc(c.Footprint,
 			func(string) string {
 				return strings.ToUpper(match[3] + "IP-" + match[2] + match[4])
 			})
@@ -145,8 +186,8 @@ func cleanupCapacitor(component *Component) {
 		number_digits := match[1]
 		factor_character := match[3]
 		trailing := cleanString(match[4])
-		// Sometimes, values are written as strange multiples, e.g. 100nF is
-		// sometimes written as 0.1uF. Normalize here.
+		// Sometimes, values are written as strange multiples,
+		// e.g. 100nF is sometimes written as 0.1uF. Normalize here.
 		factor := 1e-6
 		switch factor_character {
 		case "u", "U", "µ":
@@ -214,8 +255,8 @@ func cleanupCompoent(component *Component) {
 
 // If this particular request is allowed to edit. Can depend on IP address,
 // cookies etc.
-func EditAllowed(r *http.Request, allowed_nets []*net.IPNet) bool {
-	if allowed_nets == nil || len(allowed_nets) == 0 {
+func (h *FormHandler) EditAllowed(r *http.Request) bool {
+	if h.editNets == nil || len(h.editNets) == 0 {
 		return true // No restrictions.
 	}
 	// Looks like we can't get the IP address in its raw form from
@@ -228,18 +269,15 @@ func EditAllowed(r *http.Request, allowed_nets []*net.IPNet) bool {
 	if ip = net.ParseIP(addr); ip == nil {
 		return false
 	}
-	for i := 0; i < len(allowed_nets); i++ {
-		if allowed_nets[i].Contains(ip) {
+	for i := 0; i < len(h.editNets); i++ {
+		if h.editNets[i].Contains(ip) {
 			return true
 		}
 	}
 	return false
 }
 
-// TODO: all these parameters such as imageDir and edit_neds suggest that we
-// want a struct here.
-func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
-	w http.ResponseWriter, r *http.Request) {
+func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Look at the request and see what we need to display,
 	// and if we have to store something.
@@ -273,7 +311,7 @@ func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 		Version: int(time.Now().UnixNano() % 10000),
 	}
 
-	edit_allowed := EditAllowed(r, edit_nets)
+	edit_allowed := h.EditAllowed(r)
 
 	defer ElapsedPrint("Form action", time.Now())
 
@@ -298,7 +336,7 @@ func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 
 		cleanupCompoent(&fromForm)
 
-		was_stored, store_msg := store.EditRecord(edit_id, func(comp *Component) bool {
+		was_stored, store_msg := h.store.EditRecord(edit_id, func(comp *Component) bool {
 			*comp = fromForm
 			return true
 		})
@@ -327,7 +365,7 @@ func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 	// If we were merely viewing the page, then next edit is view as well.
 	page.FormEditable = requestStore && edit_allowed
 
-	currentItem := store.FindById(id)
+	currentItem := h.store.FindById(id)
 	if currentItem != nil {
 		page.Component = *currentItem
 	} else {
@@ -359,7 +397,7 @@ func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 		startStatusId = 0
 	}
 	for i := 0; i < 12; i++ {
-		fillStatusItem(store, imageDir, i+startStatusId, &page.Status[i])
+		fillStatusItem(h.store, h.imgPath, i+startStatusId, &page.Status[i])
 		if i+startStatusId == id {
 			page.Status[i].Status = page.Status[i].Status + " selstatus"
 		}
@@ -375,20 +413,18 @@ func entryFormHandler(store StuffStore, imageDir string, edit_nets []*net.IPNet,
 	zipped.Close()
 }
 
-func relatedComponentSetOperations(store StuffStore, edit_nets []*net.IPNet,
-	out http.ResponseWriter, r *http.Request) {
+func (h *FormHandler) relatedComponentSetOperations(out http.ResponseWriter, r *http.Request) {
 	switch r.FormValue("op") {
 	case "html":
-		relatedComponentSetHtml(store, out, r)
+		h.relatedComponentSetHtml(out, r)
 	case "join":
-		relatedComponentSetJoin(store, edit_nets, out, r)
+		h.relatedComponentSetJoin(out, r)
 	case "remove":
-		relatedComponentSetRemove(store, edit_nets, out, r)
+		h.relatedComponentSetRemove(out, r)
 	}
 }
 
-func relatedComponentSetJoin(store StuffStore, edit_nets []*net.IPNet,
-	out http.ResponseWriter, r *http.Request) {
+func (h *FormHandler) relatedComponentSetJoin(out http.ResponseWriter, r *http.Request) {
 	comp, err := strconv.Atoi(r.FormValue("comp"))
 	if err != nil {
 		return
@@ -397,22 +433,21 @@ func relatedComponentSetJoin(store StuffStore, edit_nets []*net.IPNet,
 	if err != nil {
 		return
 	}
-	if EditAllowed(r, edit_nets) {
-		store.JoinSet(comp, set)
+	if h.EditAllowed(r) {
+		h.store.JoinSet(comp, set)
 	}
-	relatedComponentSetHtml(store, out, r)
+	h.relatedComponentSetHtml(out, r)
 }
 
-func relatedComponentSetRemove(store StuffStore, edit_nets []*net.IPNet,
-	out http.ResponseWriter, r *http.Request) {
+func (h *FormHandler) relatedComponentSetRemove(out http.ResponseWriter, r *http.Request) {
 	comp, err := strconv.Atoi(r.FormValue("comp"))
 	if err != nil {
 		return
 	}
-	if EditAllowed(r, edit_nets) {
-		store.LeaveSet(comp)
+	if h.EditAllowed(r) {
+		h.store.LeaveSet(comp)
 	}
-	relatedComponentSetHtml(store, out, r)
+	h.relatedComponentSetHtml(out, r)
 }
 
 type EquivalenceSet struct {
@@ -425,8 +460,7 @@ type EquivalenceSetList struct {
 	Sets          []*EquivalenceSet
 }
 
-func relatedComponentSetHtml(store StuffStore,
-	out http.ResponseWriter, r *http.Request) {
+func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.Request) {
 	comp_id, err := strconv.Atoi(r.FormValue("id"))
 	if err != nil {
 		return
@@ -436,7 +470,7 @@ func relatedComponentSetHtml(store StuffStore,
 		Sets:          make([]*EquivalenceSet, 0, 0),
 	}
 	var current_set *EquivalenceSet = nil
-	components := store.MatchingEquivSetForComponent(comp_id)
+	components := h.store.MatchingEquivSetForComponent(comp_id)
 	switch len(components) {
 	case 0:
 		page.Message = "No Value or Category set"
