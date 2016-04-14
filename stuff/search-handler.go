@@ -21,14 +21,16 @@ const (
 )
 
 type SearchHandler struct {
-	store   StuffStore
-	imgPath string
+	store    StuffStore
+	template *TemplateRenderer
+	imgPath  string
 }
 
-func AddSearchHandler(store StuffStore, imgPath string) {
+func AddSearchHandler(store StuffStore, template *TemplateRenderer, imgPath string) {
 	handler := &SearchHandler{
-		store:   store,
-		imgPath: imgPath,
+		store:    store,
+		template: template,
+		imgPath:  imgPath,
 	}
 	http.Handle(kSearchPage, handler)
 	http.Handle(kApiSearchFormatted, handler)

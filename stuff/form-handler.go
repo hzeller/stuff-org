@@ -31,13 +31,15 @@ var available_category []string = []string{
 
 type FormHandler struct {
 	store    StuffStore
+	template *TemplateRenderer
 	imgPath  string
 	editNets []*net.IPNet // IP Networks that are allowed to edit
 }
 
-func AddFormHandler(store StuffStore, imgPath string, editNets []*net.IPNet) {
+func AddFormHandler(store StuffStore, template *TemplateRenderer, imgPath string, editNets []*net.IPNet) {
 	handler := &FormHandler{
 		store:    store,
+		template: template,
 		imgPath:  imgPath,
 		editNets: editNets,
 	}
@@ -410,7 +412,7 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
 	w.Header().Set("Content-Encoding", "gzip")
 	zipped := gzip.NewWriter(w)
-	renderTemplate(zipped, w.Header(), "form-template.html", page)
+	h.template.Render(zipped, w.Header(), "form-template.html", page)
 	zipped.Close()
 }
 
@@ -495,5 +497,5 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 		}
 		current_set.Items = append(current_set.Items, c)
 	}
-	renderTemplate(out, out.Header(), "set-drag-drop.html", page)
+	h.template.Render(out, out.Header(), "set-drag-drop.html", page)
 }

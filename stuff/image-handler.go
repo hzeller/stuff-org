@@ -16,13 +16,15 @@ const (
 
 type ImageHandler struct {
 	store      StuffStore
+	template   *TemplateRenderer
 	imgPath    string
 	staticPath string
 }
 
-func AddImageHandler(store StuffStore, imgPath string, staticPath string) {
+func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath string, staticPath string) {
 	handler := &ImageHandler{
 		store:      store,
+		template:   template,
 		imgPath:    imgPath,
 		staticPath: staticPath,
 	}
@@ -43,7 +45,7 @@ func (h *ImageHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 
 // Create a synthetic representation of component from information given
 // in the component.
-func serveGeneratedComponentImage(component *Component, category string, value string,
+func (h *ImageHandler) serveGeneratedComponentImage(component *Component, category string, value string,
 	out http.ResponseWriter) bool {
 	// If we got a category string, it takes precedence
 	if len(category) == 0 && component != nil {
@@ -51,22 +53,22 @@ func serveGeneratedComponentImage(component *Component, category string, value s
 	}
 	switch category {
 	case "Resistor":
-		return serveResistorImage(component, value, out)
+		return serveResistorImage(component, value, h.template, out)
 	case "Diode (D)":
-		return renderTemplate(out, out.Header(), "category-Diode.svg", component)
+		return h.template.Render(out, out.Header(), "category-Diode.svg", component)
 	case "LED":
-		return renderTemplate(out, out.Header(), "category-LED.svg", component)
+		return h.template.Render(out, out.Header(), "category-LED.svg", component)
 	case "Capacitor (C)":
-		return renderTemplate(out, out.Header(), "category-Capacitor.svg", component)
+		return h.template.Render(out, out.Header(), "category-Capacitor.svg", component)
 	}
 	return false
 }
 
-func servePackageImage(component *Component, out http.ResponseWriter) bool {
+func (h *ImageHandler) servePackageImage(component *Component, out http.ResponseWriter) bool {
 	if component == nil || component.Footprint == "" {
 		return false
 	}
-	return renderTemplate(out, out.Header(),
+	return h.template.Render(out, out.Header(),
 		"package-"+component.Footprint+".svg", component)
 }
 
@@ -83,10 +85,10 @@ func (h *ImageHandler) serveComponentImage(requested string, out http.ResponseWr
 		category := r.FormValue("c") // We also allow these if available
 		value := r.FormValue("v")
 		if (component != nil || len(category) > 0 || len(value) > 0) &&
-			serveGeneratedComponentImage(component, category, value, out) {
+			h.serveGeneratedComponentImage(component, category, value, out) {
 			return
 		}
-		if servePackageImage(component, out) {
+		if h.servePackageImage(component, out) {
 			return
 		}
 	}

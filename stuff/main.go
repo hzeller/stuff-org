@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -73,65 +71,6 @@ func ElapsedPrint(msg string, start time.Time) {
 	}
 }
 
-var cache_templates = flag.Bool("cache-templates", true,
-	"Cache templates. False for online editing.")
-var templates = template.Must(template.ParseFiles(
-	// Application templates
-	"template/form-template.html",
-	"template/status-table.html",
-	"template/set-drag-drop.html",
-	// Templates to create component images
-	"template/component/category-Diode.svg",
-	"template/component/category-LED.svg",
-	"template/component/category-Capacitor.svg",
-	// Value rendering of resistors
-	"template/component/4-Band_Resistor.svg",
-	"template/component/5-Band_Resistor.svg",
-	// Some common packages
-	"template/component/package-TO-39.svg",
-	"template/component/package-TO-220.svg",
-	"template/component/package-DIP-14.svg",
-	"template/component/package-DIP-16.svg",
-	"template/component/package-DIP-28.svg"))
-
-func setContentTypeFromTemplateName(template_name string, header http.Header) {
-	switch {
-	case strings.HasSuffix(template_name, ".svg"):
-		header.Set("Content-Type", "image/svg+xml")
-	default:
-		header.Set("Content-Type", "text/html; charset=utf-8")
-	}
-}
-
-// for now, render templates directly to easier edit them.
-func renderTemplate(w io.Writer, header http.Header, template_name string, p interface{}) bool {
-	var err error
-	if *cache_templates {
-		template := templates.Lookup(template_name)
-		if template == nil {
-			return false
-		}
-		setContentTypeFromTemplateName(template_name, header)
-		err = template.Execute(w, p)
-	} else {
-		t, err := template.ParseFiles("template/" + template_name)
-		if err != nil {
-			t, err = template.ParseFiles("template/component/" + template_name)
-			if err != nil {
-				log.Printf("%s: %s", template_name, err)
-				return false
-			}
-		}
-		setContentTypeFromTemplateName(template_name, header)
-		err = t.Execute(w, p)
-	}
-	if err != nil {
-		log.Printf("Template broken %s", template_name)
-		return false
-	}
-	return true
-}
-
 func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
 	http.Redirect(out, r, "/search", 302)
 }
@@ -155,6 +94,9 @@ func parseAllowedEditorCIDR(allowed string) []*net.IPNet {
 
 func main() {
 	imageDir := flag.String("imagedir", "img-srv", "Directory with component images")
+	templateDir := flag.String("templatedir", "./template", "Base-Directory with templates")
+	cacheTemplates := flag.Bool("cache-templates", true,
+		"Cache templates. False for online editing while development.")
 	staticResource := flag.String("staticdir", "static",
 		"Directory with static resources")
 	port := flag.Int("port", 2000, "Port to serve from")
@@ -214,10 +156,11 @@ func main() {
 		return
 	}
 
-	AddImageHandler(store, *imageDir, *staticResource)
-	AddFormHandler(store, *imageDir, edit_nets)
-	AddSearchHandler(store, *imageDir)
-	AddStatusHandler(store, *imageDir)
+	templates := NewTemplateRenderer(*templateDir, *cacheTemplates)
+	AddImageHandler(store, templates, *imageDir, *staticResource)
+	AddFormHandler(store, templates, *imageDir, edit_nets)
+	AddSearchHandler(store, templates, *imageDir)
+	AddStatusHandler(store, templates, *imageDir)
 
 	http.HandleFunc("/", stuffStoreRoot)
 

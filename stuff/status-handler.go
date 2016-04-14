@@ -14,14 +14,16 @@ const (
 )
 
 type StatusHandler struct {
-	store   StuffStore
-	imgPath string
+	store    StuffStore
+	template *TemplateRenderer
+	imgPath  string
 }
 
-func AddStatusHandler(store StuffStore, imgPath string) {
+func AddStatusHandler(store StuffStore, template *TemplateRenderer, imgPath string) {
 	handler := &StatusHandler{
-		store:   store,
-		imgPath: imgPath,
+		store:    store,
+		template: template,
+		imgPath:  imgPath,
 	}
 	http.Handle(kStatusPage, handler)
 }
@@ -109,5 +111,5 @@ func (h *StatusHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 		}
 
 	}
-	renderTemplate(out, out.Header(), "status-table.html", page)
+	h.template.Render(out, out.Header(), "status-table.html", page)
 }
