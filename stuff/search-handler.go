@@ -51,7 +51,7 @@ func (h *SearchHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 func (h *SearchHandler) showSearchPage(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Just static html. Maybe serve from /static ?
-	content, _ := ioutil.ReadFile("template/search-result.html")
+	content, _ := ioutil.ReadFile(h.template.baseDir + "/search-result.html")
 	out.Write(content)
 }
 
