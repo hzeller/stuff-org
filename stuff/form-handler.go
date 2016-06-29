@@ -63,7 +63,8 @@ type Selection struct {
 	AddSeparator bool
 }
 type FormPage struct {
-	Component     // All these values are shown in the form
+	Component // All these values are shown in the form
+	PageTitle string
 	Version   int // Caching-relevant versioning of images.
 
 	// Category choice.
@@ -237,7 +238,7 @@ func cleanString(input string) string {
 	return strings.Replace(result, "\r\n", "\n", -1)
 }
 
-func cleanupCompoent(component *Component) {
+func cleanupComponent(component *Component) {
 	component.Value = cleanString(component.Value)
 	component.Category = cleanString(component.Category)
 	component.Description = cleanString(component.Description)
@@ -337,7 +338,7 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 			fromForm.Category = r.FormValue("category_select")
 		}
 
-		cleanupCompoent(&fromForm)
+		cleanupComponent(&fromForm)
 
 		was_stored, store_msg := h.store.EditRecord(edit_id, func(comp *Component) bool {
 			*comp = fromForm
@@ -371,8 +372,13 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	currentItem := h.store.FindById(id)
 	if currentItem != nil {
 		page.Component = *currentItem
+		if currentItem.Category != "" {
+			page.PageTitle = currentItem.Category + " - "
+		}
+		page.PageTitle += currentItem.Value
 	} else {
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
+		page.PageTitle = "New Item: Noisebridge stuff organization"
 	}
 
 	page.CatChoice = make([]Selection, len(available_category))

@@ -1,6 +1,6 @@
 <head>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
-  <title>Noisebridge Electronic Component Declutter Project</title>
+  <title>Status: Noisebridge Electronic Component Declutter Project</title>
   <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <style>
   /** Print formatting is a huge .. mess; no idea how to make this look nice **/
@@ -72,7 +72,7 @@
       {{ if eq $element.Separator 1}}</tr><tr>{{end}}
       {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
       <td class="{{$element.Status}}">
-	<a href="/form?id={{ $element.Number }}"><div>
+	<a href="/form?id={{ $element.Number }}" {{ if eq $element.Status "missing"}}rel="nofollow"{{end}}><div>
 	<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
 	{{ $element.Number }}</div></a></td>
       {{end}}

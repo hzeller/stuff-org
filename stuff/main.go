@@ -123,6 +123,8 @@ func main() {
 	is_dbfilenew := true
 	if _, err := os.Stat(*dbFile); err == nil {
 		is_dbfilenew = false
+	} else {
+		log.Printf("Implicitly creating new database file from --dbfile=%s", *dbFile)
 	}
 
 	db, err := sql.Open("sqlite3", *dbFile)
@@ -143,7 +145,7 @@ func main() {
 			if c := store.FindById(i); c != nil {
 				store.EditRecord(i, func(c *Component) bool {
 					before := *c
-					cleanupCompoent(c)
+					cleanupComponent(c)
 					if *c == before {
 						return false
 					}
