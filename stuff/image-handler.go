@@ -75,7 +75,7 @@ func (h *ImageHandler) servePackageImage(component *Component, out http.Response
 func (h *ImageHandler) serveComponentImage(requested string, out http.ResponseWriter, r *http.Request) {
 	path := h.imgPath + "/" + requested + ".jpg"
 	if _, err := os.Stat(path); err == nil { // we have an image.
-		sendResource(path, h.staticPath+"/fallback.jpg", out)
+		sendResource(path, h.staticPath+"/fallback.png", out)
 		return
 	}
 	// No image, but let's see if we can do something from the
@@ -93,7 +93,7 @@ func (h *ImageHandler) serveComponentImage(requested string, out http.ResponseWr
 		}
 	}
 	// Use fallback-resource straight away to get short cache times.
-	sendResource("", h.staticPath+"/fallback.jpg", out)
+	sendResource("", h.staticPath+"/fallback.png", out)
 }
 
 func (h *ImageHandler) serveStatic(out http.ResponseWriter, r *http.Request) {

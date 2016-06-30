@@ -370,7 +370,7 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 		// of the particular image by addinga semi-random number to it.
 		// Why ? When we edit an element, we might just have updated the
 		// image while the browser stubbonly cached the old version.
-		page.ImageUrl += fmt.Sprintf("?v=%d",
+		page.ImageUrl += fmt.Sprintf("?version=%d",
 			int(time.Now().UnixNano()%10000))
 	}
 	currentItem := h.store.FindById(id)
