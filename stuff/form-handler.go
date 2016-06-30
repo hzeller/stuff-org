@@ -3,6 +3,7 @@ package main
 import (
 	"compress/gzip"
 	"fmt"
+	"io"
 	"math"
 	"net"
 	"net/http"
@@ -282,7 +283,6 @@ func (h *FormHandler) EditAllowed(r *http.Request) bool {
 }
 
 func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
-
 	// Look at the request and see what we need to display,
 	// and if we have to store something.
 
@@ -371,12 +371,14 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	currentItem := h.store.FindById(id)
 	if currentItem != nil {
+		w.WriteHeader(http.StatusOK)
 		page.Component = *currentItem
 		if currentItem.Category != "" {
 			page.PageTitle = currentItem.Category + " - "
 		}
 		page.PageTitle += currentItem.Value
 	} else {
+		w.WriteHeader(http.StatusNotFound)
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
 		page.PageTitle = "New Item: Noisebridge stuff organization"
 	}
@@ -416,10 +418,21 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	// We are not using any web-framework or want to keep track of session
 	// cookies. Simply a barebone, state-less web app: use plain cookies.
 	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
-	w.Header().Set("Content-Encoding", "gzip")
-	zipped := gzip.NewWriter(w)
-	h.template.Render(zipped, w.Header(), "form-template.html", page)
-	zipped.Close()
+	var zipped io.Closer = nil
+	var out_writer io.Writer = w
+	for _, val := range r.Header["Accept-Encoding"] {
+		if val == "gzip" {
+			zipped := gzip.NewWriter(w)
+			out_writer = zipped
+			w.Header().Set("Content-Encoding", "gzip")
+			break
+		}
+	}
+
+	h.template.Render(out_writer, w.Header(), "form-template.html", page)
+	if zipped != nil {
+		zipped.Close()
+	}
 }
 
 func (h *FormHandler) relatedComponentSetOperations(out http.ResponseWriter, r *http.Request) {
