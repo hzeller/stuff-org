@@ -264,11 +264,14 @@ func (h *FormHandler) EditAllowed(r *http.Request) bool {
 	if h.editNets == nil || len(h.editNets) == 0 {
 		return true // No restrictions.
 	}
-	// Looks like we can't get the IP address in its raw form from
-	// the request, but have to parse it.
-	addr := r.RemoteAddr
-	if pos := strings.LastIndex(addr, ":"); pos >= 0 {
-		addr = addr[0:pos]
+	addr := ""
+	if h := r.Header["X-Forwarded-For"]; h != nil {
+		addr = h[0]
+	} else {
+		addr := r.RemoteAddr
+		if pos := strings.LastIndex(addr, ":"); pos >= 0 {
+			addr = addr[0:pos]
+		}
 	}
 	var ip net.IP
 	if ip = net.ParseIP(addr); ip == nil {
