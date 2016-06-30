@@ -66,7 +66,7 @@ type Selection struct {
 type FormPage struct {
 	Component // All these values are shown in the form
 	PageTitle string
-	Version   int // Caching-relevant versioning of images.
+	ImageUrl  string
 
 	// Category choice.
 	CatChoice    []Selection
@@ -310,14 +310,6 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	requestStore := r.FormValue("edit_id") != ""
 	msg := ""
-	page := &FormPage{
-		// Version number is some value to be added to the image
-		// URL so that the browser is forced to fetch it, independent of
-		// its cache. This could be the last updated timestamp,
-		// but for now, we just give it a sufficiently random number.
-		Version: int(time.Now().UnixNano() % 10000),
-	}
-
 	edit_allowed := h.EditAllowed(r)
 
 	defer ElapsedPrint("Form action", time.Now())
@@ -357,8 +349,10 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// -- Populate form relevant fields.
+	page := &FormPage{}
 	id := next_id
 	page.Id = id
+	page.ImageUrl = fmt.Sprintf("/img/%d", id)
 	if id > 0 {
 		page.PrevId = id - 1
 	}
@@ -371,7 +365,14 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	// a roll and have the next page form editable as well.
 	// If we were merely viewing the page, then next edit is view as well.
 	page.FormEditable = requestStore && edit_allowed
-
+	if page.FormEditable {
+		// While we edit an element, we might want to force non-caching
+		// of the particular image by addinga semi-random number to it.
+		// Why ? When we edit an element, we might just have updated the
+		// image while the browser stubbonly cached the old version.
+		page.ImageUrl += fmt.Sprintf("?v=%d",
+			int(time.Now().UnixNano()%10000))
+	}
 	currentItem := h.store.FindById(id)
 	if currentItem != nil {
 		w.WriteHeader(http.StatusOK)
