@@ -110,6 +110,7 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 		local_path = fallback_resource
 		content, _ = ioutil.ReadFile(local_path)
 		cache_time = 10 // fallbacks might change more often.
+		out.WriteHeader(http.StatusNotFound)
 		header_addon = ",must-revalidate"
 	}
 	out.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d%s", cache_time, header_addon))
