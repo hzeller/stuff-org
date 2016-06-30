@@ -122,6 +122,12 @@
 	  }
       }
       form_is_enabled = enable_action;
+      edit_toggle = document.getElementById("edit-toggle");
+      if (edit_toggle) {
+          edit_toggle.src=form_is_enabled
+	   ? '/static/edit-pen.png'
+	   : '/static/non-edit-pen.png';
+      }
   }
 
   // If we change the ID input field, the other values are not
@@ -216,7 +222,7 @@
 			autofocus>
 	   <!-- very crude edit icon -->
            {{if eq .ShowEditToggle true}}
-           <img src="/static/edit-pen.png" height="32px" style="float:right;"
+           <img src="#" height="32px" id="edit-toggle" style="float:right;"
                 onclick="enable_form(!form_is_enabled);"/>
            {{end}}
            </td>
