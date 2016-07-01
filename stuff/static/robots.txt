@@ -1,0 +1,3 @@
+# Non-useful things to crawl
+User-agent: *
+Disallow: /api    # Not useful in SERPs

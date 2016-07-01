@@ -30,6 +30,12 @@ func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath strin
 	}
 	http.Handle(kComponentImage, handler) // Serve an component image or fallback.
 	http.Handle(kStaticResource, handler) // serve a static resource
+
+	// With serving robots.txt, image-handler should probably be named
+	// static handler.
+	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		sendResource(staticPath+"/robots.txt", "", w)
+	})
 }
 
 func (h *ImageHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
@@ -121,6 +127,8 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 		out.Header().Set("Content-Type", "text/css")
 	case strings.HasSuffix(local_path, ".svg"):
 		out.Header().Set("Content-Type", "image/svg+xml")
+	case strings.HasSuffix(local_path, ".txt"):
+		out.Header().Set("Content-Type", "text/plain")
 	default:
 		out.Header().Set("Content-Type", "image/jpg")
 	}
