@@ -180,7 +180,7 @@
 	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
 
-	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" src="/img/{{.PrevId}}"/></button>
+	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}"/></button>
 
 	      <input style="font-weight:bold; font-size:200%;" class="nav-item"
 		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
@@ -188,7 +188,7 @@
 		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		      onchange="form.submit();">
 
-	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" src="/img/{{.NextId}}"/> ▶</button>
+	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}"/> ▶</button>
 	    </td>
 	  </tr>
 
