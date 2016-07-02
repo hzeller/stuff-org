@@ -1,4 +1,4 @@
-<!-- how to fix: with html5 doctype, the images are not properly scaled ? -->
+<!-- in HTML5 sizes don't stay the same ? Leave doctype for now -->
 <head>
   <title>Noisebride Parts search</title>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
@@ -37,9 +37,10 @@
       text-decoration: none;
   }
   .rimg {
-      height:128;
-      width:172;
-      padding-left:44px;  /* (rbox.width - rimg.width) / 2 */
+      width: 160;
+      height: 128;
+      border-width: 1px;
+      padding-left: 50px;  /* (rbox.width - rimg.width) / 2 */
   }
   .rtxtbox {
       height: 3.5em;
@@ -131,10 +132,13 @@ function fillresults(resultRecord) {
     var i = 0;
     for (i = 0; i < len; ++i) {
 	var d = data[i];
-	references[i].obj.style.visibility = 'visible';
 	references[i].obj.href = "/form?id=" + d.id;
 	references[i].img.src = "/img/" + d.id;
+	// In HTML5, width and height from the style are cleared ?#@! Set again.
+	references[i].img.width=160;
+	references[i].img.height=128;
 	references[i].txt.innerHTML = d.txt;
+	references[i].obj.style.visibility = 'visible';
     }
     // The rest invisible and prepopulated with neutral image.
     for (; i < references.length; ++i) {

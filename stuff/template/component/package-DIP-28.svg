@@ -8,7 +8,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="300"
-   height="270"
+   height="240"
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -2709,7 +2709,7 @@
      id="layer2"
      inkscape:label="Ebene2"
      style="display:inline"
-     transform="translate(0,206)">
+     transform="translate(0,190)">
     <g
        id="g3881"
        transform="matrix(0,-1,1,0,201.74836,-12.673723)">
