@@ -32,10 +32,10 @@
       background-color:#8888ff;
   }
   input[type="text"]:disabled {
-     color: black;
+      color: black;
   }
   textarea:disabled {
-     color: black;
+      color: black;
   }
 
   .msgbox {
@@ -188,11 +188,12 @@
 
 	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}"/></button>
 
-	      <input style="font-weight:bold; font-size:200%;" class="nav-item"
-		      type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
-		      onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-		      onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
-		      onchange="form.submit();">
+	      <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
+		     class="nav-item"
+		     type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
+		     onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+		     onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
+		     onchange="form.submit();">
 
 	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}"/> ▶</button>
 	    </td>
@@ -292,6 +293,8 @@
 	      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
 	      {{ $element.Number }}</button></td>
 	  {{end}}</tr>
+	  <tr><td colspan="6">&lt-[PgUp]</td>
+	    <td align="right" colspan="6">[PgDn]-&gt;</td>
 	</table>
       </td>
 	  </tr>
