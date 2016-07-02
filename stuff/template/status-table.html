@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <head>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
   <title>Status: Noisebridge Electronic Component Declutter Project</title>
@@ -45,36 +46,35 @@
     <span class="poor">Poor: Only one field</span> |
     <span class="fair">Fair: Two fields</span> |
     <span class="good">Good; Category, Name and Description</span>
-  </p>
-  <p>
+
     <table width="50%">
       <tr><td>
-	<table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
+	  <table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
       </td><td style="text-align:left;width:90%;">
 	A square in the top corner indicates that there is a <b>picture</b> available.
       </td></tr>
       <tr><td>
-	<table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
+	  <table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
 	<td style="text-align:left;width:90%;">
 	  <b>Empty</b> drawers with numbers are crossed out.
-	</td></tr>
+      </td></tr>
       <tr><td>
-	<table><tr><td class="mystery"><div style="vertical-align:top;"></div>42</td></tr></table>
+	  <table><tr><td class="mystery"><div style="vertical-align:top;"></div>42</td></tr></table>
 	<td style="text-align:left;width:90%;">
 	  <b>Unknown</b> component. Needs revisit.
-	</td></tr>
+      </td></tr>
     </table>
-  </p>
 
-  <div class="block"><h2>000</h2>
-    <table><tr>
-      {{ range $element := .Items }}
-      {{ if eq $element.Separator 1}}</tr><tr>{{end}}
-      {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
-      <td class="{{$element.Status}}">
-	<a href="/form?id={{ $element.Number }}" {{ if eq $element.Status "missing"}}rel="nofollow"{{end}}><div>
-	<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
-	{{ $element.Number }}</div></a></td>
-      {{end}}
+    <div class="block"><h2>000</h2>
+      <table><tr>
+	  {{ range $element := .Items }}
+	  {{ if eq $element.Separator 1}}</tr><tr>{{end}}
+	  {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
+	  <td class="{{$element.Status}}">
+	    <a href="/form?id={{ $element.Number }}" {{ if eq $element.Status "missing"}}rel="nofollow"{{end}}><div>
+		<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+		{{ $element.Number }}</div></a></td>
+	  {{end}}
       </table>
+    </div>
 </body>

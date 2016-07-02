@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <head>
   <title>{{.PageTitle}}</title>
   <link rel="icon" type="image/png" href="/static/stuff-icon.png">
@@ -161,7 +162,7 @@
       var doc_img = document.getElementById("component-image");
       var value = document.getElementById("cvalue").value;
       var category = getRadioValue("category_select");
-      doc_img.src = "/img/{{.Id}}?c=" + category + "&v=" + value
+      doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value
   }
   </script>
 </head>
@@ -172,7 +173,7 @@
   This is how we did it back then. Yes, tables! It sucked. Still sucks.
   Also, I don't know javascript, so feel free to make this right.
   -->
-  <form name="compform" id="compform" action="/form" method="POST">
+  <form name="compform" id="compform" action="/form" method="post">
     <input type="hidden" name="edit_id" value="{{.Id}}"/>
     <table>
       <tr><td valign="top">                              <!-- First column: Form -->
@@ -184,9 +185,9 @@
 	    <td>
 	      <!-- dummy submit button to catch the 'Return' action. Not sure if
 	      this works properly on all browsers. Chrome, Firefox work -->
-	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/></button>
+	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/>
 
-	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}"/></button>
+	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="Previous Image"/></button>
 
 	      <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
 		     class="nav-item"
@@ -195,7 +196,7 @@
 		     onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		     onchange="form.submit();">
 
-	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}"/> ▶</button>
+	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="Next image"/> ▶</button>
 	    </td>
 	  </tr>
 
@@ -229,8 +230,8 @@
 			autofocus>
 	   <!-- very crude edit icon -->
            {{if eq .ShowEditToggle true}}
-           <img src="#" height="32px" id="edit-toggle" style="float:right;"
-                onclick="enable_form(!form_is_enabled);"/>
+           <img src="#" height="32" id="edit-toggle" style="float:right;"
+                onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
            {{end}}
            </td>
 	  </tr>
@@ -246,12 +247,12 @@
 
 	  <tr>
 	    <td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
-	    <td><textarea rows="3" cols="50" name="description" size="40" id="cdesc">{{.Description}}</textarea></td>
+	    <td><textarea rows="3" cols="50" name="description" id="cdesc">{{.Description}}</textarea></td>
 	  </tr>
 
 	  <tr>
 	    <td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
-	    <td><textarea rows="3" cols="50" name="notes" size="40" id="cnotes">{{.Notes}}</textarea></td>
+	    <td><textarea rows="3" cols="50" name="notes" id="cnotes">{{.Notes}}</textarea></td>
 	  </tr>
 
 	  <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
@@ -278,26 +279,28 @@
 
       <!-- Second column: Picture  -->
       <!-- TODO: on mobile, put it to the bottom. -->
-      <td style="vertical-align:top;" align="left">
+      <td style="vertical-align:top;" align="left" width="400">
 	<!-- fixed size to help browser layout. TODO: this happens to be the
 	image size we use right	now, but that needs to be adapted of course -->
-	<img height="320" widt="400" id="component-image" src="{{.ImageUrl}}"/>
+	<img height="320" width="400" id="component-image" src="{{.ImageUrl}}"
+	     alt="Component image"/>
 	<div class="msgbox">{{.Msg}}</div>
 
 	<!-- Status around -->
 	<div>Status adjacent drawers/bins</div>
-	<table id="statustab"><tr>
-	  {{ range $element := .Status }}
-	  <td class="{{$element.Status}}">
-	    <button style="background-color:transparent;" name="nav_id_button" value="{{$element.Number}}">
-	      <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
-	      {{ $element.Number }}</button></td>
-	  {{end}}</tr>
-	  <tr><td colspan="6">&lt-[PgUp]</td>
+	<table id="statustab" width="400">
+	  <tr width="400">
+	    {{ range $element := .Status }}
+	    <td class="{{$element.Status}}">
+	      <button style="background-color:transparent;" name="nav_id_button" value="{{$element.Number}}">
+		<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+		{{ $element.Number }}</button></td>
+	    {{end}}</tr>
+	  <tr><td colspan="6">&lt;-[PgUp]</td>
 	    <td align="right" colspan="6">[PgDn]-&gt;</td>
 	</table>
       </td>
-	  </tr>
+      </tr>
     </table>
   </form>
 
@@ -314,7 +317,7 @@
       ev.preventDefault();
       ev.stopPropagation();
 
-      doOperation("join", "comp=" + from_id + "&set=" + in_set);
+      doOperation("join", "comp=" + from_id + "&amp;set=" + in_set);
   }
   function removeFromSet(ev) {
       ev.preventDefault();
@@ -337,7 +340,7 @@
 	  document.getElementById('set-display').innerHTML = xmlhttp.responseText;
       };
 
-      var url="/api/related-set?op=" + op + "&id={{.Id}}&" + params;
+      var url="/api/related-set?op=" + op + "&amp;id={{.Id}}&amp;" + params;
       xmlhttp.open("GET", url, true);
       xmlhttp.send();
   }
