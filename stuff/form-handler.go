@@ -426,9 +426,9 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	var out_writer io.Writer = w
 	for _, val := range r.Header["Accept-Encoding"] {
 		if val == "gzip" {
+			w.Header().Set("Content-Encoding", "gzip")
 			zipped := gzip.NewWriter(w)
 			out_writer = zipped
-			w.Header().Set("Content-Encoding", "gzip")
 			break
 		}
 	}

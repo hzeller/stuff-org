@@ -185,7 +185,7 @@
 	    <td>
 	      <!-- dummy submit button to catch the 'Return' action. Not sure if
 	      this works properly on all browsers. Chrome, Firefox work -->
-	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"/>
+	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"></button>
 
 	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="Previous Image"/></button>
 
@@ -291,8 +291,8 @@
 	<table id="statustab" width="400">
 	  <tr width="400">
 	    {{ range $element := .Status }}
-	    <td class="{{$element.Status}}">
-	      <button style="background-color:transparent;" name="nav_id_button" value="{{$element.Number}}">
+	    <td class="{{$element.Status}}" style="width:30px;">
+	      <button style="background-color:transparent;padding:0;" name="nav_id_button" value="{{$element.Number}}">
 		<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
 		{{ $element.Number }}</button></td>
 	    {{end}}</tr>
