@@ -26,7 +26,7 @@ func StringScore(needle string, haystack string) float32 {
 	endword := pos + len(needle)
 	var boost float32 = 0.0
 	if pos == 0 || isSeparator(haystack[pos-1]) {
-		boost = 15.0 // word starts with it
+		boost = 12.0 // word starts with it
 	}
 	if endword == len(haystack) || isSeparator(haystack[endword]) {
 		boost += 5.0 // word ends with it
@@ -58,8 +58,8 @@ func (c *SearchComponent) MatchScore(term string) float32 {
 		// NOTE: more fields here, add to lowerCased below.
 		score := maxlist(2.0*StringScore(part, c.preprocessed.Category),
 			3.0*StringScore(part, c.preprocessed.Value),
-			2.0*StringScore(part, c.preprocessed.Description),
-			1.5*StringScore(part, c.preprocessed.Notes),
+			1.5*StringScore(part, c.preprocessed.Description),
+			1.2*StringScore(part, c.preprocessed.Notes),
 			1.0*StringScore(part, c.preprocessed.Footprint))
 
 		if score == 0 {
