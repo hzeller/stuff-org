@@ -111,5 +111,5 @@ func (h *StatusHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 		}
 
 	}
-	h.template.Render(out, out.Header(), "status-table.html", page)
+	h.template.Render(out, "status-table.html", page)
 }

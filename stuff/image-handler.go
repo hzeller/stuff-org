@@ -61,11 +61,11 @@ func (h *ImageHandler) serveGeneratedComponentImage(component *Component, catego
 	case "Resistor":
 		return serveResistorImage(component, value, h.template, out)
 	case "Diode (D)":
-		return h.template.Render(out, out.Header(), "category-Diode.svg", component)
+		return h.template.Render(out, "category-Diode.svg", component)
 	case "LED":
-		return h.template.Render(out, out.Header(), "category-LED.svg", component)
+		return h.template.Render(out, "category-LED.svg", component)
 	case "Capacitor (C)":
-		return h.template.Render(out, out.Header(), "category-Capacitor.svg", component)
+		return h.template.Render(out, "category-Capacitor.svg", component)
 	}
 	return false
 }
@@ -74,7 +74,7 @@ func (h *ImageHandler) servePackageImage(component *Component, out http.Response
 	if component == nil || component.Footprint == "" {
 		return false
 	}
-	return h.template.Render(out, out.Header(),
+	return h.template.Render(out,
 		"package-"+component.Footprint+".svg", component)
 }
 

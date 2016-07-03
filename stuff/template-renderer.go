@@ -55,16 +55,24 @@ func setContentTypeFromTemplateName(template_name string, header http.Header) {
 	}
 }
 
+func (h *TemplateRenderer) Render(w http.ResponseWriter, template_name string, p interface{}) bool {
+	return h.RenderWithHttpCode(w, w, http.StatusOK, template_name, p)
+}
+
 // for now, render templates directly to easier edit them.
-func (h *TemplateRenderer) Render(w io.Writer, header http.Header, template_name string, p interface{}) bool {
+func (h *TemplateRenderer) RenderWithHttpCode(w http.ResponseWriter, output_writer io.Writer, http_code int, template_name string, p interface{}) bool {
 	var err error
+	if output_writer == nil {
+		output_writer = w
+	}
 	if h.doCache {
 		templ := h.cachedTemplates.Lookup(template_name)
 		if templ == nil {
 			return false
 		}
-		setContentTypeFromTemplateName(template_name, header)
-		err = templ.Execute(w, p)
+		setContentTypeFromTemplateName(template_name, w.Header())
+		w.WriteHeader(http_code)
+		err = templ.Execute(output_writer, p)
 	} else {
 		t, err := template.ParseFiles(h.baseDir + "/" + template_name)
 		if err != nil {
@@ -74,8 +82,9 @@ func (h *TemplateRenderer) Render(w io.Writer, header http.Header, template_name
 				return false
 			}
 		}
-		setContentTypeFromTemplateName(template_name, header)
-		err = t.Execute(w, p)
+		setContentTypeFromTemplateName(template_name, w.Header())
+		w.WriteHeader(http_code)
+		err = t.Execute(output_writer, p)
 	}
 	if err != nil {
 		log.Printf("Template broken %s (%s)", template_name, err)

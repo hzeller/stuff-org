@@ -374,15 +374,15 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 			int(time.Now().UnixNano()%10000))
 	}
 	currentItem := h.store.FindById(id)
+	http_code := http.StatusOK
 	if currentItem != nil {
-		w.WriteHeader(http.StatusOK)
 		page.Component = *currentItem
 		if currentItem.Category != "" {
 			page.PageTitle = currentItem.Category + " - "
 		}
 		page.PageTitle += currentItem.Value
 	} else {
-		w.WriteHeader(http.StatusNotFound)
+		http_code = http.StatusNotFound
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
 		page.PageTitle = "New Item: Noisebridge stuff organization"
 	}
@@ -422,18 +422,17 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	// We are not using any web-framework or want to keep track of session
 	// cookies. Simply a barebone, state-less web app: use plain cookies.
 	w.Header().Set("Set-Cookie", fmt.Sprintf("last-edit=%d", id))
-	var zipped io.Closer = nil
-	var out_writer io.Writer = w
+	var zipped io.WriteCloser = nil
 	for _, val := range r.Header["Accept-Encoding"] {
-		if val == "gzip" {
+		if strings.Contains(strings.ToLower(val), "gzip") {
 			w.Header().Set("Content-Encoding", "gzip")
-			zipped := gzip.NewWriter(w)
-			out_writer = zipped
+			zipped = gzip.NewWriter(w)
 			break
 		}
 	}
 
-	h.template.Render(out_writer, w.Header(), "form-template.html", page)
+	h.template.RenderWithHttpCode(w, zipped, http_code,
+		"form-template.html", page)
 	if zipped != nil {
 		zipped.Close()
 	}
@@ -520,5 +519,5 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 		}
 		current_set.Items = append(current_set.Items, c)
 	}
-	h.template.Render(out, out.Header(), "set-drag-drop.html", page)
+	h.template.Render(out, "set-drag-drop.html", page)
 }
