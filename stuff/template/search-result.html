@@ -18,8 +18,17 @@
       padding: 10px;
       width: 100%;
   }
-  .infobox {
+  .queryinfo {
       font-size: small;
+      color: #aaaaaa;
+      white-space: nowrap;
+      width: 80%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+  }
+  .resultinfo {
+      font-size: small;
+      color: #aaaaaa;
   }
   .idtxt {
       font-size: small;
@@ -78,36 +87,37 @@
 	  onkeyup="retrieve(this);"
 	  onkeypress="if (event.keyCode == 13) hideKeyboard(this);"
 	  onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-	  autofocus><br/>
-  <span class="infobox" id="infobox" style="float:right;"></span>
+	 autofocus><br/>
+  <span class="queryinfo" id="queryinfo" style="float:left;"></span>
+  <span class="resultinfo" id="resultinfo" style="float:right;"></span>
 </div>
 &nbsp;
 <!-- only up to 24 search results - everything beyond that is too irrelevant -->
 <div id="result-list">
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img src="#" class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
 </div>
 <script>
 var references = [];
@@ -145,7 +155,8 @@ function fillresults(resultRecord) {
 	references[i].obj.style.visibility = 'hidden';
 	references[i].img.src = "/static/white.png"
     }
-    infobox.innerHTML = resultRecord.info;
+    resultinfo.innerHTML = resultRecord.resultinfo;
+    queryinfo.innerHTML = resultRecord.queryinfo;
 }
 
 function hideKeyboard(widget) {

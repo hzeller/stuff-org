@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -12,14 +14,28 @@ func isSeparator(c byte) bool {
 }
 
 func queryRewrite(term string) string {
+	// TODO(hzeller): all these regexps should be what in C would be 'static'
+	// variables.
 	and_rewrite_, _ := regexp.Compile(`(?i)( and )`)
 	term = and_rewrite_.ReplaceAllString(term, " ")
 
 	or_rewrite_, _ := regexp.Compile(`(?i)( or )`)
 	term = or_rewrite_.ReplaceAllString(term, " | ")
 
-	possible_resistor, _ := regexp.Compile(`(?i)([0-9]+[kM]?)(\s*Ohm?)`)
+	possible_resistor, _ := regexp.Compile(`(?i)([0-9]+(\.[0-9]+)*[kM]?)(\s*Ohm?)`)
 	term = possible_resistor.ReplaceAllString(term, "($0 | ($1 (resistor|potentiometer|r-network)))")
+
+	// Nanofarad values are often given as 0.something microfarad.
+	// Internally, all capacitors are normalized to nanofarad.
+	possible_small_microfarad, _ := regexp.Compile(`(?i)(0\.[0-9]+)u(\w*)`)
+	if cmatch := possible_small_microfarad.FindStringSubmatch(term); cmatch != nil {
+		val, err := strconv.ParseFloat(cmatch[1], 32)
+		if err == nil {
+			term = possible_small_microfarad.ReplaceAllString(
+				term, fmt.Sprintf("($0 | %.0fn$2)", 1000*val))
+		}
+	}
+
 	return term
 }
 

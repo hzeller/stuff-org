@@ -82,7 +82,15 @@ func TestQueryRewrite(t *testing.T) {
 	// Ohm to the value, expand the query to match the raw number plus
 	// something that narrows it to resistor. But also still look for the
 	// original value in case this is something
-	expectEqual(t, queryRewrite("10k"), "10k") // no rewrite
+	expectEqual(t, queryRewrite("10k"), "10k")   // no rewrite
+	expectEqual(t, queryRewrite("3.9k"), "3.9k") // no rewrite
 	expectEqual(t, queryRewrite("10kOhm"), "(10kOhm | (10k (resistor|potentiometer|r-network)))")
 	expectEqual(t, queryRewrite("10k Ohm"), "(10k Ohm | (10k (resistor|potentiometer|r-network)))")
+	expectEqual(t, queryRewrite("3.9kOhm"), "(3.9kOhm | (3.9k (resistor|potentiometer|r-network)))")
+	expectEqual(t, queryRewrite("3.kOhm"), "3.kOhm") // silly number.
+
+	expectEqual(t, queryRewrite("0.1u"), "(0.1u | 100n)")
+	expectEqual(t, queryRewrite("0.1uF"), "(0.1uF | 100nF)")
+	expectEqual(t, queryRewrite("0.01u"), "(0.01u | 10n)")
+	expectEqual(t, queryRewrite("0.068u"), "(0.068u | 68n)")
 }

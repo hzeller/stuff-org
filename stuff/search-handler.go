@@ -116,9 +116,10 @@ type JsonHtmlSearchResultRecord struct {
 }
 
 type JsonHtmlSearchResult struct {
-	Count int                          `json:"count"`
-	Info  string                       `json:"info"`
-	Items []JsonHtmlSearchResultRecord `json:"items"`
+	Count      int                          `json:"count"`
+	QueryInfo  string                       `json:"queryinfo"`
+	ResultInfo string                       `json:"resultinfo"`
+	Items      []JsonHtmlSearchResultRecord `json:"items"`
 }
 
 func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Request) {
@@ -128,21 +129,31 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	out.Header().Set("Cache-Control", "max-age=10")
 	query := r.FormValue("q")
 	if query == "" {
-		out.Write([]byte("{\"count\":0, \"info\":\"\", \"items\":[]}"))
+		out.Write([]byte(`{"count":0, "queryinfo":"", "resultinfo":"", "items":[]}`))
 		return
 	}
 	start := time.Now()
 	searchResults := h.store.Search(query)
 	elapsed := time.Now().Sub(start)
 	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
+
+	// We only want to output a query info if it actually has been
+	// rewritten.
+	queryInfo := ""
+	rewrittenQuery := queryRewrite(query)
+	if rewrittenQuery != query {
+		queryInfo = rewrittenQuery
+	}
+
 	outlen := 24 // Limit max output
 	if len(searchResults) < outlen {
 		outlen = len(searchResults)
 	}
 	jsonResult := &JsonHtmlSearchResult{
-		Count: len(searchResults),
-		Info:  fmt.Sprintf("%d results (%s)", len(searchResults), elapsed),
-		Items: make([]JsonHtmlSearchResultRecord, outlen),
+		Count:      len(searchResults),
+		ResultInfo: fmt.Sprintf("%d results (%s)", len(searchResults), elapsed),
+		QueryInfo:  queryInfo,
+		Items:      make([]JsonHtmlSearchResultRecord, outlen),
 	}
 
 	for i := 0; i < outlen; i++ {
