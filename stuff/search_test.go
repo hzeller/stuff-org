@@ -68,7 +68,7 @@ func TestQueryRewrite(t *testing.T) {
 	expectEqual(t, queryRewrite("foo"), "foo")
 	expectEqual(t, queryRewrite("10k"), "10k")
 
-	// AND, OR rewrite
+	// AND, OR rewrite to internal operators
 	expectEqual(t, queryRewrite("foo AND bar"), "foo bar")
 	expectEqual(t, queryRewrite("foo OR bar"), "foo | bar")
 	expectEqual(t, queryRewrite("(foo AND bar) OR (bar AND baz)"),
@@ -90,6 +90,7 @@ func TestQueryRewrite(t *testing.T) {
 	expectEqual(t, queryRewrite("3.kOhm"), "3.kOhm") // silly number.
 
 	expectEqual(t, queryRewrite("0.1u"), "(0.1u | 100n)")
+	expectEqual(t, queryRewrite(".1u"), "(.1u | 100n)")
 	expectEqual(t, queryRewrite("0.1uF"), "(0.1uF | 100nF)")
 	expectEqual(t, queryRewrite("0.01u"), "(0.01u | 10n)")
 	expectEqual(t, queryRewrite("0.068u"), "(0.068u | 68n)")

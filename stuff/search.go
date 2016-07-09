@@ -27,7 +27,7 @@ func queryRewrite(term string) string {
 
 	// Nanofarad values are often given as 0.something microfarad.
 	// Internally, all capacitors are normalized to nanofarad.
-	possible_small_microfarad, _ := regexp.Compile(`(?i)(0\.[0-9]+)u(\w*)`)
+	possible_small_microfarad, _ := regexp.Compile(`(?i)(0?\.[0-9]+)u(\w*)`)
 	if cmatch := possible_small_microfarad.FindStringSubmatch(term); cmatch != nil {
 		val, err := strconv.ParseFloat(cmatch[1], 32)
 		if err == nil {
@@ -82,8 +82,27 @@ func maxlist(values ...float32) (max float32) {
 	return
 }
 
-// Score terms, starting at index 'start', returns index it went up to.
-// Treats terms as 'AND' until it reaches an 'OR' (|) operator.
+// Score terms, starting at index 'start' and goes to the end of the current
+// term (closing parenthesis or end of string). Returns score and
+// last index it went up to.
+// Treats consecutive terms as 'AND' until it reaches an 'OR' operator.
+// Like in real life, precedence AND > OR, and there are parenthesis to eval
+// terms differently.
+//
+// Scoring per component is done on a couple of important fields, but weighted
+// according to their importance (e.g. the Value field scores more than Info).
+//
+// Since we are dealing with real number scores instead of simple boolean
+// matches, the AND and OR operators are implemented to return results like
+// that.
+//   - If any of the subscore of an AND expression is zero, the result is zero.
+//     Otherwise, all sub-scores are added up: this gives a meaningful ordering
+//     for componets that match all terms in the AND expression.
+//     the result is zero.
+//   - For the OR-operation, we take the highest scoring sub-term. Thus if
+//     multiple sub-terms in the OR expression match, this won't result in
+//     keyword stuffing (though one could consider adding a much smaller
+//     constant weight for number of sub-terms that do match).
 func (c *SearchComponent) scoreTerms(terms []string, start int) (float32, int) {
 	var last_or_term float32 = 0.0
 	var current_score float32 = 0.0
