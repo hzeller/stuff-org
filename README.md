@@ -26,7 +26,10 @@ Other than that, no external dependency is needed.
   applications.
 - A way to display component pictures (and soon: upload). Also automatically
   generates some drawing from the package name, or if it is a resistor,
-  auto-generates an image with resistor
+  auto-generates an image with resistor color bands.
+- Drag'n drop arrangement of similar components that should
+  be in the same drawer. We have a large amount of different donations that
+  all have overlapping set of parts. This helps organize these.
 - An extremely simple 'authentication' by IP address. By default, within the
   Hackerspace, the items are editable, while externally, a readonly view is
   presented (this will soon be augmented with OAuth, so that we can authenticate
