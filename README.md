@@ -1,28 +1,40 @@
 Keeping track of stuff
 ----------------------
 
-Mostly just to organize electronic components at home and at hackerspace.
+Mostly to organize electronic components at home and at hackerspace. Store
+details in a database and make them findable with a pleasing fast search.
 
-Nothing to see here yet, work in progress, quick hack.
-With a neat useful search though :)
+We use it at Noisebridge: https://parts.noisebridge.net
 
-Uses SQLite to keep data in one file.
+Uses SQLite to keep data in one file, so you need this external go dependency
 
 ```
 go get github.com/mattn/go-sqlite3
 ```
 
-Beware, I am just playing around with go and a simple http server to learn things;
-so this doesn't use a web framework of any kind, only what comes stock with the
-golang libraries.
+Other than that, no external dependency is needed.
 
-Also, I don't know any CSS or JavaScript...
+### Features
+(work in progress of course)
 
-Provides
-
-- Enter form to enter details found in boxes with a given ID
+- Enter form to enter details found in boxes with a given ID. Assumes that
+  all your items are labelled with a unique number.
 - Search form with search-as-you-type in an legitimate use of JSON ui :)
-- Some search API returning JSON formatted results.
+- Automatic synonym search (e.g. query for `.1u` is automatically re-written to `(.1u | 100n)`)
+- Boolean expressions in search terms.
+- A search API returning JSON results to be queried from other
+  applications.
+- A way to display component pictures (and soon: upload). Also automatically
+  generates some drawing from the package name, or if it is a resistor,
+  auto-generates an image with resistor
+- An extremely simple 'authentication' by IP address. By default, within the
+  Hackerspace, the items are editable, while externally, a readonly view is
+  presented (this will soon be augmented with OAuth, so that we can authenticate
+  via a login of our wiki).
+
+Search                     | Detail Page with resitor
+---------------------------|-------------------------------|
+![](img/page-search.png)   |![](img/page-resistor.png)
 
 ## API
 
@@ -31,7 +43,7 @@ to be integrated in other apps, e.g. slack
 
 ### Sample query
 ```
-http://pegasus:3000/api/search?q=fet
+https://parts.noisebridge.net/api/search?q=fet
 ```
 
 Optional URL-parameter `count=42` to limit the number of results (default: 100).
@@ -68,3 +80,17 @@ Optional URL-parameter `count=42` to limit the number of results (default: 100).
   ]
 }
 ```
+
+### Note
+
+Beware, these are also my early experiments with golang and it only uses basic
+functionality that comes with the stock library: HTTP server and templates.
+It doesn't use a web framework of any kind, only what comes with the
+golang libraries. And it might not necessarily be pretty as I am learning.
+
+HTML, CSS and JavaScript is hand-written and not generated - I want to keep it
+that way as long as possible to get a feeling of what would need to be done for
+a web framework. When the HTML output is not burried under various layers of
+abstractions it is also easier to understand what parts in web-browsers are slow
+and address them directly. So no dependency on golang web-frameworks or JQuery
+of stuff like that. Less dependencies are good.
