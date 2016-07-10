@@ -25,8 +25,8 @@ Other than that, no external dependency is needed.
 - A search API returning JSON results to be queried from other
   applications.
 - A way to display component pictures (and soon: upload). Also automatically
-  generates some drawing from the package name, or if it is a resistor,
-  auto-generates an image with resistor color bands.
+  generates some drawing if there is a template for the package name, or if
+  it is a resistor, auto-generates an image with resistor color bands.
 - Drag'n drop arrangement of similar components that should
   be in the same drawer. We have a large amount of different donations that
   all have overlapping set of parts. This helps organize these.
@@ -35,7 +35,7 @@ Other than that, no external dependency is needed.
   presented (this will soon be augmented with OAuth, so that we can authenticate
   via a login of our wiki).
 
-Search                     | Detail Page with resitor
+Search                     | Detail Page with resistor
 ---------------------------|-------------------------------|
 ![](img/page-search.png)   |![](img/page-resistor.png)
 
