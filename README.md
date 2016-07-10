@@ -93,7 +93,11 @@ golang libraries. And it might not necessarily be pretty as I am learning.
 
 HTML, CSS and JavaScript is hand-written and not generated - I want to keep it
 that way as long as possible to get a feeling of what would need to be done for
-a web framework. When the HTML output is not burried under various layers of
-abstractions it is also easier to understand what parts in web-browsers are slow
+a web framework (but be aware that my last exposure to HTML was around 1997,
+before there was CSS and working JavaScript ... so if you find something that
+should be stylistically better, let me know).
+
+When the HTML output is not burried under various layers of abstractions it is
+also easier to understand what parts in web-browsers are slow
 and address them directly. So no dependency on golang web-frameworks or JQuery
 of stuff like that. Less dependencies are good.
