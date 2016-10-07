@@ -108,6 +108,8 @@ func main() {
 	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
 	permitted_nets := flag.String("edit-permission-nets", "", "Comma separated list of networks (CIDR format IP-Addr/network) that are allowed to edit content")
 	site_name := flag.String("site-name", "", "Site-name, in particular needed for SSL")
+	ssl_key := flag.String("ssl-key", "", "Key file")
+	ssl_cert := flag.String("ssl-cert", "", "Cert file")
 
 	flag.Parse()
 
@@ -170,7 +172,13 @@ func main() {
 	AddSitemapHandler(store, *site_name)
 
 	log.Printf("Listening on :%d", *port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+	if *ssl_cert != "" && *ssl_key != "" {
+		log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port),
+			*ssl_cert, *ssl_key,
+			nil))
+	} else {
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+	}
 
 	var block_forever chan bool
 	<-block_forever
