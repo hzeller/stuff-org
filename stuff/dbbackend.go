@@ -102,6 +102,7 @@ type DBBackend struct {
 	joinSet       *sql.Stmt
 	leaveSet      *sql.Stmt
 	findEquivById *sql.Stmt
+	selectAll     *sql.Stmt
 	fts           *FulltextSearch
 }
 
@@ -158,9 +159,10 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		return nil, err
 	}
 
+	selectAll, err := db.Prepare("SELECT id, " + all_fields + " FROM component ORDER BY id")
 	// Populate fts with existing components.
 	fts := NewFulltextSearch()
-	rows, _ := db.Query("SELECT id, " + all_fields + " FROM component")
+	rows, _ := selectAll.Query()
 	count := 0
 	for rows != nil && rows.Next() {
 		c, _ := row2Component(rows)
@@ -178,6 +180,7 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		joinSet:       joinSet,
 		leaveSet:      leaveSet,
 		findEquivById: findEquivById,
+		selectAll:     selectAll,
 		fts:           fts}, nil
 }
 
@@ -191,6 +194,17 @@ func (d *DBBackend) FindById(id int) *Component {
 		}
 	}
 	return nil
+}
+
+func (d *DBBackend) IterateAll(callback func(comp *Component) bool) {
+	rows, _ := d.selectAll.Query()
+	for rows != nil && rows.Next() {
+		c, _ := row2Component(rows)
+		if !callback(c) {
+			break
+		}
+	}
+	rows.Close()
 }
 
 func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {

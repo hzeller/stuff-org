@@ -33,6 +33,7 @@ func AddSearchHandler(store StuffStore, template *TemplateRenderer, imgPath stri
 		imgPath:  imgPath,
 	}
 	http.Handle(kSearchPage, handler)
+	http.Handle("/", handler)
 	http.Handle(kApiSearchFormatted, handler)
 	http.Handle(kApiSearch, handler)
 }

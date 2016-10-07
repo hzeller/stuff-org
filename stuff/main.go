@@ -61,6 +61,9 @@ type StuffStore interface {
 	// Given a search term, returns all the components that match, ordered
 	// by some internal scoring system. Don't modify the returned objects!
 	Search(search_term string) []*Component
+
+	// Iterate through all elements.
+	IterateAll(func(comp *Component) bool)
 }
 
 var wantTimings = flag.Bool("want-timings", false, "Print processing timings.")
@@ -104,6 +107,7 @@ func main() {
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
 	permitted_nets := flag.String("edit-permission-nets", "", "Comma separated list of networks (CIDR format IP-Addr/network) that are allowed to edit content")
+	site_name := flag.String("site-name", "", "Site-name, in particular needed for SSL")
 
 	flag.Parse()
 
@@ -163,8 +167,7 @@ func main() {
 	AddFormHandler(store, templates, *imageDir, edit_nets)
 	AddSearchHandler(store, templates, *imageDir)
 	AddStatusHandler(store, templates, *imageDir)
-
-	http.HandleFunc("/", stuffStoreRoot)
+	AddSitemapHandler(store, *site_name)
 
 	log.Printf("Listening on :%d", *port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
