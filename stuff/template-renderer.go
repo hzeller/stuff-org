@@ -49,7 +49,7 @@ func NewTemplateRenderer(baseDir string, doCache bool) *TemplateRenderer {
 func setContentTypeFromTemplateName(template_name string, header http.Header) {
 	switch {
 	case strings.HasSuffix(template_name, ".svg"):
-		header.Set("Content-Type", "image/svg+xml")
+		header.Set("Content-Type", "image/svg+xml;charset=utf-8")
 	default:
 		header.Set("Content-Type", "text/html; charset=utf-8")
 	}
