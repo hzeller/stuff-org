@@ -119,27 +119,55 @@
      height: 320px;
   }
   .nav-item {}  /* tagging class */
+
+    #editdiv {
+    float: right;
+      height: 40px;
+margin-top: 8px;
+//      padding-bottom: 10px;
+      display: inline-block;
+  }
+  .editmoder {
+    text-align: right;
+  }
+
   </style>
   <script>
-  var form_is_enabled;
-  function enable_form(enable_action) {
-      var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
-      for (var i = 0; i < elements.length; ++i) {
-	  elements[i].disabled = !enable_action;
-	  if (enable_action) {
-	      elements[i].style["background-color"] = 'white';
-	  } else {
-	      elements[i].style["background-color"] = '#eeeeee';
-	  }
+
+    var form_is_enabled;
+
+    console.log('without function formisenambled = ', form_is_enabled);
+    function enable_form(enable_action) {
+      console.log("the passed in enable_action is", enable_action)
+        var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
+        for (var i = 0; i < elements.length; ++i) {
+          elements[i].disabled = !enable_action;
+          var tx = document.getElementById("edittext")
+
+
+      if (enable_action) {
+          console.log(elements[i])
+          elements[i].style["background-color"] = "white";
+          tx.textContent = "(on)"
+
+      } else {
+          elements[i].style["background-color"] = '#eeeeee';
+          tx.textContent = "(off)"
+
       }
-      form_is_enabled = enable_action;
-      edit_toggle = document.getElementById("edit-toggle");
-      if (edit_toggle) {
-          edit_toggle.src=form_is_enabled
-	   ? '/static/edit-pen.png'
-	   : '/static/non-edit-pen.png';
-      }
-  }
+        }
+        form_is_enabled = enable_action;
+        edit_toggle = document.getElementsByClassName("edit-toggle");
+        if (edit_toggle.length > 0) {
+          console.log(form_is_enabled);
+          for(i of edit_toggle){
+            i.src=form_is_enabled
+            ? '/static/edit-pen.png'
+            : '/static/non-edit-pen.png';
+          }
+        }
+    }
+
 
   // If we change the ID input field, the other values are not
   // a valid representation of the component; gray things out.
@@ -204,7 +232,19 @@
 	    </td>
 	  </tr>
 
-	  <tr><td colspan="2">Category</td></tr>
+    <tr><td colspan="1">Category</td>
+  <td colspan="1" class="editmoder">
+    <!-- very crude edit icon -->
+          {{if eq .ShowEditToggle true}}
+                <div id="editdiv" onclick="enable_form(!form_is_enabled);" style="cursor: pointer;">
+               Toggle Edit Mode <span id="edittext">(off)</span>
+               </div>
+                <img height="32" class="edit-toggle" style="cursor: pointer;"
+                      alt="edit toggle"/>
+                      {{end}}
+
+                </td>
+              </tr>
 	  <tr><td colspan="2">
 	    <!-- Selection box -->
 	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
@@ -232,11 +272,11 @@
 			onkeyup="category_value_changed();"
 			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 			autofocus>
-	   <!-- very crude edit icon -->
-           {{if eq .ShowEditToggle true}}
-           <img height="32" id="edit-toggle" style="float:right;"
-                onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
-           {{end}}
+      <!-- very crude edit icon -->
+            {{if eq .ShowEditToggle true}}
+            <img height="32" class="edit-toggle" style="float:right;"
+                 onclick="enable_form(!form_is_enabled);" alt="toggle edit"/>
+            {{end}}
            </td>
 	  </tr>
 
