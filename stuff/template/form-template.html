@@ -123,12 +123,15 @@
     #editdiv {
     float: right;
       height: 40px;
-margin-top: 8px;
-//      padding-bottom: 10px;
+   margin-top: 8px;
       display: inline-block;
   }
   .editmoder {
     text-align: right;
+  }
+
+  .edit-toggle{
+    cursor:pointer;
   }
 
   </style>
@@ -136,9 +139,7 @@ margin-top: 8px;
 
     var form_is_enabled;
 
-    console.log('without function formisenambled = ', form_is_enabled);
     function enable_form(enable_action) {
-      console.log("the passed in enable_action is", enable_action)
         var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
         for (var i = 0; i < elements.length; ++i) {
           elements[i].disabled = !enable_action;
@@ -146,7 +147,6 @@ margin-top: 8px;
 
 
       if (enable_action) {
-          console.log(elements[i])
           elements[i].style["background-color"] = "white";
           tx.textContent = "(on)"
 
@@ -159,7 +159,6 @@ margin-top: 8px;
         form_is_enabled = enable_action;
         edit_toggle = document.getElementsByClassName("edit-toggle");
         if (edit_toggle.length > 0) {
-          console.log(form_is_enabled);
           for(i of edit_toggle){
             i.src=form_is_enabled
             ? '/static/edit-pen.png'
@@ -232,20 +231,23 @@ margin-top: 8px;
 	    </td>
 	  </tr>
 
-    <tr><td colspan="1">Category</td>
-  <td colspan="1" class="editmoder">
+    <tr>
+      <td colspan="1">Category</td>
+      <td colspan="1" class="editmoder">
     <!-- very crude edit icon -->
           {{if eq .ShowEditToggle true}}
                 <div id="editdiv" onclick="enable_form(!form_is_enabled);" style="cursor: pointer;">
                Toggle Edit Mode <span id="edittext">(off)</span>
                </div>
-                <img height="32" class="edit-toggle" style="cursor: pointer;"
+                <img onclick="enable_form(!form_is_enabled);" height="32" class="edit-toggle" style="cursor: pointer;"
                       alt="edit toggle"/>
-                      {{end}}
+          {{end}}
 
-                </td>
-              </tr>
-	  <tr><td colspan="2">
+        </td>
+      </tr>
+
+	  <tr>
+      <td colspan="2">
 	    <!-- Selection box -->
 	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
 	      {{range $i, $element := .CatChoice}}
@@ -253,7 +255,7 @@ margin-top: 8px;
 	      <td><input type="radio" name="category_select" value="{{$element.Value}}"
 			  id="cat{{$i}}" onchange="category_value_changed();"
 			  {{if $element.IsSelected}}checked{{end}}>
-		<label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
+		      <label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
 	      <tr><td colspan="3">
 		<input type="radio" name="category_select"
 			value="{{.CatFallback.Value}}" id="catother"
@@ -277,15 +279,18 @@ margin-top: 8px;
             <img height="32" class="edit-toggle" style="float:right;"
                  onclick="enable_form(!form_is_enabled);" alt="toggle edit"/>
             {{end}}
-           </td>
+      </td>
 	  </tr>
 
 	  <tr>
 	    <td align="right"><label for="fprint">Footprint</label></td>
-	    <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
+	    <td>
+        <input type="text" name="footprint" size="10" id="fprint"
+         value="{{.Footprint}}">
 	      &nbsp;&nbsp;
 	      <label for="cquant">Quantity</label>
-	      <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
+	      <input style="text-align:right;" type="text" name="quantity" size="5"
+         id="cquant" value="{{.Quantity}}">-ish
 	    </td>
 	  </tr>
 

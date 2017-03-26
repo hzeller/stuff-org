@@ -11,8 +11,22 @@ Uses SQLite to keep data in one file, so you need this external go dependency
 ```
 go get github.com/mattn/go-sqlite3
 ```
+Other than that, no external dependencies are needed.
 
-Other than that, no external dependency is needed.
+To run the app navigate to the /stuff directory and run:
+
+```
+go run main.go dbbackend.go search-handler.go search.go form-handler.go image-handler.go resistor-image.go template-renderer.go status-handler.go sitemap-handler.go
+```
+
+Or you can navigate to the /stuff directory and run:
+
+```
+make all
+./stuff
+```
+
+You can then open it at http://localhost:2000/# to start adding stuff to your database and/or editing the code and helping making stuff-org more excellent.
 
 ### Features
 (work in progress of course)
