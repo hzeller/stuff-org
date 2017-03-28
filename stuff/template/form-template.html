@@ -131,60 +131,6 @@
       cursor: pointer;
   }
   </style>
-  <script>
-    var form_is_enabled;
-
-    function enable_form(enable_action) {
-        var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
-
-        var tx = document.getElementById("edittext");
-        tx.textContent = enable_action ? "(on)" : "(off)";
-
-        for (var i = 0; i < elements.length; ++i) {
-          elements[i].disabled = !enable_action;
-          if (enable_action) {
-              elements[i].style["background-color"] = "white";
-          } else {
-              elements[i].style["background-color"] = '#eeeeee';
-          }
-        }
-        form_is_enabled = enable_action;
-        edit_toggle = document.getElementsByClassName("edit-toggle");
-        for (var i = 0; i < edit_toggle.length; ++i) {
-            edit_toggle[i].src = form_is_enabled
-              ? '/static/edit-pen.png'
-              : '/static/non-edit-pen.png';
-        }
-    }
-
-  // If we change the ID input field, the other values are not
-  // a valid representation of the component; gray things out.
-  function disable_form_if_different(ev, field, orig) {
-      if (ev.keyCode == 27) {  // Escape
-	        field.value = orig;
-      }
-      enable_form(field.value == orig);
-  }
-
-  function getRadioValue(for_name) {
-      var all_radios = document.forms[0].elements[for_name];
-      for(var i = 0; i < all_radios.length; ++i) {
-	  if (all_radios[i].checked) {
-	      return all_radios[i].value;
-	  }
-      }
-      return "";
-  }
-
-  function category_value_changed(value) {
-      // Update the URL of the image with category/value. E.g. Resistors
-      // can change the look then.
-      var doc_img = document.getElementById("component-image");
-      var value = document.getElementById("cvalue").value;
-      var category = getRadioValue("category_select");
-      doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value;
-  }
-  </script>
 </head>
 <body>
   <div><span class="seltab">Enter Data</span>&nbsp;
@@ -326,7 +272,6 @@
     	image size we use right	now, but that needs to be adapted of course -->
     	  <img id="component-image" src="{{.ImageUrl}}" alt="Component image"/>
     	  <div class="msgbox">{{.Msg}}</div>
-
     	  <!-- Status around -->
     	  <div>Status adjacent drawers/bins</div>
     	  <table id="statustab" width="400">
@@ -351,7 +296,64 @@
   </table>
   </form>
 
+  <div id="set-display" class="set-area"
+	  ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
+    <!-- To be filled dynamically -->
+  </div>
+
   <script>
+  var form_is_enabled;
+
+  function enable_form(enable_action) {
+      var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
+
+      var tx = document.getElementById("edittext");
+      tx.textContent = enable_action ? "(on)" : "(off)";
+
+      for (var i = 0; i < elements.length; ++i) {
+        elements[i].disabled = !enable_action;
+        if (enable_action) {
+            elements[i].style["background-color"] = "white";
+        } else {
+            elements[i].style["background-color"] = '#eeeeee';
+        }
+      }
+      form_is_enabled = enable_action;
+      edit_toggle = document.getElementsByClassName("edit-toggle");
+      for (var i = 0; i < edit_toggle.length; ++i) {
+          edit_toggle[i].src = form_is_enabled
+            ? '/static/edit-pen.png'
+            : '/static/non-edit-pen.png';
+      }
+  }
+  // If we change the ID input field, the other values are not
+  // a valid representation of the component; gray things out.
+  function disable_form_if_different(ev, field, orig) {
+      if (ev.keyCode == 27) {  // Escape
+          field.value = orig;
+      }
+      enable_form(field.value == orig);
+  }
+
+  function getRadioValue(for_name) {
+      var all_radios = document.forms[0].elements[for_name];
+      for(var i = 0; i < all_radios.length; ++i) {
+    if (all_radios[i].checked) {
+        return all_radios[i].value;
+    }
+      }
+      return "";
+  }
+
+  function category_value_changed(value) {
+      // Update the URL of the image with category/value. E.g. Resistors
+      // can change the look then.
+      var doc_img = document.getElementById("component-image");
+      var value = document.getElementById("cvalue").value;
+      var category = getRadioValue("category_select");
+      doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value;
+  }
+
   function allowDrop(ev) {
       ev.preventDefault();
   }
@@ -372,14 +374,7 @@
       //console.log("GOT remove from set for " + from_id);
       doOperation("remove", "comp=" + from_id);
   }
-  </script>
 
-  <div id="set-display" class="set-area"
-	  ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
-    <!-- To be filled dynamically -->
-  </div>
-
-  <script>
   function doOperation(op, params) {
       var xmlhttp = new XMLHttpRequest();
       xmlhttp.onreadystatechange = function() {
@@ -394,7 +389,6 @@
   doOperation("html");  // Initial filling.
   form_is_enabled = {{.FormEditable}};
   enable_form(form_is_enabled);
-
   // Keyboard navigation.
   document.onkeydown = function(e) {
     e = e || window.event;
