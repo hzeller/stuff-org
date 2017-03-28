@@ -16,13 +16,7 @@ Other than that, no external dependencies are needed.
 To run the app navigate to the /stuff directory and run:
 
 ```
-go run main.go dbbackend.go search-handler.go search.go form-handler.go image-handler.go resistor-image.go template-renderer.go status-handler.go sitemap-handler.go
-```
-
-Or you can navigate to the /stuff directory and run:
-
-```
-make all
+make stuff
 ./stuff
 ```
 
