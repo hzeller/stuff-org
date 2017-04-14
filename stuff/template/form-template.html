@@ -32,10 +32,11 @@
   input[type="radio"]:checked + label {
       background-color:#8888ff;
   }
-  input[type="text"]:disabled {
+  input[type="text"]:read-only {
       color: black;
+      cursor: text;
   }
-  textarea:disabled {
+  textarea:read-only {
       color: black;
   }
 
@@ -118,6 +119,9 @@
      width: 400px;
      height: 320px;
   }
+  .edit-toggle {
+     cursor: pointer;
+  }
   .nav-item {}  /* tagging class */
   </style>
   <script>
@@ -125,13 +129,23 @@
   function enable_form(enable_action) {
       var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
       for (var i = 0; i < elements.length; ++i) {
-	  elements[i].disabled = !enable_action;
+	  // Regular inputs should be readonly instead of disabled, so that
+	  // it is possible to text-select in some browsers.
+	  elements[i].readOnly = !enable_action;
+
+	  // Radio buttons should be disabled to avoid changing things.
+	  if (elements[i].type == "radio") {
+	     elements[i].disabled = !enable_action;
+	  }
 	  if (enable_action) {
 	      elements[i].style["background-color"] = 'white';
 	  } else {
 	      elements[i].style["background-color"] = '#eeeeee';
 	  }
       }
+      // The existence of this field determines if we actually store.
+      // Disable = form submit is not considered store.
+      document.getElementById("store-edit-id").disabled = !enable_action;
       form_is_enabled = enable_action;
       edit_toggle = document.getElementById("edit-toggle");
       if (edit_toggle) {
@@ -178,7 +192,7 @@
   Also, I don't know javascript, so feel free to make this right.
   -->
   <form name="compform" id="compform" action="/form" method="post">
-    <input type="hidden" name="edit_id" value="{{.Id}}"/>
+    <input type="hidden" name="edit_id" id="store-edit-id" value="{{.Id}}"/>
     <table>
       <tr><td valign="top">                              <!-- First column: Form -->
 	<!-- Drawer Bin selection -->
@@ -204,7 +218,15 @@
 	    </td>
 	  </tr>
 
-	  <tr><td colspan="2">Category</td></tr>
+	  <tr><td colspan="1">Category</td>
+	  <td align="right">
+	   <!-- very crude edit icon -->
+           {{if eq .ShowEditToggle true}}
+	    	<b>Edit</b><img height="32" id="edit-toggle" style="float:right;cursor:pointer;"
+                onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
+           {{end}}
+</td>
+	  </tr>
 	  <tr><td colspan="2">
 	    <!-- Selection box -->
 	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
@@ -232,11 +254,6 @@
 			onkeyup="category_value_changed();"
 			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
 			autofocus>
-	   <!-- very crude edit icon -->
-           {{if eq .ShowEditToggle true}}
-           <img height="32" id="edit-toggle" style="float:right;"
-                onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
-           {{end}}
            </td>
 	  </tr>
 
