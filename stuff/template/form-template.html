@@ -205,7 +205,7 @@
 	      this works properly on all browsers. Chrome, Firefox work -->
 	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"></button>
 
-	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="Previous Image"/></button>
+	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="&lt;"/></button>
 
 	      <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
 		     class="nav-item"
@@ -214,11 +214,14 @@
 		     onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
 		     onchange="form.submit();">
 
-	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="Next image"/> ▶</button>
+	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="&gt;"/> ▶</button>
 	    </td>
 	  </tr>
 
-	  <tr><td colspan="1">Category</td>
+	  <tr><td colspan="1"><b>Category</b></td>
+	    {{if eq .ShowEditToggle false}}
+	    <td>{{.Component.Category}}</td>
+	    {{end}}
 	  <td align="right">
 	   <!-- very crude edit icon -->
            {{if eq .ShowEditToggle true}}
@@ -228,7 +231,8 @@
 </td>
 	  </tr>
 	  <tr><td colspan="2">
-	    <!-- Selection box -->
+	      <!-- Selection box -->
+	  {{if eq .ShowEditToggle true}}
 	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
 	      {{range $i, $element := .CatChoice}}
 	      {{if $element.AddSeparator}}<tr>{{end}}
@@ -245,6 +249,7 @@
 		<input type="text" name="category_txt" value="{{.CategoryText}}"
 			onkeydown="document.getElementById('catother').checked=true;"></td></tr>
 	    </table>
+	  {{end}}
 	  </td></tr>
 
 	  <tr>
