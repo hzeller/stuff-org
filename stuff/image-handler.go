@@ -67,12 +67,16 @@ func (h *ImageHandler) serveGeneratedComponentImage(component *Component, catego
 	}
 	switch category {
 	case "Resistor":
+		out.Header().Set("Cache-Control", "max-age=60")
 		return serveResistorImage(component, value, h.template, out)
 	case "Diode (D)":
+		out.Header().Set("Cache-Control", "max-age=60")
 		return h.template.Render(out, "category-Diode.svg", component)
 	case "LED":
+		out.Header().Set("Cache-Control", "max-age=60")
 		return h.template.Render(out, "category-LED.svg", component)
 	case "Capacitor (C)":
+		out.Header().Set("Cache-Control", "max-age=60")
 		return h.template.Render(out, "category-Capacitor.svg", component)
 	}
 	return false
