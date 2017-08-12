@@ -142,8 +142,8 @@ func createLinkTextFromUrl(u string) string {
 	if len(u) < 30 {
 		return u
 	}
-	shortenurl, _ := regexp.Compile("(.*://)([^/]+)/(.*)/(.*)$")
-	return shortenurl.ReplaceAllString(u, "$2/…/$4")
+	shortenurl, _ := regexp.Compile("(.*://)([^/]+)/(.*)([/?&].*)$")
+	return shortenurl.ReplaceAllString(u, "$2/…$4")
 }
 
 // Format a float value with single digit precision, but remove unneccessary .0
