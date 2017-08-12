@@ -2,7 +2,8 @@
  * TODO(hzeller): right now, this has pretty hard-coded assumptions of what
  * an component URL looks like (/img/<id>) and what the underlying image
  * is (h.imgPath + "/" + <id> + ".jpg"). This needs to change if we are to
- * provide multiple image per component
+ * provide multiple image per component. Maybe /img/<id> the main-image, and
+ * /img/<id>/<subimage> ?
  */
 package main
 
