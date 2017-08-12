@@ -1,3 +1,9 @@
+/*
+ * TODO(hzeller): right now, this has pretty hard-coded assumptions of what
+ * an component URL looks like (/img/<id>) and what the underlying image
+ * is (h.imgPath + "/" + <id> + ".jpg"). This needs to change if we are to
+ * provide multiple image per component
+ */
 package main
 
 import (
@@ -21,7 +27,7 @@ type ImageHandler struct {
 	staticPath string
 }
 
-func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath string, staticPath string) {
+func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath string, staticPath string) *ImageHandler {
 	handler := &ImageHandler{
 		store:      store,
 		template:   template,
@@ -36,6 +42,7 @@ func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath strin
 	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
 		sendResource(staticPath+"/robots.txt", "", w)
 	})
+	return handler
 }
 
 func (h *ImageHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
@@ -76,6 +83,20 @@ func (h *ImageHandler) servePackageImage(component *Component, out http.Response
 	}
 	return h.template.Render(out,
 		"package-"+component.Footprint+".svg", component)
+}
+
+// Returns true if this component likely has an image. False, if we know
+// for sure that it doesn't.
+func (h *ImageHandler) hasComponentImage(component *Component) bool {
+	if component == nil {
+		return false
+	}
+	switch component.Category {
+	case "Resistor", "Diode (D)", "LED", "Capacitor (C)":
+		return true
+	}
+	_, err := os.Stat(fmt.Sprintf("%s/%d.jpg", h.imgPath, component.Id))
+	return err == nil
 }
 
 func (h *ImageHandler) serveComponentImage(requested string, out http.ResponseWriter, r *http.Request) {

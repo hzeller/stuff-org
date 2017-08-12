@@ -21,16 +21,16 @@ const (
 )
 
 type SearchHandler struct {
-	store    StuffStore
-	template *TemplateRenderer
-	imgPath  string
+	store        StuffStore
+	template     *TemplateRenderer
+	imagehandler *ImageHandler
 }
 
-func AddSearchHandler(store StuffStore, template *TemplateRenderer, imgPath string) {
+func AddSearchHandler(store StuffStore, template *TemplateRenderer, imagehandler *ImageHandler) {
 	handler := &SearchHandler{
-		store:    store,
-		template: template,
-		imgPath:  imgPath,
+		store:        store,
+		template:     template,
+		imagehandler: imagehandler,
 	}
 	http.Handle(kSearchPage, handler)
 	http.Handle("/", handler)
@@ -112,8 +112,9 @@ func (h *SearchHandler) apiSearch(out http.ResponseWriter, r *http.Request) {
 
 // Pre-formatted search for quick div replacements.
 type JsonHtmlSearchResultRecord struct {
-	Id    int    `json:"id"`
-	Label string `json:"txt"`
+	Id     int    `json:"id"`
+	Label  string `json:"txt"`
+	ImgUrl string `json:"img"`
 }
 
 type JsonHtmlSearchResult struct {
@@ -160,6 +161,11 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	for i := 0; i < outlen; i++ {
 		var c = searchResults[i]
 		jsonResult.Items[i].Id = c.Id
+		if h.imagehandler.hasComponentImage(c) {
+			jsonResult.Items[i].ImgUrl = fmt.Sprintf("/img/%d", c.Id)
+		} else {
+			jsonResult.Items[i].ImgUrl = "/static/fallback.png"
+		}
 		jsonResult.Items[i].Label = "<b>" + html.EscapeString(c.Value) + "</b> " +
 			html.EscapeString(c.Description) +
 			fmt.Sprintf(" <span class='idtxt'>(ID:%d)</span>", c.Id)

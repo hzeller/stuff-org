@@ -143,7 +143,7 @@ function fillresults(resultRecord) {
     for (i = 0; i < len; ++i) {
 	var d = data[i];
 	references[i].obj.href = "/form?id=" + d.id;
-	references[i].img.src = "/img/" + d.id;
+	references[i].img.src = d.img;
 	// In HTML5, width and height from the style are cleared ?#@! Set again.
 	references[i].img.width=160;
 	references[i].img.height=128;

@@ -165,9 +165,9 @@ func main() {
 	}
 
 	templates := NewTemplateRenderer(*templateDir, *cacheTemplates)
-	AddImageHandler(store, templates, *imageDir, *staticResource)
+	imagehandler := AddImageHandler(store, templates, *imageDir, *staticResource)
 	AddFormHandler(store, templates, *imageDir, edit_nets)
-	AddSearchHandler(store, templates, *imageDir)
+	AddSearchHandler(store, templates, imagehandler)
 	AddStatusHandler(store, templates, *imageDir)
 	AddSitemapHandler(store, *site_name)
 
