@@ -64,9 +64,10 @@ type Selection struct {
 	AddSeparator bool
 }
 type FormPage struct {
-	Component // All these values are shown in the form
-	PageTitle string
-	ImageUrl  string
+	Component         // All these values are shown in the form
+	PageTitle         string
+	ImageUrl          string
+	DatasheetLinkText string
 
 	// Category choice.
 	CatChoice    []Selection
@@ -135,6 +136,14 @@ func cleanupFootprint(c *Component) {
 				return strings.ToUpper(match[3] + "IP-" + match[2] + match[4])
 			})
 	}
+}
+
+func createLinkTextFromUrl(u string) string {
+	if len(u) < 30 {
+		return u
+	}
+	shortenurl, _ := regexp.Compile("(.*://)([^/]+)/(.*)/(.*)$")
+	return shortenurl.ReplaceAllString(u, "$2/…/$4")
 }
 
 // Format a float value with single digit precision, but remove unneccessary .0
@@ -381,6 +390,7 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 			page.PageTitle = currentItem.Category + " - "
 		}
 		page.PageTitle += currentItem.Value
+		page.DatasheetLinkText = createLinkTextFromUrl(currentItem.Datasheet_url)
 	} else {
 		http_code = http.StatusNotFound
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
@@ -431,8 +441,13 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.template.RenderWithHttpCode(w, zipped, http_code,
-		"form-template.html", page)
+	if edit_allowed {
+		h.template.RenderWithHttpCode(w, zipped, http_code,
+			"form-template.html", page)
+	} else {
+		h.template.RenderWithHttpCode(w, zipped, http_code,
+			"display-template.html", page)
+	}
 	if zipped != nil {
 		zipped.Close()
 	}
