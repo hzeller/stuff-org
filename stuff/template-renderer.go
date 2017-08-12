@@ -27,6 +27,7 @@ func NewTemplateRenderer(baseDir string, doCache bool) *TemplateRenderer {
 		result.cachedTemplates = template.Must(template.ParseFiles(
 			// Application templates
 			baseDir+"/form-template.html",
+			baseDir+"/display-template.html",
 			baseDir+"/status-table.html",
 			baseDir+"/set-drag-drop.html",
 			// Templates to create component images
