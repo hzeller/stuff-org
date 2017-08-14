@@ -4,7 +4,10 @@ Keeping track of stuff
 Mostly to organize electronic components at home and at hackerspace. Store
 details in a database and make them findable with a pleasing fast search.
 
-We use it at Noisebridge: https://parts.noisebridge.net
+We use it at Noisebridge: https://parts.noisebridge.net/
+
+If this is the first time you are using go, you might need to set up
+the `GOPATH` environment variable; please refer to golang documentation.
 
 Uses SQLite to keep data in one file, so you need this external go dependency
 
@@ -12,7 +15,72 @@ Uses SQLite to keep data in one file, so you need this external go dependency
 go get github.com/mattn/go-sqlite3
 ```
 
-Other than that, no external dependency is needed.
+Other than that, no external dependencies are needed.
+
+To run the app navigate to the [stuff/](./stuff) directory and run:
+```
+make stuff
+./stuff
+```
+
+You can then open it at http://localhost:2000/ to start adding stuff to
+your database.
+
+These are the available options for the binary
+```
+Usage of ./stuff:
+  -cache-templates
+        Cache templates. False for online editing while development. (default true)
+  -cleanup-db
+        Cleanup run of database
+  -dbfile string
+        SQLite database file (default "stuff-database.db")
+  -edit-permission-nets string
+        Comma separated list of networks (CIDR format IP-Addr/network) that are allowed to edit content
+  -imagedir string
+        Directory with component images (default "img-srv")
+  -logfile string
+        Logfile to write interesting events
+  -port int
+        Port to serve from (default 2000)
+  -site-name string
+        Site-name, in particular needed for SSL
+  -ssl-cert string
+        Cert file
+  -ssl-key string
+        Key file
+  -staticdir string
+        Directory with static resources (default "static")
+  -templatedir string
+        Base-Directory with templates (default "./template")
+  -want-timings
+        Print processing timings.
+```
+
+There is a demo database in the [db/](./db) directory (which really
+is just a backup of the Noisebridge database). So you can play around by
+copying `db/sqlite-file.db` to `stuff-database.db` and play right away.
+
+Let's try this:
+```
+cp ../db/sqlite-file.db stuff-database.db
+./stuff -dbfile stuff-database.db
+```
+
+There are no images in this repository for demo; for your set-up, you can
+take pictures of your components and drop in some directory. If there is
+no image, some are generated from the type of component (e.g. capacitor or
+diode), and some color-coding image even generated from the value of a
+resistor.
+
+To show your own component images, you need to point the `-imagedir` flag
+to a directory that has images with name `<component-id>.jpg`.
+So for bin 42, this would be `42.jpg`.
+
+By default, you can edit database from any IP address, but
+with `-edit-permission-nets`, you can give an IP address range that is allowed
+to edit, while others only see a read-only view. The readonly view also has
+the nice property that it is concise and looks good on mobile devices.
 
 ### Features
 (work in progress of course)
@@ -35,9 +103,9 @@ Other than that, no external dependency is needed.
   presented (this will soon be augmented with OAuth, so that we can authenticate
   via a login of our wiki).
 
-Search                     | Detail Page with resistor
----------------------------|-------------------------------|
-![](img/page-search.png)   |![](img/page-resistor.png)
+Search                     | Detail Page with resistor     | Mobile view
+---------------------------|-------------------------------|--------------
+![](img/page-search.png)   |![](img/page-resistor.png)     | ![](img/stuff-mobile.jpg)
 
 ## API
 
