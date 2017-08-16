@@ -82,6 +82,9 @@ with `-edit-permission-nets`, you can give an IP address range that is allowed
 to edit, while others only see a read-only view. The readonly view also has
 the nice property that it is concise and looks good on mobile devices.
 
+If you give it a key and cert PEM via the `--ssl-key` and `--ssl-cert` options,
+this will start an HTTPS server (which also understands HTTP/2.0).
+
 ### Features
 (work in progress of course)
 
