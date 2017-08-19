@@ -6,392 +6,392 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <style>
-  input {
-      border-style: solid;
-      border-width:2px;
-      border-color:lightgray;
-      padding-left:1px;
-  }
-  button {
-      border: none;
-  }
-  input[type=submit] {
-      border-style:none;
-  }
-  textarea {
-      border-style: solid;
-      border-width:2px;
-      border-color: lightgray;
-      background-color: white;
-  }
-  label {
-      padding:4px 11px;
-      font-weight:bold;
-      border-radius:5px;
-  }
+   input {
+     border-style: solid;
+     border-width:2px;
+     border-color:lightgray;
+     padding-left:1px;
+   }
+   button {
+     border: none;
+   }
+   input[type=submit] {
+     border-style:none;
+   }
+   textarea {
+     border-style: solid;
+     border-width:2px;
+     border-color: lightgray;
+     background-color: white;
+   }
+   label {
+     padding:4px 11px;
+     font-weight:bold;
+     border-radius:5px;
+   }
 
-  input[type="radio"]:checked + label {
-      background-color:#8888ff;
-  }
-  input[type="text"]:read-only {
-      color: black;
-      cursor: text;
-  }
-  textarea:read-only {
-      color: black;
-  }
+   input[type="radio"]:checked + label {
+     background-color:#8888ff;
+   }
+   input[type="text"]:read-only {
+     color: black;
+     cursor: text;
+   }
+   textarea:read-only {
+     color: black;
+   }
 
-  .msgbox {
-      border-radius:8px;
-      background-color:#ffcc77;
-      padding: 10px;
-      margin: 10px;
-      opacity:0;
-      animation: fade-out 5s;
-  }
-  @keyframes fade-out {
-      from { opacity: 1; }
-      to   { opacity: 0; }
-  }
-  .arrowlink {
-      font-size:200%;
-      text-decoration:none;
-      color:black;
-  }
+   .msgbox {
+     border-radius:8px;
+     background-color:#ffcc77;
+     padding: 10px;
+     margin: 10px;
+     opacity:0;
+     animation: fade-out 5s;
+   }
+   @keyframes fade-out {
+     from { opacity: 1; }
+     to   { opacity: 0; }
+   }
+   .arrowlink {
+     font-size:200%;
+     text-decoration:none;
+     color:black;
+   }
 
-  #statustab button {
-      width: 30;
-      height: 30;
-      text-align: right;
-      font-size: 75%;
-  }
-  .selstatus {
-      border: 2px;
-      border-style: solid;
-      border-color: black;
-  }
+   #statustab button {
+     width: 30;
+     height: 30;
+     text-align: right;
+     font-size: 75%;
+   }
+   .selstatus {
+     border: 2px;
+     border-style: solid;
+     border-color: black;
+   }
 
-  .set-frame {  /* The frame a set is displayed in */
-      background-color: #eeeeee;
-      border: 2px;
-      border-radius:8px;
-      border-style: solid;
-      border-color: black;
-      display: inline-block;
-      padding: 10px;  /* inside */
-      margin: 4px 30px 4px 4px;   /* outside */
-  }
-  .comp-frame { /* a component displayed inside a set */
-      vertical-align: text-top;
-      border: 2px;
-      border-style: solid;
-      border-color: #888888;
-      padding: 5px;  /* inside */
-      margin: 5px;   /* outside */
-      width: 128px;
-      height: 64px;
-      display: inline-block;
+   .set-frame {  /* The frame a set is displayed in */
+     background-color: #eeeeee;
+     border: 2px;
+     border-radius:8px;
+     border-style: solid;
+     border-color: black;
+     display: inline-block;
+     padding: 10px;  /* inside */
+     margin: 4px 30px 4px 4px;   /* outside */
+   }
+   .comp-frame { /* a component displayed inside a set */
+     vertical-align: text-top;
+     border: 2px;
+     border-style: solid;
+     border-color: #888888;
+     padding: 5px;  /* inside */
+     margin: 5px;   /* outside */
+     width: 128px;
+     height: 64px;
+     display: inline-block;
 
-      overflow: hidden;
-      text-overflow: ellipsis;
+     overflow: hidden;
+     text-overflow: ellipsis;
 
-      box-shadow: 5px 5px 5px #888888;
-  }
-  .current-comp {  /* Current component in set; standing out */
-      vertical-align: text-top;
-      border: 2px;
-      border-style: dotted;
-      border-color: blue;
-  }
-  .set-area {
-      padding-bottom: 400px;  /* leave some room to drop item */
-  }
-  .id-disp {
-      font-size: 70%;
-  }
-  .fp-disp {
-      font-size: 80%;
-      font-style: italic;
-  }
-  .desc-disp {
-      font-size: 80%;
-  }
-  #component-image {
+     box-shadow: 5px 5px 5px #888888;
+   }
+   .current-comp {  /* Current component in set; standing out */
+     vertical-align: text-top;
+     border: 2px;
+     border-style: dotted;
+     border-color: blue;
+   }
+   .set-area {
+     padding-bottom: 400px;  /* leave some room to drop item */
+   }
+   .id-disp {
+     font-size: 70%;
+   }
+   .fp-disp {
+     font-size: 80%;
+     font-style: italic;
+   }
+   .desc-disp {
+     font-size: 80%;
+   }
+   #component-image {
      width: 400px;
      height: 320px;
-  }
-  .edit-toggle {
+   }
+   .edit-toggle {
      cursor: pointer;
-  }
-  .nav-item {}  /* tagging class */
+   }
+   .nav-item {}  /* tagging class */
   </style>
   <script>
-  var form_is_enabled;
-  function enable_form(enable_action) {
-      var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
-      for (var i = 0; i < elements.length; ++i) {
-	  // Regular inputs should be readonly instead of disabled, so that
-	  // it is possible to text-select in some browsers.
-	  elements[i].readOnly = !enable_action;
+   var form_is_enabled;
+   function enable_form(enable_action) {
+     var elements = document.querySelectorAll("#compform input:not(.nav-item),textarea");
+     for (var i = 0; i < elements.length; ++i) {
+       // Regular inputs should be readonly instead of disabled, so that
+       // it is possible to text-select in some browsers.
+       elements[i].readOnly = !enable_action;
 
-	  // Radio buttons should be disabled to avoid changing things.
-	  if (elements[i].type == "radio") {
-	     elements[i].disabled = !enable_action;
-	  }
-	  if (enable_action) {
-	      elements[i].style["background-color"] = 'white';
-	  } else {
-	      elements[i].style["background-color"] = '#eeeeee';
-	  }
-      }
-      // The existence of this field determines if we actually store.
-      // Disable = form submit is not considered store.
-      document.getElementById("store-edit-id").disabled = !enable_action;
-      form_is_enabled = enable_action;
-      edit_toggle = document.getElementById("edit-toggle");
-      if (edit_toggle) {
-          edit_toggle.src=form_is_enabled
-	   ? '/static/edit-pen.png'
-	   : '/static/non-edit-pen.png';
-      }
-  }
+       // Radio buttons should be disabled to avoid changing things.
+       if (elements[i].type == "radio") {
+         elements[i].disabled = !enable_action;
+       }
+       if (enable_action) {
+         elements[i].style["background-color"] = 'white';
+       } else {
+         elements[i].style["background-color"] = '#eeeeee';
+       }
+     }
+     // The existence of this field determines if we actually store.
+     // Disable = form submit is not considered store.
+     document.getElementById("store-edit-id").disabled = !enable_action;
+     form_is_enabled = enable_action;
+     edit_toggle = document.getElementById("edit-toggle");
+     if (edit_toggle) {
+       edit_toggle.src=form_is_enabled
+                     ? '/static/edit-pen.png'
+                     : '/static/non-edit-pen.png';
+     }
+   }
 
-  // If we change the ID input field, the other values are not
-  // a valid representation of the component; gray things out.
-  function disable_form_if_different(ev, field, orig) {
-      if (ev.keyCode == 27) {  // Escape
-	  field.value = orig;
-      }
-      enable_form(field.value == orig);
-  }
+   // If we change the ID input field, the other values are not
+   // a valid representation of the component; gray things out.
+   function disable_form_if_different(ev, field, orig) {
+     if (ev.keyCode == 27) {  // Escape
+       field.value = orig;
+     }
+     enable_form(field.value == orig);
+   }
 
-  function getRadioValue(for_name) {
-      var all_radios = document.forms[0].elements[for_name];
-      for(var i = 0; i < all_radios.length; ++i) {
-	  if (all_radios[i].checked) {
-	      return all_radios[i].value;
-	  }
-      }
-      return "";
-  }
+   function getRadioValue(for_name) {
+     var all_radios = document.forms[0].elements[for_name];
+     for(var i = 0; i < all_radios.length; ++i) {
+       if (all_radios[i].checked) {
+         return all_radios[i].value;
+       }
+     }
+     return "";
+   }
 
-  function category_value_changed(value) {
-      // Update the URL of the image with category/value. E.g. Resistors
-      // can change the look then.
-      var doc_img = document.getElementById("component-image");
-      var value = document.getElementById("cvalue").value;
-      var category = getRadioValue("category_select");
-      doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value
-  }
+   function category_value_changed(value) {
+     // Update the URL of the image with category/value. E.g. Resistors
+     // can change the look then.
+     var doc_img = document.getElementById("component-image");
+     var value = document.getElementById("cvalue").value;
+     var category = getRadioValue("category_select");
+     doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value
+   }
   </script>
 </head>
 <body>
   <div><span class="seltab">Enter Data</span>&nbsp;<a href="/search" class="deseltab">Search</a>&nbsp;<a href="/status#{{.HundredGroup}}" class="deseltab">Status</a></div>
 
   <!-- Someone with CSS knowledge please fix this form. I only know HTML from the 90ies :)
-  This is how we did it back then. Yes, tables! It sucked. Still sucks.
-  Also, I don't know javascript, so feel free to make this right.
-  -->
+       This is how we did it back then. Yes, tables! It sucked. Still sucks.
+       Also, I don't know javascript, so feel free to make this right.
+     -->
   <form name="compform" id="compform" action="/form" method="post">
     <input type="hidden" name="edit_id" id="store-edit-id" value="{{.Id}}"/>
     <table>
       <tr><td valign="top">                              <!-- First column: Form -->
-	<!-- Drawer Bin selection -->
-	<table style="margin-right:5px">  <!-- Table to align form elements: left input fields -->
-	  {{/* The number on the drawer or bin */}}
-	  <tr style="background-color:#eeeeee; height:3em;">
-	    <td align="right"><label for="navigate_id">Drawer/Bin</label></td>
-	    <td>
-	      <!-- dummy submit button to catch the 'Return' action. Not sure if
-	      this works properly on all browsers. Chrome, Firefox work -->
-	      <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"></button>
+        <!-- Drawer Bin selection -->
+        <table style="margin-right:5px">  <!-- Table to align form elements: left input fields -->
+          {{/* The number on the drawer or bin */}}
+          <tr style="background-color:#eeeeee; height:3em;">
+            <td align="right"><label for="navigate_id">Drawer/Bin</label></td>
+            <td>
+              <!-- dummy submit button to catch the 'Return' action. Not sure if
+                   this works properly on all browsers. Chrome, Firefox work -->
+              <button type="submit" name="dummy_submit" value="dummy_submit" style="visibility:hidden;"></button>
 
-	      <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="&lt;"/></button>
+              <button class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" value="{{.PrevId}}" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="&lt;"/></button>
 
-	      <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
-		     class="nav-item"
-		     type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
-		     onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-		     onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
-		     onchange="form.submit();">
+              <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
+                     class="nav-item"
+                     type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
+                     onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+                     onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
+                     onchange="form.submit();">
 
-	      <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="&gt;"/> ▶</button>
-	    </td>
-	  </tr>
+              <button class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" value="{{.NextId}}" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="&gt;"/> ▶</button>
+            </td>
+          </tr>
 
-	  <tr><td colspan="1"><b>Category</b></td>
-	    {{if eq .ShowEditToggle false}}
-	    <td>{{.Component.Category}}</td>
-	    {{end}}
-	  <td align="right">
-	   <!-- very crude edit icon -->
-           {{if eq .ShowEditToggle true}}
-	    	<b>Edit</b><img height="32" id="edit-toggle" style="float:right;cursor:pointer;"
-                onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
-           {{end}}
-</td>
-	  </tr>
-	  <tr><td colspan="2">
-	      <!-- Selection box -->
-	  {{if eq .ShowEditToggle true}}
-	    <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
-	      {{range $i, $element := .CatChoice}}
-	      {{if $element.AddSeparator}}<tr>{{end}}
-	      <td><input type="radio" name="category_select" value="{{$element.Value}}"
-			  id="cat{{$i}}" onchange="category_value_changed();"
-			  {{if $element.IsSelected}}checked{{end}}>
-		<label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
-	      <tr><td colspan="3">
-		<input type="radio" name="category_select"
-			value="{{.CatFallback.Value}}" id="catother"
-			onchange="category_value_changed();"
-			{{if .CatFallback.IsSelected}}checked{{end}}>
-		<label for="catother">(other)</label>
-		<input type="text" name="category_txt" value="{{.CategoryText}}"
-			onkeydown="document.getElementById('catother').checked=true;"></td></tr>
-	    </table>
-	  {{end}}
-	  </td></tr>
+          <tr><td colspan="1"><b>Category</b></td>
+            {{if eq .ShowEditToggle false}}
+            <td>{{.Component.Category}}</td>
+            {{end}}
+            <td align="right">
+              <!-- very crude edit icon -->
+              {{if eq .ShowEditToggle true}}
+              <b>Edit</b><img height="32" id="edit-toggle" style="float:right;cursor:pointer;"
+                              onclick="enable_form(!form_is_enabled);" alt="edit toggle"/>
+              {{end}}
+            </td>
+          </tr>
+          <tr><td colspan="2">
+            <!-- Selection box -->
+            {{if eq .ShowEditToggle true}}
+            <table width="100%" style="background-color:#eeeeee;padding:3px;border-radius:5px;">
+              {{range $i, $element := .CatChoice}}
+              {{if $element.AddSeparator}}<tr>{{end}}
+              <td><input type="radio" name="category_select" value="{{$element.Value}}"
+                         id="cat{{$i}}" onchange="category_value_changed();"
+                         {{if $element.IsSelected}}checked{{end}}>
+                <label id="cat{{$i}}-label" for="cat{{$i}}">{{$element.Value}}</label></td>{{end}}
+              <tr><td colspan="3">
+                <input type="radio" name="category_select"
+                       value="{{.CatFallback.Value}}" id="catother"
+                       onchange="category_value_changed();"
+                       {{if .CatFallback.IsSelected}}checked{{end}}>
+                <label for="catother">(other)</label>
+                <input type="text" name="category_txt" value="{{.CategoryText}}"
+                       onkeydown="document.getElementById('catother').checked=true;"></td></tr>
+            </table>
+            {{end}}
+          </td></tr>
 
-	  <tr>
-	    <td align="right"><label for="cvalue">Name/Value</label></td>
-	    <td><input type="text" id="cvalue" size="40"
-			name="value" value="{{.Value}}"
-			onkeyup="category_value_changed();"
-			onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-			autofocus>
-           </td>
-	  </tr>
+          <tr>
+            <td align="right"><label for="cvalue">Name/Value</label></td>
+            <td><input type="text" id="cvalue" size="40"
+                       name="value" value="{{.Value}}"
+                       onkeyup="category_value_changed();"
+                       onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+                       autofocus>
+            </td>
+          </tr>
 
-	  <tr>
-	    <td align="right"><label for="fprint">Footprint</label></td>
-	    <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
-	      &nbsp;&nbsp;
-	      <label for="cquant">Quantity</label>
-	      <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
-	    </td>
-	  </tr>
+          <tr>
+            <td align="right"><label for="fprint">Footprint</label></td>
+            <td><input type="text" name="footprint" size="10" id="fprint" value="{{.Footprint}}">
+              &nbsp;&nbsp;
+              <label for="cquant">Quantity</label>
+              <input style="text-align:right;" type="text" name="quantity" size="5" id="cquant" value="{{.Quantity}}">-ish
+            </td>
+          </tr>
 
-	  <tr>
-	    <td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
-	    <td><textarea rows="3" cols="50" name="description" id="cdesc">{{.Description}}</textarea></td>
-	  </tr>
+          <tr>
+            <td align="right" style="vertical-align:top;"><label for="cdesc">Description</label></td>
+            <td><textarea rows="3" cols="50" name="description" id="cdesc">{{.Description}}</textarea></td>
+          </tr>
 
-	  <tr>
-	    <td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
-	    <td><textarea rows="3" cols="50" name="notes" id="cnotes">{{.Notes}}</textarea></td>
-	  </tr>
+          <tr>
+            <td align="right" style="vertical-align:top;"><label for="cnotes">Notes</label></td>
+            <td><textarea rows="3" cols="50" name="notes" id="cnotes">{{.Notes}}</textarea></td>
+          </tr>
 
-	  <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
-	  <tr>
-	    <td align="right"><label for="dsheet">Datasheet</label></td>
-	    <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td>
-	  </tr>
+          <!-- todo: provide link to open if filled and starts with http://, https:// or ftp:// -- should be on change visible with js -->
+          <tr>
+            <td align="right"><label for="dsheet">Datasheet</label></td>
+            <td><input style="text-size:smaller;" type="text" name="datasheet" size="50" id="dsheet" value="{{.Datasheet_url}}"></td>
+          </tr>
 
-	  <tr><td align="right"><label>Drawer/Bin</label></td>
-	    <td>space needed: <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
-	      <input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
-	      <input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
-	    </td>
-	  </tr>
+          <tr><td align="right"><label>Drawer/Bin</label></td>
+            <td>space needed: <input type="radio" name="drawersize" value="0" id="d0" {{if eq .Drawersize 0}}checked{{end}}><label for="d0">regular</label>
+              <input type="radio" name="drawersize" value="1" id="d1" {{if eq .Drawersize 1}}checked{{end}}><label for="d1">medium</label>
+              <input type="radio" name="drawersize" value="2" id="d2" {{if eq .Drawersize 2}}checked{{end}}><label for="d2">large</label>
+            </td>
+          </tr>
 
-	  <!-- submit -->
-	  <tr>
-	    <td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
-	      <input style="font-size:larger;" type="reset" name="cancel" value="Cancel">&nbsp;
-	      <input type="submit" style="font-size:larger;" name="send" value="Submit and next"></td>
-	  </tr>
-	</table>
+          <!-- submit -->
+          <tr>
+            <td colspan="2" style="background-color:#eeeeee;height:3em;text-align:right;">
+              <input style="font-size:larger;" type="reset" name="cancel" value="Cancel">&nbsp;
+              <input type="submit" style="font-size:larger;" name="send" value="Submit and next"></td>
+          </tr>
+        </table>
       </td>  <!-- - end of form column -->
 
       <!-- Second column: Picture  -->
       <!-- TODO: on mobile, put it to the bottom. -->
       <td style="vertical-align:top;" align="left" width="400">
-	<!-- fixed size to help browser layout. TODO: this happens to be the
-	image size we use right	now, but that needs to be adapted of course -->
-	<img id="component-image" src="{{.ImageUrl}}" alt="Component image"/>
-	<div class="msgbox">{{.Msg}}</div>
+        <!-- fixed size to help browser layout. TODO: this happens to be the
+             image size we use right   now, but that needs to be adapted of course -->
+        <img id="component-image" src="{{.ImageUrl}}" alt="Component image"/>
+        <div class="msgbox">{{.Msg}}</div>
 
-	<!-- Status around -->
-	<div>Status adjacent drawers/bins</div>
-	<table id="statustab" width="400">
-	  <tr width="400">
-	    {{ range $element := .Status }}
-	    <td class="{{$element.Status}}" style="width:30px;">
-	      <button style="background-color:transparent;padding:0;" name="nav_id_button" value="{{$element.Number}}">
-		<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
-		{{ $element.Number }}</button></td>
-	    {{end}}</tr>
-	  <tr><td colspan="6">&lt;-[PgUp]</td>
-	    <td align="right" colspan="6">[PgDn]-&gt;</td>
-	</table>
+        <!-- Status around -->
+        <div>Status adjacent drawers/bins</div>
+        <table id="statustab" width="400">
+          <tr width="400">
+            {{ range $element := .Status }}
+            <td class="{{$element.Status}}" style="width:30px;">
+              <button style="background-color:transparent;padding:0;" name="nav_id_button" value="{{$element.Number}}">
+                <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+                {{ $element.Number }}</button></td>
+            {{end}}</tr>
+          <tr><td colspan="6">&lt;-[PgUp]</td>
+            <td align="right" colspan="6">[PgDn]-&gt;</td>
+        </table>
       </td>
-      </tr>
+          </tr>
     </table>
   </form>
 
-  <script>
-  function allowDrop(ev) {
-      ev.preventDefault();
-  }
-  function drag(ev) {
-      ev.dataTransfer.setData("text", ev.target.id);
-  }
-  function drop(ev, in_set) {
-      var from_id = ev.dataTransfer.getData("text");
-      //console.log("GOT drop from " + from_id + " into set " + in_set);
-      ev.preventDefault();
-      ev.stopPropagation();
+  <script> {{/* Drag and drop implementation for set operations */}}
+   function allowDrop(ev) {
+     ev.preventDefault();
+   }
+   function drag(ev) {
+     ev.dataTransfer.setData("text", ev.target.id);
+   }
+   function drop(ev, in_set) {
+     var from_id = ev.dataTransfer.getData("text");
+     //console.log("GOT drop from " + from_id + " into set " + in_set);
+     ev.preventDefault();
+     ev.stopPropagation();
 
-      doOperation("join", "comp=" + from_id + "&amp;set=" + in_set);
-  }
-  function removeFromSet(ev) {
-      ev.preventDefault();
-      var from_id = ev.dataTransfer.getData("text");
-      //console.log("GOT remove from set for " + from_id);
-      doOperation("remove", "comp=" + from_id);
-  }
+     doSetOperation("join", "comp=" + from_id + "&amp;set=" + in_set);
+   }
+   function removeFromSet(ev) {
+     ev.preventDefault();
+     var from_id = ev.dataTransfer.getData("text");
+     //console.log("GOT remove from set for " + from_id);
+     doSetOperation("remove", "comp=" + from_id);
+   }
   </script>
 
   <div id="set-display" class="set-area"
-	  ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
+       ondragover="allowDrop(event);" ondrop="removeFromSet(event);">
     <!-- To be filled dynamically -->
   </div>
 
 
   <script>
-  function doOperation(op, params) {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() {
-	  document.getElementById('set-display').innerHTML = xmlhttp.responseText;
-      };
+   function doSetOperation(op, params) {
+     var xmlhttp = new XMLHttpRequest();
+     xmlhttp.onreadystatechange = function() {
+       document.getElementById('set-display').innerHTML = xmlhttp.responseText;
+     };
 
-      var url="/api/related-set?op=" + op + "&amp;id={{.Id}}&amp;" + params;
-      xmlhttp.open("GET", url, true);
-      xmlhttp.send();
-  }
+     var url="/api/related-set?op=" + op + "&amp;id={{.Id}}&amp;" + params;
+     xmlhttp.open("GET", url, true);
+     xmlhttp.send();
+   }
 
-  doOperation("html");  // Initial filling.
-  form_is_enabled = {{.FormEditable}};
-  enable_form(form_is_enabled);
+   doSetOperation("html");  // Initial filling.
+   form_is_enabled = {{.FormEditable}};
+   enable_form(form_is_enabled);
 
-  // Keyboard navigation.
-  document.onkeydown = function(e) {
-    e = e || window.event;
-    switch(e.which || e.keyCode) {
-      case 33:  // pg up
+   // Keyboard navigation.
+   document.onkeydown = function(e) {
+     e = e || window.event;
+     switch(e.which || e.keyCode) {
+       case 33:  // pg up
          document.querySelector("#nav-prev").click();
          break;
 
-      case 34:  // pg dn
+       case 34:  // pg dn
          document.querySelector("#nav-next").click();
          break;
 
-      default:
+       default:
          return;
-    }
-    e.preventDefault();
-  }
+     }
+     e.preventDefault();
+   }
   </script>
 
   <!-- General footer -->

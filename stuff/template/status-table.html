@@ -4,38 +4,18 @@
   <title>Status: Noisebridge Electronic Component Declutter Project</title>
   <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <style>
-  /** Print formatting is a huge .. mess; no idea how to make this look nice **/
-  @media print {
-      body {
-	  -webkit-print-color-adjust: exact;
-      }
-      a {
-	  text-decoration: none;
-      }
-  }
+   /** Print formatting is a huge .. mess; no idea how to make this look nice **/
+   @media print {
+     body { -webkit-print-color-adjust: exact; }
+     a { text-decoration: none; }
+   }
 
-  td {
-      width: 40px;
-      height: 40px;
-      text-align: right;
-      font-size: 90%;
-  }
-  td a {
-      text-decoration:none;
-  }
+   td { width: 40px; height: 40px;  text-align: right; font-size: 90%;  }
+   td a {  text-decoration:none; }
 
-  span {
-      padding: 5px 15px;
-  }
-  .block {
-      float:left;
-      padding: 10px;
-  }
-  .selstatus {
-      border: 2px;
-      border-style: solid;
-      border-color: black;
-  }
+   span { padding: 5px 15px;  }
+   .block {  float:left;  padding: 10px; }
+   .selstatus {  border: 2px; border-style: solid; border-color: black; }
   </style>
 </head>
 <body>
@@ -49,32 +29,32 @@
 
     <table width="50%">
       <tr><td>
-	  <table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
+        <table><tr><td class="good"><div style="vertical-align:top;">□</div>42</td></tr></table>
       </td><td style="text-align:left;width:90%;">
-	A square in the top corner indicates that there is a <b>picture</b> available.
+        A square in the top corner indicates that there is a <b>picture</b> available.
       </td></tr>
       <tr><td>
-	  <table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
-	<td style="text-align:left;width:90%;">
-	  <b>Empty</b> drawers with numbers are crossed out.
-      </td></tr>
+        <table><tr><td class="empty"><div style="vertical-align:top;"></div>42</td></tr></table>
+        <td style="text-align:left;width:90%;">
+          <b>Empty</b> drawers with numbers are crossed out.
+        </td></tr>
       <tr><td>
-	  <table><tr><td class="mystery"><div style="vertical-align:top;"></div>42</td></tr></table>
-	<td style="text-align:left;width:90%;">
-	  <b>Unknown</b> component. Needs revisit.
-      </td></tr>
+        <table><tr><td class="mystery"><div style="vertical-align:top;"></div>42</td></tr></table>
+        <td style="text-align:left;width:90%;">
+          <b>Unknown</b> component. Needs revisit.
+        </td></tr>
     </table>
 
     <div class="block"><h2>000</h2>
       <table><tr>
-	  {{ range $element := .Items }}
-	  {{ if eq $element.Separator 1}}</tr><tr>{{end}}
-	  {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
-	  <td class="{{$element.Status}}">
-	    <a href="/form?id={{ $element.Number }}" {{ if eq $element.Status "missing"}}rel="nofollow"{{end}}><div>
-		<div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
-		{{ $element.Number }}</div></a></td>
-	  {{end}}
-      </table>
-    </div>
+        {{ range $element := .Items }}
+        {{ if eq $element.Separator 1}}</tr><tr>{{end}}
+        {{ if eq $element.Separator 2}}</tr></table></div><div class="block"><h2 id="{{$element.Number}}">{{$element.Number}}</h2><table><tr>{{end}}
+        <td class="{{$element.Status}}">
+          <a href="/form?id={{ $element.Number }}" {{ if eq $element.Status "missing"}}rel="nofollow"{{end}}><div>
+            <div style="vertical-align:top;">{{ if $element.HasPicture}}□{{else}}&nbsp;{{end}}</div>
+            {{ $element.Number }}</div></a></td>
+        {{end}}
+        </table>
+        </div>
 </body>

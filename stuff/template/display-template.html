@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-{{/* This is the template for a component shown in the readonly, non-editable mode
-     Simplicity and small data transfer to be shown on a mobile device are the
-     guiding factors here. Also removing irrelevant information.
+{{/* This is the template for a component shown in the readonly, non-editable
+mode. Simplicity and small data transfer to be shown on a mobile device are the
+guiding factors here. Also removing irrelevant information.
 */}}
 <head>
   <title>{{.PageTitle}}</title>
@@ -9,39 +9,12 @@
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <style>
-    label {
-      padding:4px 11px;
-      font-weight:normal;
-      border-radius:5px;
-      color: gray;
-    }
-    table {
-      float: left;
-    }
-    .v {  {{/* for "Value" */}}
-      color: black;
-      font-weight:bold;
-      font-size:larger;
-    }
-    textarea {
-      color: black;
-      background-color: white;
-      font-size:larger;
-    }
-
-    .arrowlink {
-      font-size:200%;
-      text-decoration:none;
-      color:black;
-    }
-    #component-image {
-      width: 400px;
-      height: 320px;
-      float:right;
-    }
-    td {
-     vertical-align:top;
-    }
+   label { padding:4px 11px; font-weight:normal; border-radius:5px; color: gray; }
+   table { float: left; }
+   .v { color: black; font-weight:bold; font-size:larger; }
+   .arrowlink { font-size:200%; text-decoration:none; color:black; }
+   #component-image { width: 400px;  height: 320px;  float:right; }
+   td { vertical-align:top; }
   </style>
 </head>
 <body>
@@ -54,18 +27,18 @@
     <table style="margin-right:5px" width="100%">  <!-- Table to align form elements: left input fields -->
       {{/* The number on the drawer or bin */}}
       <tr style="background-color:#eeeeee; height:3em;">
-	<td colspan="2">
-	  <a  href="?id={{.PrevId}}" class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="&lt;"/></a>
+        <td colspan="2">
+          <a  href="?id={{.PrevId}}" class="arrowlink nav-item" title="PgUp" style="float:left;" name="nav_id_button" id="nav-prev">◀ <img style="vertical-align:middle;" height="40" width="50" src="/img/{{.PrevId}}" alt="&lt;"/></a>
 
-	  <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
-		 class="nav-item"
-		 type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
-		 onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-		 onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
-		 onchange="form.submit();">
+          <input style="font-weight:bold; font-size:200%;margin-left:5%;width:5em;"
+                 class="nav-item"
+                 type="text" name="id" size="5" id="navigate_id" value="{{.Id}}"
+                 onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+                 onkeyup="disable_form_if_different(event, this, '{{.Id}}');"
+                 onchange="form.submit();">
 
-	  <a href="?id={{.NextId}}" class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="&gt;"/> ▶</a>
-	</td>
+          <a href="?id={{.NextId}}" class="arrowlink nav-item" title="PgDn" style="float:right;" name="nav_id_button" id="nav-next"><img style="vertical-align:middle;" height="40" width="50" src="/img/{{.NextId}}" alt="&gt;"/> ▶</a>
+        </td>
       </tr>
     </table>
   </form>
@@ -74,7 +47,7 @@
     <tr><td align="right"><label>Category</label></td><td class="v">{{.Component.Category}}</td></tr>
     <tr><td align="right"><label>Name/Value</label></td><td class="v">{{.Value}}</td></tr>
     <tr><td align="right"><label>Footprint</label></td><td><span class="v">{{.Footprint}}</span>
-	{{if ne .Quantity ""}}&nbsp;&nbsp;<label>Quantity</label><span class="v">{{.Quantity}}-ish</span>{{end}}
+      {{if ne .Quantity ""}}&nbsp;&nbsp;<label>Quantity</label><span class="v">{{.Quantity}}-ish</span>{{end}}
     </td></tr>
 
     <tr><td align="right"><label>Description</label></td><td class="v">{{.Description}}</td></tr>
@@ -89,21 +62,21 @@
   <div><img id="component-image" src="{{.ImageUrl}}" alt="Component image"/></div>
 
   <script> {{/* so does anyone know if this could also be triggered with a swipe-action on mobile ? */}}
-    document.onkeydown = function(e) {
-    e = e || window.event;
-    switch(e.which || e.keyCode) {
-      case 33:  // pg up
+   document.onkeydown = function(e) {
+     e = e || window.event;
+     switch(e.which || e.keyCode) {
+       case 33:  // pg up
          document.querySelector("#nav-prev").click();
          break;
 
-      case 34:  // pg dn
+       case 34:  // pg dn
          document.querySelector("#nav-next").click();
          break;
 
-      default:
+       default:
          return;
-    }
-    e.preventDefault();
-  }
+     }
+     e.preventDefault();
+   }
   </script>
 </body>

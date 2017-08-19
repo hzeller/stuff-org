@@ -5,176 +5,176 @@
   <link rel="stylesheet" type="text/css" href="/static/stuff.css"/>
   <meta name="viewport" content="width=device-width">
   <style>
-  td {
-      vertical-align:top;
-  }
-  .searchbar {
-      background-color:#eeeeee;
-      horizontal-align: center;
-      padding: 15px 20px;
-  }
-  .searchinput {
-      font-size: x-large;
-      padding: 10px;
-      width: 100%;
-  }
-  .queryinfo {
-      font-size: small;
-      color: #aaaaaa;
-      white-space: nowrap;
-      width: 80%;
-      text-overflow: ellipsis;
-      overflow: hidden;
-  }
-  .resultinfo {
-      font-size: small;
-      color: #aaaaaa;
-  }
-  .idtxt {
-      font-size: small;
-  }
-  .rbox {
-      font-size: larger;
-      border-width: 1px;
-      border-style: solid;
-      border-color: #cccccc;
-      width: 260;
-      height: 190;
-      float: left;
-      padding: 5px 5px;
-      visibility:hidden;
-      text-decoration: none;
-  }
-  .rimg {
-      width: 160;
-      height: 128;
-      border-width: 1px;
-      padding-left: 50px;  /* (rbox.width - rimg.width) / 2 */
-  }
-  .rtxtbox {
-      height: 3.5em;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-  }
+   td {
+     vertical-align:top;
+   }
+   .searchbar {
+     background-color:#eeeeee;
+     horizontal-align: center;
+     padding: 15px 20px;
+   }
+   .searchinput {
+     font-size: x-large;
+     padding: 10px;
+     width: 100%;
+   }
+   .queryinfo {
+     font-size: small;
+     color: #aaaaaa;
+     white-space: nowrap;
+     width: 80%;
+     text-overflow: ellipsis;
+     overflow: hidden;
+   }
+   .resultinfo {
+     font-size: small;
+     color: #aaaaaa;
+   }
+   .idtxt {
+     font-size: small;
+   }
+   .rbox {
+     font-size: larger;
+     border-width: 1px;
+     border-style: solid;
+     border-color: #cccccc;
+     width: 260;
+     height: 190;
+     float: left;
+     padding: 5px 5px;
+     visibility:hidden;
+     text-decoration: none;
+   }
+   .rimg {
+     width: 160;
+     height: 128;
+     border-width: 1px;
+     padding-left: 50px;  /* (rbox.width - rimg.width) / 2 */
+   }
+   .rtxtbox {
+     height: 3.5em;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     /* Some non-standard hack to get ellipsis at the end; chrome, webkit */
+     display: -webkit-box;
+     -webkit-line-clamp: 3;
+     -webkit-box-orient: vertical;
+   }
   </style>
   <script>
-  function retrieve(input_field) {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() {
-	  if (xmlhttp.responseText == "")
-	      return;
-	  fillresults(JSON.parse(xmlhttp.responseText));
-      };
-      var url="/api/search-formatted?q=" + encodeURIComponent(input_field.value);
-      xmlhttp.open("GET", url, true);
-      xmlhttp.send();
-      window.location = "#" + encodeURIComponent(input_field.value);
-  }
+   function retrieve(input_field) {
+     var xmlhttp = new XMLHttpRequest();
+     xmlhttp.onreadystatechange = function() {
+       if (xmlhttp.responseText == "")
+	 return;
+       fillresults(JSON.parse(xmlhttp.responseText));
+     };
+     var url="/api/search-formatted?q=" + encodeURIComponent(input_field.value);
+     xmlhttp.open("GET", url, true);
+     xmlhttp.send();
+     window.location = "#" + encodeURIComponent(input_field.value);
+   }
   </script>
 </head>
 <body>
   <div><a class="deseltab" href="/form">Enter Data</a>&nbsp;<span class="seltab">Search</span>&nbsp;<a href="/status" class="deseltab">Status</a></div>
 
-<div class="searchbar" style="margin-top:5px;">
-  <input class="searchinput"
-	  id="sbox"
-	  placeholder="Type and refine. Most relevant results will be first."
-	  type="text"
-	  onkeyup="retrieve(this);"
-	  onkeypress="if (event.keyCode == 13) hideKeyboard(this);"
-	  onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
-	 autofocus><br/>
-  <span class="queryinfo" id="queryinfo" style="float:left;"></span>
-  <span class="resultinfo" id="resultinfo" style="float:right;"></span>
-</div>
-&nbsp;
-<!-- only up to 24 search results - everything beyond that is too irrelevant -->
-<div id="result-list">
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-  <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
-</div>
-<script>
-var references = [];
-var result_items = document.getElementById('result-list').childNodes;
+  <div class="searchbar" style="margin-top:5px;">
+    <input class="searchinput"
+	   id="sbox"
+	   placeholder="Type and refine. Most relevant results will be first."
+	   type="text"
+	   onkeyup="retrieve(this);"
+	   onkeypress="if (event.keyCode == 13) hideKeyboard(this);"
+	   onfocus="this.selectionStart = this.selectionEnd = this.value.length;"
+	   autofocus><br/>
+    <span class="queryinfo" id="queryinfo" style="float:left;"></span>
+    <span class="resultinfo" id="resultinfo" style="float:right;"></span>
+  </div>
+  &nbsp;
+  <!-- only up to 24 search results - everything beyond that is too irrelevant -->
+  <div id="result-list">
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+    <a href="#" class="rbox"><div><img class="rimg"><div class="rtxtbox"></div></div></a>
+  </div>
+  <script>
+   var references = [];
+   var result_items = document.getElementById('result-list').childNodes;
 
-// Pre-collect all the relevant nodes for quick access
-for (var r = 0; r < result_items.length; ++r) {
-    var a = result_items[r];
-    if (a.nodeName != "A") continue
-    var div = a.childNodes[0];
-    var img = div.childNodes[0];
-    var txt = div.childNodes[1];
-    references.push({ obj: a, img: img, txt: txt});
-}
+   // Pre-collect all the relevant nodes for quick access
+   for (var r = 0; r < result_items.length; ++r) {
+     var a = result_items[r];
+     if (a.nodeName != "A") continue
+     var div = a.childNodes[0];
+     var img = div.childNodes[0];
+     var txt = div.childNodes[1];
+     references.push({ obj: a, img: img, txt: txt});
+   }
 
-var info_box = document.getElementById('infobox');  // we need that later
-function fillresults(resultRecord) {
-    var data = resultRecord.items;
-    var len = (resultRecord.count != 0)
-	? data.length < references.length ? data.length : references.length
-	: 0;
-    var i = 0;
-    for (i = 0; i < len; ++i) {
-	var d = data[i];
-	references[i].obj.href = "/form?id=" + d.id;
-	references[i].img.src = d.img;
-	// In HTML5, width and height from the style are cleared ?#@! Set again.
-	references[i].img.width=160;
-	references[i].img.height=128;
-	references[i].txt.innerHTML = d.txt;
-	references[i].obj.style.visibility = 'visible';
-    }
-    // The rest invisible and prepopulated with neutral image.
-    for (; i < references.length; ++i) {
-	references[i].obj.style.visibility = 'hidden';
-	references[i].img.src = "/static/white.png"
-    }
-    resultinfo.innerHTML = resultRecord.resultinfo;
-    queryinfo.innerHTML = resultRecord.queryinfo;
-}
+   var info_box = document.getElementById('infobox');  // we need that later
+   function fillresults(resultRecord) {
+     var data = resultRecord.items;
+     var len = (resultRecord.count != 0)
+	     ? data.length < references.length ? data.length : references.length
+	     : 0;
+     var i = 0;
+     for (i = 0; i < len; ++i) {
+       var d = data[i];
+       references[i].obj.href = "/form?id=" + d.id;
+       references[i].img.src = d.img;
+       // In HTML5, width and height from the style are cleared ?#@! Set again.
+       references[i].img.width=160;
+       references[i].img.height=128;
+       references[i].txt.innerHTML = d.txt;
+       references[i].obj.style.visibility = 'visible';
+     }
+     // The rest invisible and prepopulated with neutral image.
+     for (; i < references.length; ++i) {
+       references[i].obj.style.visibility = 'hidden';
+       references[i].img.src = "/static/white.png"
+     }
+     resultinfo.innerHTML = resultRecord.resultinfo;
+     queryinfo.innerHTML = resultRecord.queryinfo;
+   }
 
-function hideKeyboard(widget) {
-    widget.disabled = true;
-    setTimeout(function() {
-        widget.blur();  // disable focus, keyboard vanishes.
-	// back to normal.
-	widget.disabled = false;
-    }, 100);
-}
+   function hideKeyboard(widget) {
+     widget.disabled = true;
+     setTimeout(function() {
+       widget.blur();  // disable focus, keyboard vanishes.
+       // back to normal.
+       widget.disabled = false;
+     }, 100);
+   }
 
-// If we are here because of back button, the sbox might already contain
-// a term. Populate search results.
-var initial_term = window.location.hash;
-var input_box = document.getElementById('sbox');
-if (initial_term != undefined && initial_term != "") {
-    input_box.value = decodeURIComponent(initial_term.substring(1));
-}
-retrieve(input_box);
-</script>
+   // If we are here because of back button, the sbox might already contain
+   // a term. Populate search results.
+   var initial_term = window.location.hash;
+   var input_box = document.getElementById('sbox');
+   if (initial_term != undefined && initial_term != "") {
+     input_box.value = decodeURIComponent(initial_term.substring(1));
+   }
+   retrieve(input_box);
+  </script>
 </body>

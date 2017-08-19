@@ -3,13 +3,14 @@ this with JavaScript, we simply fill this HTML template manually.
 
 Someone has to make this drag-drop stuff work on mobile.*/}}
 {{.Message}}<p>
-{{range $set := .Sets}}
-<div class="set-frame" id="{{$set.Id}}" ondrop="drop(event, this.id);">
-  {{range $item := $set.Items}}
-  <div class="comp-frame {{if eq $item.Id $.HighlightComp}}current-comp{{end}}" style="background:url(/img/{{$item.Id}}) #777777; background-size:100%; background-blend-mode: lighten;" draggable="true" id="{{$item.Id}}" ondragstart="drag(event)">
-    <span class="id-disp">({{$item.Id}})</span>
-    <b>{{$item.Value}}</b><br/>
-    <span class="fp-disp">{{$item.Footprint}}</span>
-    <span class="desc-disp">{{$item.Description}}</span>
+  {{range $set := .Sets}}
+  <div class="set-frame" id="{{$set.Id}}" ondrop="drop(event, this.id);">
+    {{range $item := $set.Items}}
+    <div class="comp-frame {{if eq $item.Id $.HighlightComp}}current-comp{{end}}" style="background:url(/img/{{$item.Id}}) #777777; background-size:100%; background-blend-mode: lighten;" draggable="true" id="{{$item.Id}}" ondragstart="drag(event)">
+      <span class="id-disp">({{$item.Id}})</span>
+      <b>{{$item.Value}}</b><br/>
+      <span class="fp-disp">{{$item.Footprint}}</span>
+      <span class="desc-disp">{{$item.Description}}</span>
+    </div>{{end}}
   </div>{{end}}
-</div>{{end}}
+</p>
