@@ -140,7 +140,7 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
 
 	// We only want to output a query info if it actually has been
-	// rewritten.
+	// rewritten, e.g. 0.1u becomes (100n | 0.1u)
 	queryInfo := ""
 	rewrittenQuery := queryRewrite(query)
 	if rewrittenQuery != query {
@@ -158,11 +158,23 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 		Items:      make([]JsonHtmlSearchResultRecord, outlen),
 	}
 
+	pusher, _ := out.(http.Pusher) // HTTP/2 pushing if available.
+
 	for i := 0; i < outlen; i++ {
 		var c = searchResults[i]
 		jsonResult.Items[i].Id = c.Id
 		if h.imagehandler.hasComponentImage(c) {
-			jsonResult.Items[i].ImgUrl = fmt.Sprintf("/img/%d", c.Id)
+			imgUrl := fmt.Sprintf("/img/%d", c.Id)
+			jsonResult.Items[i].ImgUrl = imgUrl
+			if pusher != nil {
+				// TODO(hzeller): we should be more smart and
+				// only push stuff that is not likely cached
+				// already on the client. So we need a HTTP
+				// session and keep some timely rotating
+				// bloom filter or something.
+				// For now: push all the things.
+				pusher.Push(imgUrl, nil)
+			}
 		} else {
 			jsonResult.Items[i].ImgUrl = "/static/fallback.png"
 		}
@@ -170,6 +182,7 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 			html.EscapeString(c.Description) +
 			fmt.Sprintf(" <span class='idtxt'>(ID:%d)</span>", c.Id)
 	}
+
 	json, _ := json.Marshal(jsonResult)
 	out.Write(json)
 }
