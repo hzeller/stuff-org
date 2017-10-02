@@ -67,7 +67,10 @@ type FormPage struct {
 	Component         // All these values are shown in the form
 	PageTitle         string
 	ImageUrl          string
-	DatasheetLinkText string
+	DatasheetLinkText string // Abbreviated link for display
+
+	DescriptionRows int // Number of rows displayed in textarea
+	NotesRows       int
 
 	// Category choice.
 	CatChoice    []Selection
@@ -294,6 +297,14 @@ func (h *FormHandler) EditAllowed(r *http.Request) bool {
 	return false
 }
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
 func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	// Look at the request and see what we need to display,
 	// and if we have to store something.
@@ -396,6 +407,9 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
 		page.PageTitle = "New Item: Noisebridge stuff organization"
 	}
+
+	page.DescriptionRows = max(3, strings.Count(page.Component.Description, "\n")+1)
+	page.NotesRows = max(3, strings.Count(page.Component.Notes, "\n")+1)
 
 	page.CatChoice = make([]Selection, len(available_category))
 	anySelected := false
