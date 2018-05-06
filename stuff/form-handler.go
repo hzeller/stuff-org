@@ -400,7 +400,7 @@ func (h *FormHandler) entryFormHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http_code = http.StatusNotFound
 		msg = msg + fmt.Sprintf(" (%d: New item)", id)
-		page.PageTitle = "New Item: Noisebridge stuff organization"
+		page.PageTitle = "New Item: CkP stuff organization"
 	}
 
 	page.DescriptionRows = max(3, strings.Count(page.Component.Description, "\n")+1)
