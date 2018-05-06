@@ -21,8 +21,8 @@ const (
 // Some useful pre-defined set of categories
 var available_category []string = []string{
 	"Fabric Art", "Paper Art", "Drawing",
-	"3D print", "Printer Supply", "Tools",
-	"Electronics", "Stepper Motor",
+	"3D print", "Book", "Printer Supply",
+	"Electronics", "Stepper Motor", "Tools",
 }
 
 type FormHandler struct {
