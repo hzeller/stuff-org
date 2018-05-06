@@ -20,14 +20,9 @@ const (
 
 // Some useful pre-defined set of categories
 var available_category []string = []string{
-	"Resistor", "Potentiometer", "R-Network",
-	"Capacitor (C)", "Aluminum Cap", "Inductor (L)",
-	"Diode (D)", "Power Diode", "LED",
-	"Transistor", "Mosfet", "IGBT",
-	"Integrated Circuit (IC)", "IC Analog", "IC Digital",
-	"Connector", "Socket", "Switch",
-	"Fuse", "Mounting", "Heat Sink",
-	"Microphone", "Transformer", "? MYSTERY",
+	"Fabric Art", "Paper Art", "Drawing",
+	"3D print", "Printer Supply", "Tools",
+	"Electronics", "Stepper Motor",
 }
 
 type FormHandler struct {
@@ -527,26 +522,24 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 	components := h.store.MatchingEquivSetForComponent(comp_id)
 	switch len(components) {
 	case 0:
-		page.Message = "No Value or Category set"
 	case 1:
-		page.Message = "Only one component with this Category/Name"
+		page.Message = ""
 	default:
 		page.Message = "Organize matching components into same virtual drawer (drag'n drop)"
-	}
-
-	for _, c := range components {
-		if current_set != nil && c.Equiv_set != current_set.Id {
-			current_set = nil
-		}
-
-		if current_set == nil {
-			current_set = &EquivalenceSet{
-				Id:    c.Equiv_set,
-				Items: make([]*Component, 0, 5),
+		for _, c := range components {
+			if current_set != nil && c.Equiv_set != current_set.Id {
+				current_set = nil
 			}
-			page.Sets = append(page.Sets, current_set)
+
+			if current_set == nil {
+				current_set = &EquivalenceSet{
+					Id:    c.Equiv_set,
+					Items: make([]*Component, 0, 5),
+				}
+				page.Sets = append(page.Sets, current_set)
+			}
+			current_set.Items = append(current_set.Items, c)
 		}
-		current_set.Items = append(current_set.Items, c)
 	}
 	h.template.Render(out, "set-drag-drop.html", page)
 }
