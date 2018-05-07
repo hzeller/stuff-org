@@ -15,6 +15,15 @@ Uses SQLite to keep data in one file, so you need this external go dependency
 go get github.com/mattn/go-sqlite3
 ```
 
+For users with Go version < 1.7 This go-sqlite3 dependency uses 'context' which
+was built into go after golang v1.7. So, if you are using Go version < 1.7 (say
+on a raspberry pi or beaglebone black), then install the go context package,
+ and you will need to modify something something in the go-sqlite3 and install the external packages 
+
+```
+go get x/net/context package
+```
+
 Other than that, no external dependencies are needed.
 
 To run the app navigate to the [stuff/](./stuff) directory and run:
