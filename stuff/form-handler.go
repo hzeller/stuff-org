@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"compress/gzip"
 	"fmt"
 	"io"
@@ -16,6 +17,7 @@ import (
 const (
 	kFormPage = "/form"
 	kSetApi   = "/api/related-set"
+	kInfoApi  = "/api/info"
 )
 
 // Some useful pre-defined set of categories
@@ -46,12 +48,15 @@ func AddFormHandler(store StuffStore, template *TemplateRenderer, imgPath string
 	}
 	http.Handle(kFormPage, handler)
 	http.Handle(kSetApi, handler)
+	http.Handle(kInfoApi, handler)
 }
 
 func (h *FormHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 	switch {
 	case strings.HasPrefix(req.URL.Path, kSetApi):
 		h.relatedComponentSetOperations(out, req)
+	case strings.HasPrefix(req.URL.Path, kInfoApi):
+		h.apiInfo(out, req)
 	default:
 		h.entryFormHandler(out, req)
 	}
@@ -88,6 +93,12 @@ type FormPage struct {
 
 	FormEditable   bool
 	ShowEditToggle bool
+}
+//We need another type to indicate availability of an item
+//but it uses aggregation with an existing type
+type JsonInfoComponent struct {
+	Available bool          `json:"available"`
+	Item      JsonComponent `json:"item"`
 }
 
 // -- TODO: For cleanup, we need some kind of category-aware plugin structure.
@@ -549,4 +560,36 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 		current_set.Items = append(current_set.Items, c)
 	}
 	h.template.Render(out, "set-drag-drop.html", page)
+}
+
+//Search for an item with a given ID, and present the information in an JSON endpoint.
+func (h *FormHandler) apiInfo(out http.ResponseWriter, r *http.Request) {
+	out.Header().Set("Cache-Control", "max-age=10")
+	out.Header().Set("Content-Type", "application/json")
+
+	rawId := r.FormValue("id")
+	id := 0
+
+	//Input validation, let StuffStore take care of out-of-bound IDs.
+	if rawId != "" {
+		parsed_id, err := strconv.Atoi(rawId)
+		if err == nil && parsed_id >= 0 {
+			id = parsed_id
+		}
+	}
+
+	//Use the JsonComponent type already defined in search-handler.go
+	//If item not found, available variable is false in JSON
+	var jsonResult JsonInfoComponent
+	currentItem := h.store.FindById(id)
+	if currentItem != nil {
+		jsonResult.Available = true
+		jsonResult.Item = JsonComponent {
+			Component: *currentItem,
+			Image: fmt.Sprintf("/img/%d", currentItem.Id),
+		}
+	}
+
+	json, _ := json.Marshal(jsonResult)
+	out.Write(json)
 }
