@@ -121,7 +121,7 @@ Search                     | Detail Page with resistor     | Mobile view
 
 ## API
 
-Next to a web-UI, this provides as well a search API with JSON response
+Next to a web-UI, this provides as well a search, status, and item information API with JSON response
 to be integrated in other apps, e.g. slack
 
 ### Sample query
