@@ -94,8 +94,8 @@ type FormPage struct {
 	FormEditable   bool
 	ShowEditToggle bool
 }
-//We need another type to indicate availability of an item
-//but it uses aggregation with an existing type
+// We need another type to indicate availability of an item
+// but it uses aggregation with an existing type
 type JsonInfoComponent struct {
 	Available bool          `json:"available"`
 	Item      JsonComponent `json:"item"`
@@ -562,7 +562,7 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 	h.template.Render(out, "set-drag-drop.html", page)
 }
 
-//Search for an item with a given ID, and present the information in an JSON endpoint.
+// Search for an item with a given ID, and present the information in an JSON endpoint.
 func (h *FormHandler) apiInfo(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Cache-Control", "max-age=10")
 	out.Header().Set("Content-Type", "application/json")
@@ -570,7 +570,7 @@ func (h *FormHandler) apiInfo(out http.ResponseWriter, r *http.Request) {
 	rawId := r.FormValue("id")
 	id := 0
 
-	//Input validation, let StuffStore take care of out-of-bound IDs.
+	// Input validation, let StuffStore take care of out-of-bound IDs.
 	if rawId != "" {
 		parsed_id, err := strconv.Atoi(rawId)
 		if err == nil && parsed_id >= 0 {
@@ -578,8 +578,8 @@ func (h *FormHandler) apiInfo(out http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//Use the JsonComponent type already defined in search-handler.go
-	//If item not found, available variable is false in JSON
+	// Use the JsonComponent type already defined in search-handler.go
+	// If item not found, available variable is false in JSON
 	var jsonResult JsonInfoComponent
 	currentItem := h.store.FindById(id)
 	if currentItem != nil {

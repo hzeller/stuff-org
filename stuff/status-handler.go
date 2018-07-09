@@ -141,7 +141,7 @@ func (h *StatusHandler) apiStatus(out http.ResponseWriter, r *http.Request) {
 	limit := kApiStatusDefaultLimit
 	maxStatus := 2100
 
-	//Input validation, restrict inputs from 0 to maxStatus
+	// Input validation, restrict inputs from 0 to maxStatus
 	if rawOffset != "" {
 		parsed_offset, err := strconv.Atoi(rawOffset)
 		if err != nil || parsed_offset < 0 {
