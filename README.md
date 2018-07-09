@@ -121,8 +121,14 @@ Search                     | Detail Page with resistor     | Mobile view
 
 ## API
 
-Next to a web-UI, this provides as well a search API with JSON response
+Next to a web-UI, this provides as well a search, status, and item information API with JSON response
 to be integrated in other apps, e.g. slack
+
+API Endpoint | Required Query             | Optional Queries
+-------------|----------------------------|--------------------
+/api/search  | q (search query)           | count (default 100)
+/api/status  | offset (beginning item ID) | limit (default 100)
+/api/info    | id (ID of item)            | (none)
 
 ### Sample query
 ```
@@ -161,6 +167,58 @@ Optional URL-parameter `count=42` to limit the number of results (default: 100).
       "img": "/img/76"
     }
   ]
+}
+```
+
+### Sample status query
+```
+https://parts.noisebridge.net/api/status?offset=0&limit=3
+```
+
+### Sample status response
+```json
+{
+  "link": "/status?offset=0&limit=3",
+  "offset": 0,
+  "limit": 3,
+  "status": [
+    {
+      "number": 0,
+      "status": "mystery",
+      "haspicture": false
+    },
+    {
+      "number": 1,
+      "status": "good",
+      "haspicture": false
+    },
+    {
+      "number": 2,
+      "status": "good",
+      "haspicture": false
+    }
+  ]
+}
+```
+
+### Sample item query
+```
+https://parts.noisebridge.net/api/info?id=1
+```
+
+### Sample item response
+```json
+{
+  "available": true,
+  "item": {
+    "id": 1,
+    "equiv_set": 1,
+    "value": "120",
+    "category": "Resistor",
+    "description": "",
+    "quantity": "20",
+    "img": "/img/1"
+  }
 }
 ```
 
