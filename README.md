@@ -176,7 +176,7 @@ https://parts.noisebridge.net/api/status?offset=0&limit=3
 ```
 
 ### Sample status response
-```
+```json
 {
   "link": "/status?offset=0&limit=3",
   "offset": 0,
@@ -207,7 +207,7 @@ https://parts.noisebridge.net/api/info?id=1
 ```
 
 ### Sample item response
-```
+```json
 {
   "available": true,
   "item": {
