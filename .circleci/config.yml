@@ -1,0 +1,12 @@
+---
+version: 2.1
+
+executors:
+  golang:
+    docker:
+    - image: circleci/golang:1.11
+
+jobs:
+
+workflows:
+  version: 2
