@@ -5,14 +5,18 @@ jobs:
   build:
     docker:
     - image: circleci/golang:1.11
+
     steps:
     - checkout
     - run: sudo apt-get -y install file
+    - run: go mod download
     - run: mkdir -v build
-    - run: go get github.com/mattn/go-sqlite3
+    - run: make -C stuff style
     - run: make -C stuff stuff
     - run: make -C stuff test
-    - run: mv stuff/stuff build/stuff
+    - run: mv -v stuff/stuff build/stuff-amd64
+    - run: GOARCH=arm GOARM=5 make -C stuff stuff
+    - run: mv -v stuff/stuff build/stuff-armv5
     - run: file build/*
     - persist_to_workspace:
         root: .
@@ -20,6 +24,29 @@ jobs:
         - build
     - store_artifacts:
         path: build
+
+  release:
+    docker:
+    - image: circleci/golang:1.11
+
+    steps:
+    - run: sudo apt-get update
+    - run: sudo apt-get -y install fakeroot
+    - run: mkdir -v -p ${HOME}/bin
+    - run: curl -L 'https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2' | tar xvjf - --strip-components 3 -C ${HOME}/bin
+    - attach_workspace:
+        at: .
+    - run: cd build && fakeroot tar -czvf ../stuff-${CIRCLE_TAG}.amd64.tar.gz stuff-amd64
+    - run: cd build && fakeroot tar -czvf ../stuff-${CIRCLE_TAG}.armv5.tar.gz stuff-armv5
+    - run: >
+        for tarfile in stuff-*.tar.gz ; do
+          ${HOME}/bin/github-release upload \
+            --user "${CIRCLE_PROJECT_USERNAME}" \
+            --repo "${CIRCLE_PROJECT_REPONAME}" \
+            --tag "${CIRCLE_TAG}" \
+            --name "${tarfile}" \
+            --file "${tarfile}"
+        done
 
 workflows:
   version: 2
@@ -29,3 +56,11 @@ workflows:
         filters:
           tags:
             only: /.*/
+    - release:
+        requires:
+        - build
+        filters:
+          tags:
+            only: /^v.*/
+          branches:
+            ignore: /.*/
