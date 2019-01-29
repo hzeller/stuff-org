@@ -15,8 +15,8 @@ jobs:
     - run: file build/*
     - persist_to_workspace:
         root: .
-	paths:
-	- build
+        paths:
+        - build
     - store_artifacts:
         path: build
 
