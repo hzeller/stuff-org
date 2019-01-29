@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
@@ -94,6 +94,7 @@ type FormPage struct {
 	FormEditable   bool
 	ShowEditToggle bool
 }
+
 // We need another type to indicate availability of an item
 // but it uses aggregation with an existing type
 type JsonInfoComponent struct {
@@ -584,9 +585,9 @@ func (h *FormHandler) apiInfo(out http.ResponseWriter, r *http.Request) {
 	currentItem := h.store.FindById(id)
 	if currentItem != nil {
 		jsonResult.Available = true
-		jsonResult.Item = JsonComponent {
+		jsonResult.Item = JsonComponent{
 			Component: *currentItem,
-			Image: fmt.Sprintf("/img/%d", currentItem.Id),
+			Image:     fmt.Sprintf("/img/%d", currentItem.Id),
 		}
 	}
 
