@@ -1,12 +1,30 @@
 ---
 version: 2.1
 
-executors:
-  golang:
+jobs:
+  build:
     docker:
     - image: circleci/golang:1.11
-
-jobs:
+    steps:
+    - checkout
+    - mkdir -v build
+    - run: go get github.com/mattn/go-sqlite3
+    - run: cd stuff && make build
+    - run: cd stuff && make test
+    - run: mv stuff/stuff build/stuff
+    - run: file build/*
+    - persist_to_workspace:
+        root: .
+	paths:
+	- build
+    - store_artifacts:
+        path: build
 
 workflows:
   version: 2
+  stuff:
+    jobs:
+    - build:
+        filters:
+          tags:
+            only: /.*/
