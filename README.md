@@ -1,6 +1,8 @@
 Keeping track of stuff
 ----------------------
 
+[![CircleCI](https://circleci.com/gh/hzeller/stuff-org.svg?style=svg)](https://circleci.com/gh/hzeller/stuff-org)
+
 Mostly to organize electronic components at home and at hackerspace. Store
 details in a database and make them findable with a pleasing fast search.
 
@@ -18,7 +20,7 @@ go get github.com/mattn/go-sqlite3
 For users with Go version < 1.7 This go-sqlite3 dependency uses 'context' which
 was built into go after golang v1.7. So, if you are using Go version < 1.7 (say
 on a raspberry pi or beaglebone black), then install the go context package,
- and you will need to modify something something in the go-sqlite3 and install the external packages 
+ and you will need to modify something something in the go-sqlite3 and install the external packages
 
 ```
 go get x/net/context package
