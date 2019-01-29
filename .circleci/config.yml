@@ -10,6 +10,7 @@ jobs:
     - run: sudo apt-get -y install file
     - run: mkdir -v build
     - run: go get github.com/mattn/go-sqlite3
+    - run: cd stuff && ls -l
     - run: make -C stuff -f Makefile build
     - run: make -C stuff -f Makefile test
     - run: mv stuff/stuff build/stuff
