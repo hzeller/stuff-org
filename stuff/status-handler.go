@@ -11,10 +11,10 @@ import (
 )
 
 const (
-	kStatusPage = "/status"
-	kApiStatus = "/api/status"
+	kStatusPage             = "/status"
+	kApiStatus              = "/api/status"
 	kApiStatusDefaultOffset = 0
-	kApiStatusDefaultLimit = 100
+	kApiStatusDefaultLimit  = 100
 )
 
 type StatusHandler struct {
@@ -47,10 +47,10 @@ type JsonStatus struct {
 	StatusItem
 }
 type JsonApiStatusResult struct {
-	Directlink string  `json:"link"`
-	Offset int         `json:"offset"`
-	Limit int          `json:"limit"`
-	Items []JsonStatus `json:"status"`
+	Directlink string       `json:"link"`
+	Offset     int          `json:"offset"`
+	Limit      int          `json:"limit"`
+	Items      []JsonStatus `json:"status"`
 }
 
 func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem) {
@@ -158,7 +158,7 @@ func (h *StatusHandler) apiStatus(out http.ResponseWriter, r *http.Request) {
 			limit = parsed_limit
 		}
 	}
-	if offset + limit > maxStatus {
+	if offset+limit > maxStatus {
 		offset, limit = 0, maxStatus
 	}
 
@@ -169,8 +169,8 @@ func (h *StatusHandler) apiStatus(out http.ResponseWriter, r *http.Request) {
 		Items: make([]StatusItem, limit),
 	}
 
-	for i := offset; i < offset + limit; i++ {
-		fillStatusItem(h.store, h.imgPath, i, &page.Items[i - offset])
+	for i := offset; i < offset+limit; i++ {
+		fillStatusItem(h.store, h.imgPath, i, &page.Items[i-offset])
 	}
 
 	jsonResult := &JsonApiStatusResult{
