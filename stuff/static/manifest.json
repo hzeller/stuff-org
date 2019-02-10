@@ -1,0 +1,15 @@
+{
+  "short_name": "Parts",
+  "name": "Parts and Stuff",
+  "icons": [
+      {
+	  "src": "/static/stuff-icon.png",
+	  "type": "image/png",
+	  "sizes": "32x32"
+      }
+  ],
+  "start_url": "/search",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "theme_color": "#FFFFFF"
+}

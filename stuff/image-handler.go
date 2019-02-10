@@ -155,6 +155,8 @@ func sendResource(local_path string, fallback_resource string, out http.Response
 		out.Header().Set("Content-Type", "image/svg+xml;charset=utf-8")
 	case strings.HasSuffix(local_path, ".txt"):
 		out.Header().Set("Content-Type", "text/plain")
+	case strings.HasSuffix(local_path, ".json"):
+		out.Header().Set("Content-Type", "application/json")
 	default:
 		out.Header().Set("Content-Type", "image/jpg")
 	}
