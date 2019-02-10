@@ -3,9 +3,14 @@
   "name": "Parts and Stuff",
   "icons": [
       {
-	  "src": "/static/stuff-icon.png",
+	  "src": "/static/stuff-512.png",
 	  "type": "image/png",
-	  "sizes": "32x32"
+	  "sizes": "512x512"
+      },
+      {
+	  "src": "/static/stuff-192.png",
+	  "type": "image/png",
+	  "sizes": "192x192"
       }
   ],
   "start_url": "/search",
