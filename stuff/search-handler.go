@@ -157,7 +157,7 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 		Items:      make([]JsonHtmlSearchResultRecord, outlen),
 	}
 
-	pusher, _ := out.(http.Pusher) // HTTP/2 pushing if available.
+//	pusher, _ := out.(http.Pusher) // HTTP/2 pushing if available.
 
 	for i := 0; i < outlen; i++ {
 		var c = searchResults[i]
@@ -165,15 +165,15 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 		if h.imagehandler.hasComponentImage(c) {
 			imgUrl := fmt.Sprintf("/img/%d", c.Id)
 			jsonResult.Items[i].ImgUrl = imgUrl
-			if pusher != nil {
+//			if pusher != nil {
 				// TODO(hzeller): we should be more smart and
 				// only push stuff that is not likely cached
 				// already on the client. So we need a HTTP
 				// session and keep some timely rotating
 				// bloom filter or something.
 				// For now: push all the things.
-				pusher.Push(imgUrl, nil)
-			}
+//				pusher.Push(imgUrl, nil)
+//			}
 		} else {
 			jsonResult.Items[i].ImgUrl = "/static/fallback.png"
 		}
