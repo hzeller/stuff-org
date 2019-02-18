@@ -30,6 +30,7 @@ jobs:
     - image: circleci/golang:1.11
 
     steps:
+    - checkout
     - run: sudo apt-get update
     - run: sudo apt-get -y install fakeroot
     - run: mkdir -v -p ${HOME}/bin
