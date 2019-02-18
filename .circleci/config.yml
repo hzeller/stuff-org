@@ -37,13 +37,13 @@ jobs:
     - run: curl -L 'https://github.com/aktau/github-release/releases/download/v0.7.2/linux-amd64-github-release.tar.bz2' | tar xvjf - --strip-components 3 -C ${HOME}/bin
     - attach_workspace:
         at: .
-    - run: mkdir "stuff-org-v${CIRCLE_TAG}"
-    - run: cp -r stuff/static "stuff-org-v${CIRCLE_TAG}/static"
-    - run: cp -r stuff/template "stuff-org-v${CIRCLE_TAG}/template"
-    - run: cp build/stuff-amd64 "stuff-org-v${CIRCLE_TAG}/stuff-org"
-    - run: cd build && fakeroot tar -czvf ../stuff-org-${CIRCLE_TAG}.amd64.tar.gz "stuff-org-v${CIRCLE_TAG}"
-    - run: cp build/stuff-armv5 "stuff-org-v${CIRCLE_TAG}/stuff-org"
-    - run: cd build && fakeroot tar -czvf ../stuff-org-${CIRCLE_TAG}.armv5.tar.gz "stuff-org-v${CIRCLE_TAG}"
+    - run: mkdir "stuff-org-${CIRCLE_TAG}"
+    - run: cp -r stuff/static "stuff-org-${CIRCLE_TAG}/static"
+    - run: cp -r stuff/template "stuff-org-${CIRCLE_TAG}/template"
+    - run: cp build/stuff-amd64 "stuff-org-${CIRCLE_TAG}/stuff-org"
+    - run: fakeroot tar -czvf ../stuff-org-${CIRCLE_TAG}.amd64.tar.gz "stuff-org-${CIRCLE_TAG}"
+    - run: cp build/stuff-armv5 "stuff-org-${CIRCLE_TAG}/stuff-org"
+    - run: fakeroot tar -czvf ../stuff-org-${CIRCLE_TAG}.armv5.tar.gz "stuff-org-${CIRCLE_TAG}"
     - run: sha256sum stuff-org-*.tar.gz | tee sha256sums.txt
     - run: >
         for file in stuff-org-*.tar.gz sha256sums.txt ; do
