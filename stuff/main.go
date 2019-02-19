@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -102,7 +101,7 @@ func main() {
 		"Cache templates. False for online editing while development.")
 	staticResource := flag.String("staticdir", "static",
 		"Directory with static resources")
-	port := flag.Int("port", 2000, "Port to serve from")
+	bindAddress := flag.String("bind-address", ":2000", "Port to serve from")
 	dbFile := flag.String("dbfile", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
@@ -171,13 +170,13 @@ func main() {
 	AddStatusHandler(store, templates, *imageDir)
 	AddSitemapHandler(store, *site_name)
 
-	log.Printf("Listening on :%d", *port)
+	log.Printf("Listening on %q", *bindAddress)
 	if *ssl_cert != "" && *ssl_key != "" {
-		log.Fatal(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port),
+		log.Fatal(http.ListenAndServeTLS(*bindAddress,
 			*ssl_cert, *ssl_key,
 			nil))
 	} else {
-		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
+		log.Fatal(http.ListenAndServe(*bindAddress, nil))
 	}
 
 	var block_forever chan bool
