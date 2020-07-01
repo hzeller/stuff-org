@@ -1,0 +1,42 @@
+project_name: stuff-org
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod download
+builds:
+- binary: stuff
+  goarch:
+  - amd64
+  - arm
+  - arm64
+  goarm:
+  - 6
+  - 7
+  goos:
+  - darwin
+  - freebsd
+  - linux
+  - windows
+archives:
+  - files:
+    - static/**/*
+    - template/**/*
+    format_overrides:
+    - goos: windows
+      format: zip
+    wrap_in_directory: true
+checksum:
+  name_template: 'checksums.txt'
+# TODO: Setup Docker in CircleCI.
+# dockers:
+# - image_templates:
+#   - "{{ .Env.CI_REGISTRY_IMAGE }}:latest"
+#   - "{{ .Env.CI_REGISTRY_IMAGE }}:{{ .Tag }}"
+snapshot:
+  name_template: "{{ .Tag }}-{{ .ShortCommit }}"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
