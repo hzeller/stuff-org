@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -169,6 +171,7 @@ func main() {
 	AddSearchHandler(store, templates, imagehandler)
 	AddStatusHandler(store, templates, *imageDir)
 	AddSitemapHandler(store, *site_name)
+	http.Handle("/metrics", promhttp.Handler())
 
 	log.Printf("Listening on %q", *bindAddress)
 	if *ssl_cert != "" && *ssl_key != "" {
