@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -64,34 +65,104 @@ func TestSearchOperators(t *testing.T) {
 }
 
 func TestQueryRewrite(t *testing.T) {
+	cExpand := func(i int) string {
+		return fmt.Sprintf("<component %d>", i)
+	}
+
 	// Identity
-	expectEqual(t, queryRewrite("foo"), "foo")
-	expectEqual(t, queryRewrite("10k"), "10k")
+	expectEqual(t, queryRewrite("foo", cExpand), "foo")
+	expectEqual(t, queryRewrite("10k", cExpand), "10k")
 
 	// AND, OR rewrite to internal operators
-	expectEqual(t, queryRewrite("foo AND bar"), "foo bar")
-	expectEqual(t, queryRewrite("foo OR bar"), "foo | bar")
-	expectEqual(t, queryRewrite("(foo AND bar) OR (bar AND baz)"),
+	expectEqual(t, queryRewrite("foo AND bar", cExpand), "foo bar")
+	expectEqual(t, queryRewrite("foo OR bar", cExpand), "foo | bar")
+	expectEqual(t, queryRewrite("(foo AND bar) OR (bar AND baz)", cExpand),
 		"(foo bar) | (bar baz)")
 
 	// Only mess with it if it is with spaces.
-	expectEqual(t, queryRewrite("fooANDbar"), "fooANDbar")
-	expectEqual(t, queryRewrite("fooORbar"), "fooORbar")
+	expectEqual(t, queryRewrite("fooANDbar", cExpand), "fooANDbar")
+	expectEqual(t, queryRewrite("fooORbar", cExpand), "fooORbar")
 
 	// We store resistors without the 'Ohm' suffix. So if someone adds
 	// Ohm to the value, expand the query to match the raw number plus
 	// something that narrows it to resistor. But also still look for the
 	// original value in case this is something
-	expectEqual(t, queryRewrite("10k"), "10k")   // no rewrite
-	expectEqual(t, queryRewrite("3.9k"), "3.9k") // no rewrite
-	expectEqual(t, queryRewrite("10kOhm"), "(10kOhm | (10k (resistor|potentiometer|r-network)))")
-	expectEqual(t, queryRewrite("10k Ohm"), "(10k Ohm | (10k (resistor|potentiometer|r-network)))")
-	expectEqual(t, queryRewrite("3.9kOhm"), "(3.9kOhm | (3.9k (resistor|potentiometer|r-network)))")
-	expectEqual(t, queryRewrite("3.kOhm"), "3.kOhm") // silly number.
+	expectEqual(t, queryRewrite("10k", cExpand), "10k")   // no rewrite
+	expectEqual(t, queryRewrite("3.9k", cExpand), "3.9k") // no rewrite
+	expectEqual(t, queryRewrite("10kOhm", cExpand), "(10kOhm | (10k (resistor|potentiometer|r-network)))")
+	expectEqual(t, queryRewrite("10k Ohm", cExpand), "(10k Ohm | (10k (resistor|potentiometer|r-network)))")
+	expectEqual(t, queryRewrite("3.9kOhm", cExpand), "(3.9kOhm | (3.9k (resistor|potentiometer|r-network)))")
+	expectEqual(t, queryRewrite("3.kOhm", cExpand), "3.kOhm") // silly number.
 
-	expectEqual(t, queryRewrite("0.1u"), "(0.1u | 100n)")
-	expectEqual(t, queryRewrite(".1u"), "(.1u | 100n)")
-	expectEqual(t, queryRewrite("0.1uF"), "(0.1uF | 100nF)")
-	expectEqual(t, queryRewrite("0.01u"), "(0.01u | 10n)")
-	expectEqual(t, queryRewrite("0.068u"), "(0.068u | 68n)")
+	expectEqual(t, queryRewrite("0.1u", cExpand), "(0.1u | 100n)")
+	expectEqual(t, queryRewrite(".1u", cExpand), "(.1u | 100n)")
+	expectEqual(t, queryRewrite("0.1uF", cExpand), "(0.1uF | 100nF)")
+	expectEqual(t, queryRewrite("0.01u", cExpand), "(0.01u | 10n)")
+	expectEqual(t, queryRewrite("0.068u", cExpand), "(0.068u | 68n)")
+
+	// Similarity search looks up the component details.
+	expectEqual(t, queryRewrite("like:42", cExpand), "(<component 42>)")
+	expectEqual(t, queryRewrite("like:foo", cExpand), "like:foo") // silly number.
+}
+
+func TestSearchComponent_ToQuery(t *testing.T) {
+
+	cases := map[string]struct {
+		component Component
+		expect    string
+	}{
+		"blank component": {
+			component: Component{},
+			expect:    "()",
+		},
+		"category filled": {
+			component: Component{Category: "resistor"},
+			expect:    "(resistor)",
+		},
+		"description filled": {
+			component: Component{Description: "description"},
+			expect:    "(description)",
+		},
+		"notes filled": {
+			component: Component{Notes: "notes"},
+			expect:    "(notes)",
+		},
+		"value filled": {
+			component: Component{Value: "value"},
+			expect:    "(value)",
+		},
+		"footprint filled": {
+			component: Component{Footprint: "footprint"},
+			expect:    "(footprint)",
+		},
+		"full component": {
+			component: Component{
+				Category:    "category",
+				Description: "d1 d2",
+				Notes:       "n1 n2",
+				Value:       "value",
+				Footprint:   "footprint",
+			},
+			expect: "(category|d1|d2|n1|n2|value|footprint)",
+		},
+		"ignored fields": {
+			component: Component{
+				Datasheet_url: "https://example.com",
+				Drawersize:    3,
+				Quantity:      "300ish",
+			},
+			expect: "()",
+		},
+	}
+
+	for tn, tc := range cases {
+		t.Run(tn, func(t *testing.T) {
+			s := &SearchComponent{
+				preprocessed: &tc.component,
+			}
+
+			expectEqual(t, s.ToQuery(), tc.expect)
+		})
+	}
+
 }

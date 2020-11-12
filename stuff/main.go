@@ -33,6 +33,13 @@ type Component struct {
 // Modify a user pointer. Returns 'true' if the changes should be commited.
 type ModifyFun func(comp *Component) bool
 
+// SearchResult holds metadata about the search.
+type SearchResult struct {
+	OrignialQuery  string
+	RewrittenQuery string
+	Results        []*Component
+}
+
 // Interface to our storage backend.
 type StuffStore interface {
 	// Find a component by its ID. Returns nil if it does not exist. Don't
@@ -61,7 +68,7 @@ type StuffStore interface {
 
 	// Given a search term, returns all the components that match, ordered
 	// by some internal scoring system. Don't modify the returned objects!
-	Search(search_term string) []*Component
+	Search(search_term string) *SearchResult
 
 	// Iterate through all elements.
 	IterateAll(func(comp *Component) bool)
