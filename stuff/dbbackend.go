@@ -285,6 +285,6 @@ func (d *DBBackend) MatchingEquivSetForComponent(id int) []*Component {
 	return result
 }
 
-func (d *DBBackend) Search(search_term string) []*Component {
+func (d *DBBackend) Search(search_term string) *SearchResult {
 	return d.fts.Search(search_term)
 }

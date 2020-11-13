@@ -87,13 +87,13 @@ func (h *SearchHandler) apiSearch(out http.ResponseWriter, r *http.Request) {
 	if limit > maxOutLen {
 		limit = maxOutLen
 	}
-	var searchResults []*Component
+	var searchResults *SearchResult
 	if query != "" {
 		searchResults = h.store.Search(query)
 	}
 	outlen := limit
-	if len(searchResults) < limit {
-		outlen = len(searchResults)
+	if len(searchResults.Results) < limit {
+		outlen = len(searchResults.Results)
 	}
 	jsonResult := &JsonApiSearchResult{
 		Directlink: encodeUriComponent("/search#" + query),
@@ -101,7 +101,7 @@ func (h *SearchHandler) apiSearch(out http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := 0; i < outlen; i++ {
-		var c = searchResults[i]
+		var c = searchResults.Results[i]
 		jsonResult.Items[i].Component = *c
 		jsonResult.Items[i].Image = fmt.Sprintf("/img/%d", c.Id)
 	}
@@ -142,18 +142,17 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	// We only want to output a query info if it actually has been
 	// rewritten, e.g. 0.1u becomes (100n | 0.1u)
 	queryInfo := ""
-	rewrittenQuery := queryRewrite(query)
-	if rewrittenQuery != query {
-		queryInfo = rewrittenQuery
+	if searchResults.RewrittenQuery != searchResults.OrignialQuery {
+		queryInfo = searchResults.RewrittenQuery
 	}
 
 	outlen := 24 // Limit max output
-	if len(searchResults) < outlen {
-		outlen = len(searchResults)
+	if len(searchResults.Results) < outlen {
+		outlen = len(searchResults.Results)
 	}
 	jsonResult := &JsonHtmlSearchResult{
-		Count:      len(searchResults),
-		ResultInfo: fmt.Sprintf("%d results (%s)", len(searchResults), elapsed),
+		Count:      len(searchResults.Results),
+		ResultInfo: fmt.Sprintf("%d results (%s)", len(searchResults.Results), elapsed),
 		QueryInfo:  queryInfo,
 		Items:      make([]JsonHtmlSearchResultRecord, outlen),
 	}
@@ -161,7 +160,7 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	pusher, _ := out.(http.Pusher) // HTTP/2 pushing if available.
 
 	for i := 0; i < outlen; i++ {
-		var c = searchResults[i]
+		var c = searchResults.Results[i]
 		jsonResult.Items[i].Id = c.Id
 		if h.imagehandler.hasComponentImage(c) {
 			imgUrl := fmt.Sprintf("/img/%d", c.Id)

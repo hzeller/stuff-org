@@ -9,40 +9,59 @@ import (
 	"sync"
 )
 
+var (
+	andRewrite              = regexp.MustCompile(`(?i)( and )`)
+	orRewrite               = regexp.MustCompile(`(?i)( or )`)
+	possibleResistor        = regexp.MustCompile(`(?i)([0-9]+(\.[0-9]+)*[kM]?)(\s*Ohm?)`)
+	possibleSmallMicrofarad = regexp.MustCompile(`(?i)(0?\.[0-9]+)u(\w*)`)
+	logicalTerm             = regexp.MustCompile(`(?i)([\(\)\|])`)
+	likeTerm                = regexp.MustCompile(`(?i)like:([0-9]+)`)
+)
+
+// componentResolver converts a componentID to a string containing the
+// component's terms or blank if the component doesn't exist.
+type componentResolver func(componentID int) string
+
 func isSeparator(c byte) bool {
 	return c == ' ' || c == '\t' || c == '\n' || c == '.' || c == ',' || c == ';'
 }
 
-func queryRewrite(term string) string {
-	// TODO(hzeller): all these regexps should be what in C would be 'static'
-	// variables.
-	and_rewrite_, _ := regexp.Compile(`(?i)( and )`)
-	term = and_rewrite_.ReplaceAllString(term, " ")
+func queryRewrite(term string, componentLookup componentResolver) string {
+	term = andRewrite.ReplaceAllString(term, " ")
 
-	or_rewrite_, _ := regexp.Compile(`(?i)( or )`)
-	term = or_rewrite_.ReplaceAllString(term, " | ")
+	term = orRewrite.ReplaceAllString(term, " | ")
 
-	possible_resistor, _ := regexp.Compile(`(?i)([0-9]+(\.[0-9]+)*[kM]?)(\s*Ohm?)`)
-	term = possible_resistor.ReplaceAllString(term, "($0 | ($1 (resistor|potentiometer|r-network)))")
+	term = possibleResistor.ReplaceAllString(term, "($0 | ($1 (resistor|potentiometer|r-network)))")
 
 	// Nanofarad values are often given as 0.something microfarad.
 	// Internally, all capacitors are normalized to nanofarad.
-	possible_small_microfarad, _ := regexp.Compile(`(?i)(0?\.[0-9]+)u(\w*)`)
-	if cmatch := possible_small_microfarad.FindStringSubmatch(term); cmatch != nil {
+	if cmatch := possibleSmallMicrofarad.FindStringSubmatch(term); cmatch != nil {
 		val, err := strconv.ParseFloat(cmatch[1], 32)
 		if err == nil {
-			term = possible_small_microfarad.ReplaceAllString(
+			term = possibleSmallMicrofarad.ReplaceAllString(
 				term, fmt.Sprintf("($0 | %.0fn$2)", 1000*val))
 		}
 	}
+
+	term = likeTerm.ReplaceAllStringFunc(term, func(match string) string {
+		split := strings.SplitN(match, ":", 2)
+		if len(split) != 2 {
+			return match
+		}
+		val, err := strconv.ParseInt(split[1], 10, 32)
+		if err != nil {
+			return match
+		}
+
+		return fmt.Sprintf("(%s)", componentLookup(int(val)))
+	})
 
 	return term
 }
 
 func preprocessTerm(term string) string {
 	// For simplistic parsing, add spaces around special characters (|)
-	logical_term, _ := regexp.Compile(`(?i)([\(\)\|])`)
-	term = logical_term.ReplaceAllString(term, " $1 ")
+	term = logicalTerm.ReplaceAllString(term, " $1 ")
 
 	// * Lowercase: we want to be case insensitive
 	// * Dash remove: we consider dashes to join words and we want to be
@@ -155,12 +174,31 @@ func (c *SearchComponent) MatchScore(term string) float32 {
 	return score
 }
 
+// ToQuery converts the component into a normalized search query that can be
+// used to find similar components.
+func (c *SearchComponent) ToQuery() string {
+	sb := &strings.Builder{}
+
+	for _, tmp := range []string{
+		c.preprocessed.Category,
+		c.preprocessed.Description,
+		c.preprocessed.Notes,
+		c.preprocessed.Value,
+		c.preprocessed.Footprint,
+	} {
+		sb.WriteString(tmp)
+		sb.WriteString(" ")
+	}
+
+	return fmt.Sprintf("(%s)", strings.Join(strings.Fields(sb.String()), "|"))
+}
+
 type SearchComponent struct {
 	orig         *Component
 	preprocessed *Component
 }
 type FulltextSearch struct {
-	lock         sync.Mutex
+	lock         sync.RWMutex
 	id2Component map[int]*SearchComponent
 }
 
@@ -234,10 +272,15 @@ func (s *FulltextSearch) Update(c *Component) {
 	}
 	s.lock.Unlock()
 }
-func (s *FulltextSearch) Search(search_term string) []*Component {
-	search_term = queryRewrite(search_term)
+func (s *FulltextSearch) Search(search_term string) *SearchResult {
+	output := &SearchResult{
+		OrignialQuery: search_term,
+	}
+
+	search_term = queryRewrite(search_term, s.componentTerms)
+	output.RewrittenQuery = search_term
 	search_term = preprocessTerm(search_term)
-	s.lock.Lock()
+	s.lock.RLock()
 	scoredlist := make(ScoreList, 0, 10)
 	for _, search_comp := range s.id2Component {
 		scored := &ScoredComponent{
@@ -248,11 +291,26 @@ func (s *FulltextSearch) Search(search_term string) []*Component {
 			scoredlist = append(scoredlist, scored)
 		}
 	}
-	s.lock.Unlock()
+	s.lock.RUnlock()
 	sort.Sort(ScoreList(scoredlist))
-	result := make([]*Component, len(scoredlist))
+	output.Results = make([]*Component, len(scoredlist))
 	for idx, scomp := range scoredlist {
-		result[idx] = scomp.comp
+		output.Results[idx] = scomp.comp
 	}
-	return result
+	return output
 }
+
+func (s *FulltextSearch) componentTerms(componentID int) string {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+
+	component, ok := s.id2Component[componentID]
+	if !ok {
+		return ""
+	}
+
+	return component.ToQuery()
+}
+
+// Validate that componentTerms is a componentResolver.
+var _ (componentResolver) = ((*FulltextSearch)(nil)).componentTerms
