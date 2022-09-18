@@ -52,8 +52,8 @@ Usage of ./stuff:
         Directory with component images (default "img-srv")
   -logfile string
         Logfile to write interesting events
-  -port int
-        Port to serve from (default 2000)
+  -bind-address string
+        Port to serve from (default ":2000")
   -site-name string
         Site-name, in particular needed for SSL
   -ssl-cert string
