@@ -110,7 +110,7 @@ func main() {
 		"Cache templates. False for online editing while development.")
 	staticResource := flag.String("staticdir", "static",
 		"Directory with static resources")
-	bindAddress := flag.String("bind-address", ":2000", "Port to serve from")
+	bindAddress := flag.String("bind-address", ":2000", "Listen address:port to serve from")
 	dbFile := flag.String("dbfile", "stuff-database.db", "SQLite database file")
 	logfile := flag.String("logfile", "", "Logfile to write interesting events")
 	do_cleanup := flag.Bool("cleanup-db", false, "Cleanup run of database")
