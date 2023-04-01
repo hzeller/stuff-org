@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+    - main
+  pull_request:
+    branches:
+    - master
+    - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    name: Build and Test
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt install golang
+
+      - name: Get the Source
+        uses: actions/checkout@v2
+
+      - name: Build and test
+        run: |
+          cd stuff
+          make test
