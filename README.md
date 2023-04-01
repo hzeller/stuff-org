@@ -2,6 +2,7 @@ Keeping track of stuff
 ----------------------
 
 [![CircleCI](https://circleci.com/gh/hzeller/stuff-org.svg?style=svg)](https://circleci.com/gh/hzeller/stuff-org)
+[![CI action](https://github.com/hzeller/stuff-org/workflows/CI/badge.svg)](https://github.com/hzeller/stuff-org/actions)
 
 Mostly to organize electronic components at home and at hackerspace. Store
 details in a database and make them findable with a pleasing fast search.
