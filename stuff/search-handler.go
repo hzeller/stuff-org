@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
-	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -52,7 +52,7 @@ func (h *SearchHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 func (h *SearchHandler) showSearchPage(out http.ResponseWriter, r *http.Request) {
 	out.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// Just static html. Maybe serve from /static ?
-	content, _ := ioutil.ReadFile(h.template.baseDir + "/search-result.html")
+	content, _ := os.ReadFile(h.template.baseDir + "/search-result.html")
 	out.Write(content)
 }
 
@@ -136,7 +136,7 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 	}
 	start := time.Now()
 	searchResults := h.store.Search(query)
-	elapsed := time.Now().Sub(start)
+	elapsed := time.Since(start)
 	elapsed = time.Microsecond * ((elapsed + time.Microsecond/2) / time.Microsecond)
 
 	// We only want to output a query info if it actually has been

@@ -14,7 +14,7 @@ func ExpectValue(t *testing.T, expected []int, value string, tolerance string) b
 		t.Errorf("%s: Expected len %d but got %d", value, len(expected), len(result))
 		return false
 	}
-	for idx, _ := range result {
+	for idx := range result {
 		if expected[idx] != result[idx] {
 			t.Errorf("%s expected[%d] != result[%d] (%d vs. %d)",
 				value, idx, idx, expected[idx], result[idx])

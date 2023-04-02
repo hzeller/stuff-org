@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
-	"io/ioutil"
 	"log"
+	"os"
 	"syscall"
 	"testing"
 )
@@ -17,7 +17,7 @@ func ExpectTrue(t *testing.T, condition bool, message string) {
 }
 
 func TestBasicStore(t *testing.T) {
-	dbfile, _ := ioutil.TempFile("", "basic-store")
+	dbfile, _ := os.CreateTemp("", "basic-store")
 	defer syscall.Unlink(dbfile.Name())
 	db, err := sql.Open("sqlite3", dbfile.Name())
 	if err != nil {
@@ -52,7 +52,7 @@ func TestBasicStore(t *testing.T) {
 }
 
 func TestJoinSets(t *testing.T) {
-	dbfile, _ := ioutil.TempFile("", "join-sets")
+	dbfile, _ := os.CreateTemp("", "join-sets")
 	defer syscall.Unlink(dbfile.Name())
 	db, err := sql.Open("sqlite3", dbfile.Name())
 	if err != nil {
@@ -113,7 +113,7 @@ func TestJoinSets(t *testing.T) {
 }
 
 func TestLeaveSetRegression(t *testing.T) {
-	dbfile, _ := ioutil.TempFile("", "join-sets")
+	dbfile, _ := os.CreateTemp("", "join-sets")
 	defer syscall.Unlink(dbfile.Name())
 	db, err := sql.Open("sqlite3", dbfile.Name())
 	if err != nil {
@@ -143,7 +143,7 @@ func TestLeaveSetRegression(t *testing.T) {
 }
 
 func TestQueryEquiv(t *testing.T) {
-	dbfile, _ := ioutil.TempFile("", "equiv-query")
+	dbfile, _ := os.CreateTemp("", "equiv-query")
 	defer syscall.Unlink(dbfile.Name())
 	db, err := sql.Open("sqlite3", dbfile.Name())
 	if err != nil {

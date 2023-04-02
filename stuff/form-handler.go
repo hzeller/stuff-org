@@ -288,14 +288,12 @@ func (h *FormHandler) EditAllowed(r *http.Request) bool {
 	if h.editNets == nil || len(h.editNets) == 0 {
 		return true // No restrictions.
 	}
-	addr := ""
+	addr, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return false
+	}
 	if h := r.Header["X-Forwarded-For"]; h != nil {
 		addr = h[0]
-	} else {
-		addr := r.RemoteAddr
-		if pos := strings.LastIndex(addr, ":"); pos >= 0 {
-			addr = addr[0:pos]
-		}
 	}
 	var ip net.IP
 	if ip = net.ParseIP(addr); ip == nil {
@@ -533,7 +531,7 @@ func (h *FormHandler) relatedComponentSetHtml(out http.ResponseWriter, r *http.R
 	}
 	page := &EquivalenceSetList{
 		HighlightComp: comp_id,
-		Sets:          make([]*EquivalenceSet, 0, 0),
+		Sets:          make([]*EquivalenceSet, 0),
 	}
 	var current_set *EquivalenceSet = nil
 	components := h.store.MatchingEquivSetForComponent(comp_id)

@@ -82,10 +82,6 @@ func ElapsedPrint(msg string, start time.Time) {
 	}
 }
 
-func stuffStoreRoot(out http.ResponseWriter, r *http.Request) {
-	http.Redirect(out, r, "/search", 302)
-}
-
 func parseAllowedEditorCIDR(allowed string) []*net.IPNet {
 	all_allowed := strings.Split(allowed, ",")
 	allowed_nets := make([]*net.IPNet, 0, len(all_allowed))

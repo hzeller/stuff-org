@@ -83,12 +83,12 @@ func fillStatusItem(store StuffStore, imageDir string, id int, item *StatusItem)
 		case 3:
 			item.Status = "good"
 		}
-		if strings.Index(strings.ToLower(comp.Value), "empty") >= 0 ||
-			strings.Index(strings.ToLower(comp.Category), "empty") >= 0 {
+		if strings.Contains(strings.ToLower(comp.Value), "empty") ||
+			strings.Contains(strings.ToLower(comp.Category), "empty") {
 			item.Status = "empty"
 		}
-		if strings.Index(strings.ToLower(comp.Category), "mystery") >= 0 ||
-			strings.Index(comp.Value, "?") >= 0 {
+		if strings.Contains(strings.ToLower(comp.Category), "mystery") ||
+			strings.Contains(comp.Value, "?") {
 			item.Status = "mystery"
 		}
 	} else {

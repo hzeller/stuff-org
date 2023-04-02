@@ -160,6 +160,9 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 	}
 
 	selectAll, err := db.Prepare("SELECT id, " + all_fields + " FROM component ORDER BY id")
+	if err != nil {
+		return nil, err
+	}
 	// Populate fts with existing components.
 	fts := NewFulltextSearch()
 	rows, _ := selectAll.Query()

@@ -1,0 +1,14 @@
+---
+issues:
+  max-same-issues: 0
+  exclude-rules:
+    - path: _test.go
+      linters:
+        - errcheck
+
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      # This are used in HTTP handlers, any error is handled by the server itself.
+      - (net/http.ResponseWriter).Write
