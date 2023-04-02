@@ -9,7 +9,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -137,10 +136,10 @@ func (h *ImageHandler) serveStatic(out http.ResponseWriter, r *http.Request) {
 func sendResource(local_path string, fallback_resource string, out http.ResponseWriter) {
 	cache_time := 900
 	header_addon := ""
-	content, _ := ioutil.ReadFile(local_path)
+	content, _ := os.ReadFile(local_path)
 	if content == nil && fallback_resource != "" {
 		local_path = fallback_resource
-		content, _ = ioutil.ReadFile(local_path)
+		content, _ = os.ReadFile(local_path)
 		cache_time = 10 // fallbacks might change more often.
 		out.WriteHeader(http.StatusNotFound)
 		header_addon = ",must-revalidate"

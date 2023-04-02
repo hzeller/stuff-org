@@ -63,19 +63,19 @@ func (h *TemplateRenderer) Render(w http.ResponseWriter, template_name string, p
 // for now, render templates directly to easier edit them.
 func (h *TemplateRenderer) RenderWithHttpCode(w http.ResponseWriter, output_writer io.Writer, http_code int, template_name string, p interface{}) bool {
 	var err error
+	var t *template.Template
 	if output_writer == nil {
 		output_writer = w
 	}
 	if h.doCache {
-		templ := h.cachedTemplates.Lookup(template_name)
-		if templ == nil {
+		t = h.cachedTemplates.Lookup(template_name)
+		if t == nil {
 			return false
 		}
 		setContentTypeFromTemplateName(template_name, w.Header())
 		w.WriteHeader(http_code)
-		err = templ.Execute(output_writer, p)
 	} else {
-		t, err := template.ParseFiles(h.baseDir + "/" + template_name)
+		t, err = template.ParseFiles(h.baseDir + "/" + template_name)
 		if err != nil {
 			t, err = template.ParseFiles(h.baseDir + "/component/" + template_name)
 			if err != nil {
@@ -85,8 +85,8 @@ func (h *TemplateRenderer) RenderWithHttpCode(w http.ResponseWriter, output_writ
 		}
 		setContentTypeFromTemplateName(template_name, w.Header())
 		w.WriteHeader(http_code)
-		err = t.Execute(output_writer, p)
 	}
+	err = t.Execute(output_writer, p)
 	if err != nil {
 		log.Printf("Template broken %s (%s)", template_name, err)
 		return false

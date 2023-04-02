@@ -65,7 +65,7 @@ func main() {
 	}
 
 	if err := os.MkdirAll(*out_dir, 0755); err != nil {
-		log.Fatal("Can't create output directory %s", err)
+		log.Fatalf("Can't create output directory %s", err)
 	}
 
 	for _, input_filename := range flag.Args() {
@@ -95,14 +95,16 @@ func main() {
 					image.Rect(x*div_width+cut_w, y*div_height+cut_h,
 						(x+1)*div_width-cut_w, (y+1)*div_height-cut_h))
 				name := fmt.Sprintf("%s/%s:%c%d.jpg", *out_dir, box_id, y+'A', x+1)
-				log.Printf(name)
+				log.Println(name)
 				writer, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 				if err != nil {
 					log.Fatal(err)
 				}
 				defer writer.Close()
-				jpeg.Encode(writer, subimage, nil)
-
+				err = jpeg.Encode(writer, subimage, nil)
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 		}
 	}
