@@ -37,10 +37,14 @@ func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath strin
 	http.Handle(kComponentImage, handler) // Serve an component image or fallback.
 	http.Handle(kStaticResource, handler) // serve a static resource
 
-	// With serving robots.txt, image-handler should probably be named
-	// static handler.
-	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
-		sendResource(staticPath+"/robots.txt", "", w)
+	// With serving robots.txt and other static files,
+	// image-handler should probably be named static handler.
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if(strings.EqualFold("/", r.URL.Path)) {
+			http.Redirect(w, r, "/search", 302);
+		} else {
+			sendResource(staticPath+"/webroot/"+r.URL.Path[1:], "", w)
+		}
 	})
 	return handler
 }

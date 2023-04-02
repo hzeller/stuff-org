@@ -1,0 +1,67 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          stuff-org
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: stuff organizer web app
+# Description:       stuff organizer web app
+### END INIT INFO
+#
+# initd a node app
+
+# Source function library.
+. /lib/lsb/init-functions
+
+name="stuff-org"
+pidPath="/var/run/stuff-org.pid"
+workingDir="/home/stuff-org/stuff-org/stuff"
+cmd="/home/stuff-org/stuff-org/stuff/stuff"
+user="stuff-org"
+group="stuff-org"
+
+# Port to run server on
+port="2000"
+
+# Comma separated list of networks (CIDR format IP-Addr/network) that are allowed to edit content
+editSubnets="142.254.26.9/32"
+
+start() {
+   echo "Starting $name"
+
+   start-stop-daemon -p $pidPath -u $user -g $group --background --make-pidfile --remove-pidfile --chdir $workingDir --start --startas $cmd -- -port $port -edit-permission-nets $editSubnets
+#     --no-close \ # enable for debugging
+
+   RETVAL=$?
+}
+
+restart() {
+	echo "Restarting $name"
+	start
+	stop
+	RETVAL=$?
+}
+
+stop() {
+  echo "Stopping $name"
+  start-stop-daemon -p $pidPath --remove-pidfile --stop --startas $cmd
+  RETVAL=$?
+}
+
+case "$1" in
+   start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+   restart)
+   	restart
+        ;;
+	*)
+       echo "Usage:  {start|stop|restart}"
+       exit 1
+        ;;
+esac
+exit $RETVAL

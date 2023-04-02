@@ -1,0 +1,12 @@
+[Unit]
+Description=stuff-org
+After=local-fs.target network.target
+
+[Service]
+Type=simple
+ExecStart=/etc/init.d/stuff-org start
+ExecStop=/etc/init.d/stuff-org stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
