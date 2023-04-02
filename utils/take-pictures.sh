@@ -56,9 +56,15 @@ while : ; do
     # on the camera before, otherwise we sometimes get the previous
     # image.
     gphoto2 -D && gphoto2 --capture-image-and-download
+    if [ $? -ne 0 ] ; then
+	echo "Can't take picture. Camera connected ?"
+	break;
+    fi
     mv capt0000.jpg "$PIC_NAME"
     ln -sf $(realpath "$PIC_NAME") "$FEH_PICTURE"
 
     # Be helpful and increment
     ID=$[$ID + 1]
 done
+
+rm "${TMP_PART}" "${FEH_PICTURE}"
