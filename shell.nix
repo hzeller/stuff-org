@@ -7,5 +7,11 @@ pkgs.mkShell {
   buildInputs = with pkgs;
     [
       go
+
+
+      # For take pictures utility script
+      feh
+      dialog
+      gphoto2
     ];
 }
