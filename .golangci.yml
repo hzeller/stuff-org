@@ -1,4 +1,7 @@
 ---
+run:
+  deadline: 2m
+
 issues:
   max-same-issues: 0
   exclude-rules:
