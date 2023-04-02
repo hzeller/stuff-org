@@ -172,7 +172,8 @@ func (h *SearchHandler) apiSearchPageItem(out http.ResponseWriter, r *http.Reque
 				// session and keep some timely rotating
 				// bloom filter or something.
 				// For now: push all the things.
-				pusher.Push(imgUrl, nil)
+				// Ignore error, this is best effort.
+				_ = pusher.Push(imgUrl, nil)
 			}
 		} else {
 			jsonResult.Items[i].ImgUrl = "/static/fallback.png"

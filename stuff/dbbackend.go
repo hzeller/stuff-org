@@ -263,7 +263,10 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 
 func (d *DBBackend) JoinSet(id int, set int) {
 	d.LeaveSet(id) // precondition.
-	d.joinSet.Exec(id, set)
+	_, err := d.joinSet.Exec(id, set)
+	if err != nil {
+		log.Printf("Best effort JoinSet() fail: %v.", err)
+	}
 }
 
 func (d *DBBackend) LeaveSet(id int) {
@@ -273,7 +276,10 @@ func (d *DBBackend) LeaveSet(id int) {
 	// 0.001 qps service :)
 	c := d.FindById(id)
 	if c != nil {
-		d.leaveSet.Exec(id, c.Equiv_set)
+		_, err := d.leaveSet.Exec(id, c.Equiv_set)
+		if err != nil {
+			log.Printf("Best effort LeaveSet() fail: %v.", err)
+		}
 	}
 }
 
