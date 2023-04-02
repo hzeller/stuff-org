@@ -7,7 +7,7 @@ pkgs.mkShell {
   buildInputs = with pkgs;
     [
       go
-
+      golangci-lint
 
       # For take pictures utility script
       feh

@@ -8,3 +8,6 @@ update-go-deps:
 	done
 	$(GO) mod tidy
 
+lint:
+	golangci-lint run
+
