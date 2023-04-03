@@ -182,7 +182,7 @@
      var doc_img = document.getElementById("component-image");
      var value = document.getElementById("cvalue").value;
      var category = getRadioValue("category_select");
-     doc_img.src = "/img/{{.Id}}?c=" + category + "&amp;v=" + value
+     doc_img.src = "/img/{{.Id}}?c=" + category + "&v=" + value
    }
   </script>
 </head>
@@ -349,7 +349,7 @@
      ev.preventDefault();
      ev.stopPropagation();
 
-     doSetOperation("join", "comp=" + from_id + "&amp;set=" + in_set);
+     doSetOperation("join", "comp=" + from_id + "&set=" + in_set);
    }
    function removeFromSet(ev) {
      ev.preventDefault();
@@ -366,15 +366,18 @@
 
 
   <script>
-   function doSetOperation(op, params) {
-     var xmlhttp = new XMLHttpRequest();
-     xmlhttp.onreadystatechange = function() {
-       document.getElementById('set-display').innerHTML = xmlhttp.responseText;
-     };
+    function doSetOperation(op, params) {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+	    document.getElementById('set-display').innerHTML = xmlhttp.responseText;
+	};
 
-     var url="/api/related-set?op=" + op + "&amp;id={{.Id}}&amp;" + params;
-     xmlhttp.open("GET", url, true);
-     xmlhttp.send();
+	var url="/api/related-set?op=" + op + "&id={{.Id}}";
+	if (params !== undefined) {
+	    url += "&" + params;
+	}
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
    }
 
    doSetOperation("html");  // Initial filling.
