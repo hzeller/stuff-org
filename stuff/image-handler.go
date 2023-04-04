@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -25,6 +24,13 @@ type ImageHandler struct {
 	template   *TemplateRenderer
 	imgPath    string
 	staticPath string
+}
+
+// There can be multiple images per part. The main ID describes the
+// part, the gallery-ID a number within that gallery.
+type galleryImage struct {
+	id         int // stuff-id
+	gallery_id int // sub-id within a gallery
 }
 
 func AddImageHandler(store StuffStore, template *TemplateRenderer, imgPath string, staticPath string) *ImageHandler {
@@ -49,8 +55,14 @@ func (h *ImageHandler) ServeHTTP(out http.ResponseWriter, req *http.Request) {
 	switch {
 	case strings.HasPrefix(req.URL.Path, kComponentImage):
 		prefix_len := len(kComponentImage)
-		requested := req.URL.Path[prefix_len:]
-		h.serveComponentImage(requested, out, req)
+		requested_str := req.URL.Path[prefix_len:]
+		var requested galleryImage
+		n, _ := fmt.Sscanf(requested_str, "%d/%d", &requested.id, &requested.gallery_id)
+		if n >= 1 {
+			h.serveComponentImage(requested, out, req)
+		} else {
+			sendResource(h.staticPath+"/fallback.png", "", out)
+		}
 	default:
 		h.serveStatic(out, req)
 	}
@@ -103,28 +115,34 @@ func (h *ImageHandler) hasComponentImage(component *Component) bool {
 	return err == nil
 }
 
-func (h *ImageHandler) serveComponentImage(requested string, out http.ResponseWriter, r *http.Request) {
-	path := h.imgPath + "/" + requested + ".jpg"
-	if _, err := os.Stat(path); err == nil { // we have an image.
+func (h *ImageHandler) sendImageIfAvailable(path string, out http.ResponseWriter) bool {
+	if _, err := os.Stat(path); err == nil {
 		sendResource(path, h.staticPath+"/fallback.png", out)
+		return true
+	}
+	return false
+}
+
+func (h *ImageHandler) serveComponentImage(requested galleryImage, out http.ResponseWriter, r *http.Request) {
+	if h.sendImageIfAvailable(fmt.Sprintf("%s/%d/%d.jpg", h.imgPath, requested.id, requested.gallery_id), out) {
 		return
 	}
-	// No image, but let's see if we can do something from the
-	// component
-	if comp_id, err := strconv.Atoi(requested); err == nil {
-		component := h.store.FindById(comp_id)
-		category := r.FormValue("c") // We also allow these if available
-		value := r.FormValue("v")
-		if (component != nil || len(category) > 0 || len(value) > 0) &&
-			h.serveGeneratedComponentImage(component, category, value, out) {
-			return
-		}
-		if h.servePackageImage(component, out) {
-			return
-		}
+	if h.sendImageIfAvailable(fmt.Sprintf("%s/%d.jpg", h.imgPath, requested.id), out) {
+		return
 	}
-	// Use fallback-resource straight away to get short cache times.
-	sendResource("", h.staticPath+"/fallback.png", out)
+
+	// No image, but let's see if we can do something from the
+	// part ID itself.
+	component := h.store.FindById(requested.id)
+	category := r.FormValue("c") // We also allow these if available
+	value := r.FormValue("v")
+	if (component != nil || len(category) > 0 || len(value) > 0) &&
+		h.serveGeneratedComponentImage(component, category, value, out) {
+		return
+	}
+	if h.servePackageImage(component, out) {
+		return
+	}
 }
 
 func (h *ImageHandler) serveStatic(out http.ResponseWriter, r *http.Request) {
