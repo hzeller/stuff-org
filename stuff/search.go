@@ -1,3 +1,5 @@
+// A search that keeps everything in memory and knows about meaning
+// of some component fields as well as how to create some nice scoring.
 package main
 
 import (

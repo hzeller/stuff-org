@@ -111,7 +111,11 @@ func (h *ImageHandler) hasComponentImage(component *Component) bool {
 	case "Resistor", "Diode (D)", "LED", "Capacitor (C)":
 		return true
 	}
-	_, err := os.Stat(fmt.Sprintf("%s/%d.jpg", h.imgPath, component.Id))
+	_, err := os.Stat(fmt.Sprintf("%s/%d/0.jpg", h.imgPath, component.Id))
+	if err == nil {
+		return true
+	}
+	_, err = os.Stat(fmt.Sprintf("%s/%d.jpg", h.imgPath, component.Id))
 	return err == nil
 }
 
@@ -134,15 +138,18 @@ func (h *ImageHandler) serveComponentImage(requested galleryImage, out http.Resp
 	// No image, but let's see if we can do something from the
 	// part ID itself.
 	component := h.store.FindById(requested.id)
-	category := r.FormValue("c") // We also allow these if available
-	value := r.FormValue("v")
-	if (component != nil || len(category) > 0 || len(value) > 0) &&
-		h.serveGeneratedComponentImage(component, category, value, out) {
-		return
+	if component != nil {
+		category := r.FormValue("c") // We also allow these if available
+		value := r.FormValue("v")
+		if (len(category) > 0 || len(value) > 0) &&
+			h.serveGeneratedComponentImage(component, category, value, out) {
+			return
+		}
+		if h.servePackageImage(component, out) {
+			return
+		}
 	}
-	if h.servePackageImage(component, out) {
-		return
-	}
+	sendResource(h.staticPath+"/fallback.png", "", out)
 }
 
 func (h *ImageHandler) serveStatic(out http.ResponseWriter, r *http.Request) {
