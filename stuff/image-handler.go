@@ -136,18 +136,15 @@ func (h *ImageHandler) serveComponentImage(requested galleryImage, out http.Resp
 	}
 
 	// No image, but let's see if we can do something from the
-	// part ID itself.
+	// part ID itself or the values the form passes to us.
 	component := h.store.FindById(requested.id)
-	if component != nil {
-		category := r.FormValue("c") // We also allow these if available
-		value := r.FormValue("v")
-		if (len(category) > 0 || len(value) > 0) &&
-			h.serveGeneratedComponentImage(component, category, value, out) {
-			return
-		}
-		if h.servePackageImage(component, out) {
-			return
-		}
+	category := r.FormValue("c") // We also allow these if available
+	value := r.FormValue("v")
+	if h.serveGeneratedComponentImage(component, category, value, out) {
+		return
+	}
+	if h.servePackageImage(component, out) {
+		return
 	}
 	sendResource(h.staticPath+"/fallback.png", "", out)
 }
