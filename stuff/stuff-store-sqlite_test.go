@@ -23,7 +23,7 @@ func TestBasicStore(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store, _ := NewDBBackend(db, true)
+	store, _ := NewSqlStuffStore(db, true)
 
 	ExpectTrue(t, store.FindById(1) == nil, "Expected id:1 not to exist.")
 
@@ -58,7 +58,7 @@ func TestJoinSets(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store, _ := NewDBBackend(db, true)
+	store, _ := NewSqlStuffStore(db, true)
 
 	// Three components, each in their own equiv-class
 	store.EditRecord(1, func(c *Component) bool { c.Value = "one"; return true })
@@ -119,7 +119,7 @@ func TestLeaveSetRegression(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store, _ := NewDBBackend(db, true)
+	store, _ := NewSqlStuffStore(db, true)
 
 	// We store components in a slightly different
 	// sequence.
@@ -149,7 +149,7 @@ func TestQueryEquiv(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	store, _ := NewDBBackend(db, true)
+	store, _ := NewSqlStuffStore(db, true)
 
 	// Three components, each in their own equiv-class
 	store.EditRecord(1, func(c *Component) bool {

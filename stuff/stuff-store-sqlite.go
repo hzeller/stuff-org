@@ -1,3 +1,4 @@
+// Implementation of the stuff-store-interface for sqlite
 package main
 
 import (
@@ -94,7 +95,7 @@ func row2Component(row *sql.Rows) (*Component, error) {
 	return nil, nil
 }
 
-type DBBackend struct {
+type SqlStuffStore struct {
 	db            *sql.DB
 	findById      *sql.Stmt
 	insertRecord  *sql.Stmt
@@ -106,7 +107,7 @@ type DBBackend struct {
 	fts           *FulltextSearch
 }
 
-func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
+func NewSqlStuffStore(db *sql.DB, create_tables bool) (*SqlStuffStore, error) {
 	if create_tables {
 		_, err := db.Exec(create_schema)
 		if err != nil {
@@ -175,7 +176,7 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 	rows.Close()
 
 	log.Printf("Prepopulated full text search with %d items", count)
-	return &DBBackend{
+	return &SqlStuffStore{
 		db:            db,
 		findById:      findById,
 		insertRecord:  insertRecord,
@@ -187,7 +188,7 @@ func NewDBBackend(db *sql.DB, create_tables bool) (*DBBackend, error) {
 		fts:           fts}, nil
 }
 
-func (d *DBBackend) FindById(id int) *Component {
+func (d *SqlStuffStore) FindById(id int) *Component {
 	rows, _ := d.findById.Query(id)
 	if rows != nil {
 		defer rows.Close()
@@ -199,7 +200,7 @@ func (d *DBBackend) FindById(id int) *Component {
 	return nil
 }
 
-func (d *DBBackend) IterateAll(callback func(comp *Component) bool) {
+func (d *SqlStuffStore) IterateAll(callback func(comp *Component) bool) {
 	rows, _ := d.selectAll.Query()
 	for rows != nil && rows.Next() {
 		c, _ := row2Component(rows)
@@ -210,7 +211,7 @@ func (d *DBBackend) IterateAll(callback func(comp *Component) bool) {
 	rows.Close()
 }
 
-func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
+func (d *SqlStuffStore) EditRecord(id int, update ModifyFun) (bool, string) {
 	needsInsert := false
 	rec := d.FindById(id)
 	if rec == nil {
@@ -261,7 +262,7 @@ func (d *DBBackend) EditRecord(id int, update ModifyFun) (bool, string) {
 	return false, ""
 }
 
-func (d *DBBackend) JoinSet(id int, set int) {
+func (d *SqlStuffStore) JoinSet(id int, set int) {
 	d.LeaveSet(id) // precondition.
 	_, err := d.joinSet.Exec(id, set)
 	if err != nil {
@@ -269,7 +270,7 @@ func (d *DBBackend) JoinSet(id int, set int) {
 	}
 }
 
-func (d *DBBackend) LeaveSet(id int) {
+func (d *SqlStuffStore) LeaveSet(id int) {
 	// The limited way SQLite works, we have to find the equivalence
 	// set first before we can update. Not really efficient, and we
 	// would need a transaction here, but, yeah, good enough for a
@@ -283,7 +284,7 @@ func (d *DBBackend) LeaveSet(id int) {
 	}
 }
 
-func (d *DBBackend) MatchingEquivSetForComponent(id int) []*Component {
+func (d *SqlStuffStore) MatchingEquivSetForComponent(id int) []*Component {
 	result := make([]*Component, 0, 10)
 	rows, _ := d.findEquivById.Query(id)
 	for rows != nil && rows.Next() {
@@ -294,6 +295,6 @@ func (d *DBBackend) MatchingEquivSetForComponent(id int) []*Component {
 	return result
 }
 
-func (d *DBBackend) Search(search_term string) *SearchResult {
+func (d *SqlStuffStore) Search(search_term string) *SearchResult {
 	return d.fts.Search(search_term)
 }
