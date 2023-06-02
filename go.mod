@@ -3,7 +3,7 @@ module github.com/hzeller/stuff-org
 go 1.19
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/prometheus/client_golang v1.15.1
 )
 
