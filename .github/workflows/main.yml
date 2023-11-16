@@ -23,7 +23,7 @@ jobs:
           check-latest: true
       - run: make -C stuff style
       - run: make -C stuff test
-      - uses: goreleaser/goreleaser-action@v4
+      - uses: goreleaser/goreleaser-action@v5
         with:
           workdir: stuff
           version: latest
@@ -54,7 +54,7 @@ jobs:
         with:
           go-version: '1.21.x'
           check-latest: true
-      - uses: goreleaser/goreleaser-action@v4
+      - uses: goreleaser/goreleaser-action@v5
         with:
           workdir: stuff
           version: latest
