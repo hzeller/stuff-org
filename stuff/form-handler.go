@@ -285,7 +285,7 @@ func cleanupComponent(component *Component) {
 // If this particular request is allowed to edit. Can depend on IP address,
 // cookies etc.
 func (h *FormHandler) EditAllowed(r *http.Request) bool {
-	if h.editNets == nil || len(h.editNets) == 0 {
+	if len(h.editNets) == 0 {
 		return true // No restrictions.
 	}
 	addr, _, err := net.SplitHostPort(r.RemoteAddr)
