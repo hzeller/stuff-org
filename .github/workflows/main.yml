@@ -28,7 +28,7 @@ jobs:
           workdir: stuff
           version: latest
           args: release --skip-publish --snapshot
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: stuff
           path: stuff/stuff
